@@ -19,8 +19,11 @@ Open **`index.html`** — either:
 |---|---|
 | **Topo map opacity** | Fades the topo sheet in/out over the imagery |
 | **Satellite opacity** | Dims the imagery (map background is dark) |
+| **Topo on top / Satellite on top** | Swaps the stacking order of the two layers |
 | **See-through paper** | Multiply blend — the white paper disappears so boundaries, contours and tracks draw directly on the satellite photo |
 | **Show topo overlay** | Quick on/off toggle |
+| **✕ / ☰** | Hides the whole control panel behind a small button for a full-screen map |
+| **📍 Add note** | Arm it, then tap the map to drop a pin — pins are draggable, editable and deletable, persist in your browser (localStorage), and **Export** downloads them as GeoJSON for GPS apps |
 
 ## How it was made
 
