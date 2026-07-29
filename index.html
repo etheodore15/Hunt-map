@@ -10,12 +10,12 @@
   #map { height: 100%; background: #1a1a1a; }
   .panel {
     position: absolute; top: 10px; right: 10px; z-index: 1000;
-    background: rgba(20, 24, 28, 0.88); color: #eee;
+    background: rgba(20, 24, 28, 0.9); color: #eee;
     font: 13px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    padding: 12px 14px; border-radius: 10px; width: 240px;
+    padding: 12px 14px; border-radius: 10px; width: 250px;
     box-shadow: 0 2px 12px rgba(0,0,0,.5);
   }
-  .panel h1 { font-size: 14px; margin: 0 0 2px; }
+  .panel h1 { font-size: 14px; margin: 0 0 2px; padding-right: 20px; }
   .panel .sub { font-size: 11px; color: #9fb2a8; margin-bottom: 10px; }
   .ctl { margin-bottom: 10px; }
   .ctl label { display: flex; justify-content: space-between; margin-bottom: 3px; }
@@ -23,22 +23,61 @@
   .ctl input[type=range] { width: 100%; accent-color: #4caf72; }
   .toggle { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; }
   .toggle input { accent-color: #4caf72; }
-  .hint { font-size: 11px; color: #8a949e; margin-top: 8px; border-top: 1px solid #333c44; padding-top: 8px; }
-  .credit { font-size: 10px; color: #6b757f; margin-top: 6px; }
-  .collapse-btn {
-    position: absolute; top: 6px; right: 8px; background: none; border: none;
-    color: #9fb2a8; cursor: pointer; font-size: 14px; padding: 2px 4px;
+  .seg { display: flex; border: 1px solid #3a444d; border-radius: 7px; overflow: hidden; margin-bottom: 10px; }
+  .seg button {
+    flex: 1; background: none; border: none; color: #cdd6dd; padding: 6px 4px;
+    font: 12px system-ui, sans-serif; cursor: pointer;
   }
-  .panel.collapsed > *:not(.collapse-btn):not(h1) { display: none; }
-  /* keep topo overlay crisp when zoomed in */
-  .topo-overlay { image-rendering: auto; }
+  .seg button.active { background: #2e6b45; color: #fff; }
+  .sect { border-top: 1px solid #333c44; margin-top: 10px; padding-top: 9px; }
+  .sect h2 { font-size: 12px; margin: 0 0 7px; color: #b9c4cc; text-transform: uppercase; letter-spacing: .04em; }
+  .btnrow { display: flex; gap: 6px; }
+  .btn {
+    flex: 1; background: #26313a; border: 1px solid #3a444d; color: #dde5ea;
+    border-radius: 7px; padding: 6px 8px; font: 12px system-ui, sans-serif; cursor: pointer;
+  }
+  .btn:hover { background: #303d48; }
+  .btn.armed { background: #7a5b1e; border-color: #a87f2c; color: #fff; }
+  .hint { font-size: 11px; color: #8a949e; margin-top: 8px; }
+  .credit { font-size: 10px; color: #6b757f; margin-top: 8px; border-top: 1px solid #333c44; padding-top: 7px; }
+  .hide-btn {
+    position: absolute; top: 6px; right: 8px; background: none; border: none;
+    color: #9fb2a8; cursor: pointer; font-size: 15px; padding: 2px 5px;
+  }
+  .hide-btn:hover { color: #fff; }
+  /* small round button shown when the panel is hidden */
+  #showBtn {
+    position: absolute; top: 10px; right: 10px; z-index: 1000; display: none;
+    width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+    background: rgba(20, 24, 28, 0.9); color: #8fd19e; font-size: 19px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.5);
+  }
+  #showBtn:hover { background: rgba(35, 42, 48, 0.95); }
+  body.panel-hidden .panel { display: none; }
+  body.panel-hidden #showBtn { display: block; }
+  body.note-mode #map { cursor: crosshair; }
+  /* note popup */
+  .note-pop textarea {
+    width: 210px; height: 74px; resize: vertical; box-sizing: border-box;
+    font: 13px system-ui, sans-serif; padding: 5px 6px; border-radius: 6px;
+    border: 1px solid #aab; margin-bottom: 6px;
+  }
+  .note-pop .coords { font-size: 10.5px; color: #667; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+  .note-pop .btnrow button {
+    font: 12px system-ui, sans-serif; padding: 4px 10px; border-radius: 6px;
+    border: 1px solid #99a; background: #eef2f5; cursor: pointer;
+  }
+  .note-pop .btnrow .save { background: #2e6b45; border-color: #2e6b45; color: #fff; }
+  .note-pop .btnrow .del { color: #a22; }
 </style>
 </head>
 <body>
 <div id="map"></div>
 
+<button id="showBtn" title="Show controls">☰</button>
+
 <div class="panel" id="panel">
-  <button class="collapse-btn" id="collapseBtn" title="Collapse">▾</button>
+  <button class="hide-btn" id="hideBtn" title="Hide controls">✕</button>
   <h1>Morisset 9131-1N</h1>
   <div class="sub">1:25,000 topo (2017) over satellite — state forest boundaries in green</div>
 
@@ -52,6 +91,11 @@
     <input type="range" id="satOpacity" min="0" max="100" value="100">
   </div>
 
+  <div class="seg" id="orderSeg" title="Layer order">
+    <button id="orderTopoTop" class="active">Topo on top</button>
+    <button id="orderSatTop">Satellite on top</button>
+  </div>
+
   <label class="toggle">
     <input type="checkbox" id="blendMode" checked>
     <span>See-through paper (multiply blend)</span>
@@ -62,10 +106,15 @@
     <span>Show topo overlay</span>
   </label>
 
-  <div class="hint">
-    Multiply blend hides the white map paper so linework (boundaries, contours, tracks)
-    sits directly on the imagery. Turn it off and use the opacity slider to compare layers instead.
+  <div class="sect">
+    <h2>Notes <span id="noteCount" style="color:#8fd19e"></span></h2>
+    <div class="btnrow">
+      <button class="btn" id="addNoteBtn">📍 Add note</button>
+      <button class="btn" id="exportBtn" title="Download notes as GeoJSON">Export</button>
+    </div>
+    <div class="hint" id="noteHint">Tap "Add note", then tap the map. Drag a pin to move it; tap it to edit. Notes are saved in this browser.</div>
   </div>
+
   <div class="credit">
     Topo: © NSW Spatial Services (9131-1N, 2017). Imagery: Esri World Imagery.
   </div>
@@ -86,9 +135,16 @@
   });
   map.fitBounds(BOUNDS);
 
+  // Dedicated panes so the stacking order of satellite vs topo can be swapped.
+  map.createPane('satPane');
+  map.createPane('topoPane');
+  map.getPane('satPane').style.zIndex = 210;
+  map.getPane('topoPane').style.zIndex = 260;   // topo above satellite by default
+
   var satellite = L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
+      pane: 'satPane',
       attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
     }).addTo(map);
 
@@ -98,7 +154,7 @@
   var topo = L.imageOverlay(IMG_RELATIVE, BOUNDS, {
     opacity: 0.7,
     interactive: false,
-    className: 'topo-overlay'
+    pane: 'topoPane'
   }).addTo(map);
 
   // If the relative path can't be served (e.g. some HTML preview proxies), fall
@@ -109,20 +165,34 @@
 
   L.control.scale({ imperial: false }).addTo(map);
 
-  // --- UI wiring ---
+  // --- Layer controls ---
   var topoSlider = document.getElementById('topoOpacity');
   var satSlider = document.getElementById('satOpacity');
   var topoVal = document.getElementById('topoVal');
   var satVal = document.getElementById('satVal');
   var blendBox = document.getElementById('blendMode');
   var topoBox = document.getElementById('topoToggle');
+  var topoOnTop = true;
 
   function applyBlend() {
     var el = topo.getElement();
-    if (el) el.style.mixBlendMode = blendBox.checked ? 'multiply' : 'normal';
+    // Multiply blend only makes sense while the topo sheet sits above the
+    // imagery; underneath it would just blend into the dark page background.
+    if (el) el.style.mixBlendMode = (blendBox.checked && topoOnTop) ? 'multiply' : 'normal';
   }
   topo.on('load', applyBlend);
   topo.on('add', function () { setTimeout(applyBlend, 0); });
+
+  function setOrder(topoTop) {
+    topoOnTop = topoTop;
+    map.getPane('topoPane').style.zIndex = topoTop ? 260 : 210;
+    map.getPane('satPane').style.zIndex = topoTop ? 210 : 260;
+    document.getElementById('orderTopoTop').classList.toggle('active', topoTop);
+    document.getElementById('orderSatTop').classList.toggle('active', !topoTop);
+    applyBlend();
+  }
+  document.getElementById('orderTopoTop').addEventListener('click', function () { setOrder(true); });
+  document.getElementById('orderSatTop').addEventListener('click', function () { setOrder(false); });
 
   topoSlider.addEventListener('input', function () {
     topo.setOpacity(this.value / 100);
@@ -141,12 +211,146 @@
     else { map.removeLayer(topo); }
   });
 
-  document.getElementById('collapseBtn').addEventListener('click', function () {
-    var p = document.getElementById('panel');
-    p.classList.toggle('collapsed');
-    this.textContent = p.classList.contains('collapsed') ? '▸' : '▾';
+  // --- Panel show / hide ---
+  document.getElementById('hideBtn').addEventListener('click', function () {
+    document.body.classList.add('panel-hidden');
+  });
+  document.getElementById('showBtn').addEventListener('click', function () {
+    document.body.classList.remove('panel-hidden');
   });
 
+  // --- Notes (pins with text, persisted in localStorage) ---
+  var STORE_KEY = 'huntmap-notes-morisset-9131-1N';
+  var notes = [];      // [{id, lat, lng, text}]
+  var markers = {};    // id -> L.Marker
+  var addMode = false;
+  var addNoteBtn = document.getElementById('addNoteBtn');
+  var noteCount = document.getElementById('noteCount');
+
+  function loadNotes() {
+    try { notes = JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+    catch (e) { notes = []; }
+  }
+  function saveNotes() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(notes));
+    noteCount.textContent = notes.length ? '(' + notes.length + ')' : '';
+  }
+  function noteById(id) {
+    for (var i = 0; i < notes.length; i++) if (notes[i].id === id) return notes[i];
+    return null;
+  }
+
+  function popupContent(id) {
+    var n = noteById(id);
+    var div = document.createElement('div');
+    div.className = 'note-pop';
+    var coords = document.createElement('div');
+    coords.className = 'coords';
+    coords.textContent = n.lat.toFixed(5) + ', ' + n.lng.toFixed(5);
+    var ta = document.createElement('textarea');
+    ta.placeholder = 'Write a note…';
+    ta.value = n.text || '';
+    var row = document.createElement('div');
+    row.className = 'btnrow';
+    row.style.display = 'flex';
+    row.style.gap = '6px';
+    var save = document.createElement('button');
+    save.className = 'save';
+    save.textContent = 'Save';
+    save.addEventListener('click', function () {
+      n.text = ta.value.trim();
+      saveNotes();
+      markers[id].closePopup();
+      refreshTooltip(id);
+    });
+    var del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = 'Delete';
+    del.addEventListener('click', function () { removeNote(id); });
+    row.appendChild(save);
+    row.appendChild(del);
+    div.appendChild(coords);
+    div.appendChild(ta);
+    div.appendChild(row);
+    setTimeout(function () { ta.focus(); }, 50);
+    return div;
+  }
+
+  function refreshTooltip(id) {
+    var n = noteById(id);
+    var m = markers[id];
+    m.unbindTooltip();
+    if (n && n.text) {
+      var first = n.text.split('\n')[0];
+      if (first.length > 40) first = first.slice(0, 40) + '…';
+      m.bindTooltip(first, { direction: 'top', offset: [-14, -12] });
+    }
+  }
+
+  function addMarker(n) {
+    var m = L.marker([n.lat, n.lng], { draggable: true });
+    m.addTo(map);
+    m.bindPopup(function () { return popupContent(n.id); }, { closeButton: true });
+    m.on('dragend', function () {
+      var ll = m.getLatLng();
+      n.lat = ll.lat; n.lng = ll.lng;
+      saveNotes();
+    });
+    markers[n.id] = m;
+    refreshTooltip(n.id);
+  }
+
+  function removeNote(id) {
+    notes = notes.filter(function (n) { return n.id !== id; });
+    if (markers[id]) { map.removeLayer(markers[id]); delete markers[id]; }
+    saveNotes();
+  }
+
+  function setAddMode(on) {
+    addMode = on;
+    document.body.classList.toggle('note-mode', on);
+    addNoteBtn.classList.toggle('armed', on);
+    addNoteBtn.textContent = on ? 'Tap the map…' : '📍 Add note';
+  }
+  addNoteBtn.addEventListener('click', function () { setAddMode(!addMode); });
+
+  map.on('click', function (e) {
+    if (!addMode) return;
+    setAddMode(false);
+    var n = {
+      id: 'n' + Date.now() + Math.floor(Math.random() * 1000),
+      lat: e.latlng.lat,
+      lng: e.latlng.lng,
+      text: ''
+    };
+    notes.push(n);
+    saveNotes();
+    addMarker(n);
+    markers[n.id].openPopup();
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    var gj = {
+      type: 'FeatureCollection',
+      features: notes.map(function (n) {
+        return {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [n.lng, n.lat] },
+          properties: { name: (n.text || '').split('\n')[0] || 'Note', description: n.text || '' }
+        };
+      })
+    };
+    var blob = new Blob([JSON.stringify(gj, null, 2)], { type: 'application/geo+json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'hunt-map-notes.geojson';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  loadNotes();
+  notes.forEach(addMarker);
+  saveNotes();
   applyBlend();
 </script>
 </body>
