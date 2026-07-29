@@ -156,15 +156,19 @@
   </div>
 
   <div class="sect">
-    <h2>For sale <span id="saleCount" style="color:#8fd19e;text-transform:none"></span></h2>
+    <h2>Property finder</h2>
     <label class="toggle">
       <input type="checkbox" id="saleToggle" checked>
-      <span>Show for-sale properties</span>
+      <span><span class="chip" style="background:#ffd600"></span>For-sale listings <span id="saleCount" style="color:#8fd19e"></span></span>
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="cadToggle" checked>
+      <span><span class="chip" style="background:#26c6da"></span>All properties (cadastre) <span id="cadCount" style="color:#8fd19e"></span></span>
     </label>
     <div class="ctl" style="margin-top:6px">
       <label for="minAcres">Minimum size <span class="val" id="minAcresVal"></span></label>
       <div style="display:flex;align-items:center;gap:7px">
-        <input type="number" id="minAcres" min="0" step="1" value="1" inputmode="numeric"
+        <input type="number" id="minAcres" min="0" step="1" value="50" inputmode="numeric"
                style="width:80px;background:#26313a;border:1px solid #3a444d;color:#eee;border-radius:6px;padding:5px 7px;font:13px system-ui">
         <span style="color:#b9c4cc">acres and up</span>
       </div>
@@ -178,7 +182,7 @@
       <input type="checkbox" id="reqNP" checked>
       <span><span class="chip" style="background:#e040fb"></span>National park / reserve / SCA</span>
     </label>
-    <div class="hint">Ticked = property must share a boundary with that tenure (either, if both ticked). Untick both to show every checked listing regardless.</div>
+    <div class="hint">Ticked = property must share a boundary with that tenure (either, if both ticked). Untick both to drop the border requirement. Non-bordering cadastre parcels are included from ~50 acres up; bordering ones from 1 acre.</div>
     <div class="hint" id="saleHint"></div>
     <div class="btnrow" style="margin-top:8px">
       <button class="btn" id="saleZoomBtn">🔍 Zoom to results</button>
@@ -379,15 +383,71 @@
     if (document.getElementById('saleToggle').checked) saleLayer.addTo(map);
   });
   wireToggle('saleToggle', saleLayer);
+
+  // --- All properties from the cadastre (precomputed region analysis) ---
+  // properties.json holds every parcel that borders a state forest or NPWS
+  // reserve (>=1 ac), plus all parcels >=~50 ac region-wide, with verified
+  // ground acreage. Canvas renderer keeps thousands of polygons responsive.
+  var cadLayer = L.layerGroup();
+  var cadParcels = [];
+  var cadRenderer = L.canvas({ padding: 0.3 });
+
+  function cadPopup(p) {
+    var div = document.createElement('div');
+    var lines = [];
+    if (p.sf) lines.push('<b style="color:#1b5e20">Borders ' + titleCase(p.sf) + ' State Forest</b>');
+    if (p.np) lines.push('<b style="color:#6a1b9a">Borders ' + titleCase(p.np) + ' NP/Reserve</b>');
+    if (!lines.length) lines.push('Does not border state forest or NPWS reserve');
+    div.innerHTML = '<b>' + (p.addr || 'Unnamed parcel') + '</b><br>~' +
+      Math.round(p.a) + ' acres (' + Math.round(p.a / 2.4710538) + ' ha)<br>' + lines.join('<br>');
+    return div;
+  }
+
+  function renderCad() {
+    cadLayer.clearLayers();
+    if (!cadParcels.length) return;
+    var minAc = parseFloat(document.getElementById('minAcres').value) || 0;
+    var reqSF = document.getElementById('reqSF').checked;
+    var reqNP = document.getElementById('reqNP').checked;
+    var shown = 0;
+    cadParcels.forEach(function (p) {
+      if (p.a < minAc) return;
+      if ((reqSF || reqNP) && !((reqSF && p.sf) || (reqNP && p.np))) return;
+      shown++;
+      var borders = p.sf || p.np;
+      L.polygon(p.rings.map(function (ring) {
+        return ring.map(function (c) { return [c[1], c[0]]; });
+      }), {
+        renderer: cadRenderer,
+        color: borders ? '#26c6da' : '#b0bec5',
+        weight: borders ? 2 : 1.2,
+        fillColor: borders ? '#26c6da' : '#b0bec5',
+        fillOpacity: borders ? 0.12 : 0.06
+      }).bindPopup(function () { return cadPopup(p); }).addTo(cadLayer);
+    });
+    document.getElementById('cadCount').textContent = '(' + shown + ')';
+  }
+
+  fetch('properties.json').then(function (r) { return r.json(); }).then(function (data) {
+    cadParcels = data.parcels;
+    renderCad();
+    if (document.getElementById('cadToggle').checked) cadLayer.addTo(map);
+  });
+  wireToggle('cadToggle', cadLayer);
+
   ['minAcres', 'reqSF', 'reqNP'].forEach(function (id) {
-    document.getElementById(id).addEventListener('input', renderSale);
+    document.getElementById(id).addEventListener('input', function () {
+      renderSale(); renderCad();
+    });
   });
   document.getElementById('saleZoomBtn').addEventListener('click', function () {
     var b = null;
-    saleLayer.eachLayer(function (l) {
+    function extend(l) {
       var lb = l.getBounds ? l.getBounds() : L.latLngBounds([l.getLatLng()]);
       b = b ? b.extend(lb) : L.latLngBounds(lb.getSouthWest(), lb.getNorthEast());
-    });
+    }
+    if (map.hasLayer(saleLayer)) saleLayer.eachLayer(extend);
+    if (map.hasLayer(cadLayer)) cadLayer.eachLayer(extend);
     if (b) map.fitBounds(b.pad(0.1));
   });
 
