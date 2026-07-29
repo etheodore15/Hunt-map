@@ -25,6 +25,7 @@ Open **`index.html`** — either:
 | **✕ / ☰** | Hides the whole control panel behind floating buttons (☰ controls, 📍 add note, 🗺 map key) for a full-screen map |
 | **Live boundaries** | Current NSW Spatial Services layers drawn on top: property lots / cadastre (orange), state forest (green), national parks & reserves (magenta) |
 | **🗺 Map key** | Shows the sheet's full legend (extracted from the GeoPDF) in a scrollable panel |
+| **🚶 Street View** | Arm it, then tap anywhere on the map to open Google Street View at that spot (new tab, keyless deep link). Every property and note popup also carries a Street View link |
 | **📍 Add note** | Arm it, then tap the map to drop a pin — pins are draggable, editable and deletable, persist in your browser (localStorage), and **Export** downloads them as GeoJSON for GPS apps |
 | **Property finder** | Two layers driven by shared filters — **minimum size in acres** and **must border: state forest and/or NPWS park/reserve/SCA**. Gold = for-sale listings (amber = within 250 m, grey = neither). Teal = *all* cadastral properties: every parcel bordering a state forest or NPWS reserve within ~30 km of the sheet (from 1 acre), plus all parcels ≥~50 acres region-wide, precomputed from the NSW cadastre with ground-corrected areas |
 

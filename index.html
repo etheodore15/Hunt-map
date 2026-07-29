@@ -98,6 +98,7 @@
   <button id="showBtn" title="Show controls">☰</button>
   <button id="fabNote" title="Add note">📍</button>
   <button id="fabKey" title="Map key">🗺</button>
+  <button id="fabSv" title="Street View: tap the map">🚶</button>
 </div>
 
 <div id="keyPanel">
@@ -152,6 +153,7 @@
     <div class="hint">Current NSW Spatial Services data — property lot lines appear once you zoom in past ~1:100,000.</div>
     <div class="btnrow" style="margin-top:8px">
       <button class="btn" id="keyBtn">🗺 Map key</button>
+      <button class="btn" id="svBtn" title="Tap the map to open Google Street View there">🚶 Street View</button>
     </div>
   </div>
 
@@ -328,7 +330,8 @@
     div.innerHTML = '<b>' + l.address + '</b><br>' +
       l.size + ' (parcel ~' + Math.round(l.acres) + ' ac) — ' + l.price + '<br>' +
       lines.join('<br>') +
-      '<br><a href="' + l.url + '" target="_blank" rel="noopener">View listing ↗</a>';
+      '<br><a href="' + l.url + '" target="_blank" rel="noopener">View listing ↗</a> · ' +
+      svLink(l.lat, l.lon);
     return div;
   }
 
@@ -398,8 +401,13 @@
     if (p.sf) lines.push('<b style="color:#1b5e20">Borders ' + titleCase(p.sf) + ' State Forest</b>');
     if (p.np) lines.push('<b style="color:#6a1b9a">Borders ' + titleCase(p.np) + ' NP/Reserve</b>');
     if (!lines.length) lines.push('Does not border state forest or NPWS reserve');
+    var ring = p.rings[0];
+    var cx = 0, cy = 0;
+    ring.forEach(function (c) { cx += c[0]; cy += c[1]; });
+    cx /= ring.length; cy /= ring.length;
     div.innerHTML = '<b>' + (p.addr || 'Unnamed parcel') + '</b><br>~' +
-      Math.round(p.a) + ' acres (' + Math.round(p.a / 2.4710538) + ' ha)<br>' + lines.join('<br>');
+      Math.round(p.a) + ' acres (' + Math.round(p.a / 2.4710538) + ' ha)<br>' +
+      lines.join('<br>') + '<br>' + svLink(cy, cx);
     return div;
   }
 
@@ -449,6 +457,31 @@
     if (map.hasLayer(saleLayer)) saleLayer.eachLayer(extend);
     if (map.hasLayer(cadLayer)) cadLayer.eachLayer(extend);
     if (b) map.fitBounds(b.pad(0.1));
+  });
+
+  // --- Google Street View (keyless deep link) ---
+  var svMode = false;
+  function svUrl(lat, lng) {
+    return 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' +
+      lat.toFixed(6) + ',' + lng.toFixed(6);
+  }
+  function svLink(lat, lng) {
+    return '<a href="' + svUrl(lat, lng) + '" target="_blank" rel="noopener">Street View ↗</a>';
+  }
+  function setSvMode(on) {
+    svMode = on;
+    if (on && typeof setAddMode === 'function') setAddMode(false);
+    document.body.classList.toggle('note-mode', on || (typeof addMode !== 'undefined' && addMode));
+    document.getElementById('svBtn').classList.toggle('armed', on);
+    document.getElementById('fabSv').classList.toggle('armed', on);
+    document.getElementById('svBtn').textContent = on ? 'Tap the map…' : '🚶 Street View';
+  }
+  document.getElementById('svBtn').addEventListener('click', function () { setSvMode(!svMode); });
+  document.getElementById('fabSv').addEventListener('click', function () { setSvMode(!svMode); });
+  map.on('click', function (e) {
+    if (!svMode) return;
+    setSvMode(false);
+    window.open(svUrl(e.latlng.lat, e.latlng.lng), '_blank', 'noopener');
   });
 
   // --- Map key ---
@@ -538,7 +571,7 @@
     div.className = 'note-pop';
     var coords = document.createElement('div');
     coords.className = 'coords';
-    coords.textContent = n.lat.toFixed(5) + ', ' + n.lng.toFixed(5);
+    coords.innerHTML = n.lat.toFixed(5) + ', ' + n.lng.toFixed(5) + ' · ' + svLink(n.lat, n.lng);
     var ta = document.createElement('textarea');
     ta.placeholder = 'Write a note…';
     ta.value = n.text || '';
@@ -600,7 +633,8 @@
 
   function setAddMode(on) {
     addMode = on;
-    document.body.classList.toggle('note-mode', on);
+    if (on && svMode) setSvMode(false);
+    document.body.classList.toggle('note-mode', on || svMode);
     addNoteBtn.classList.toggle('armed', on);
     addNoteBtn.textContent = on ? 'Tap the map…' : '📍 Add note';
     document.getElementById('fabNote').classList.toggle('armed', on);
