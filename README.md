@@ -26,6 +26,7 @@ Open **`index.html`** — either:
 | **Live boundaries** | Current NSW Spatial Services layers drawn on top: property lots / cadastre (orange), state forest (green), national parks & reserves (magenta) |
 | **🗺 Map key** | Shows the sheet's full legend (extracted from the GeoPDF) in a scrollable panel |
 | **📍 Add note** | Arm it, then tap the map to drop a pin — pins are draggable, editable and deletable, persist in your browser (localStorage), and **Export** downloads them as GeoJSON for GPS apps |
+| **For sale** | Snapshot of acreage listings (within 30 km of the sheet) verified against the NSW cadastre. Filter by **minimum size in acres** and by **must border: state forest and/or NPWS park/reserve/SCA**. Gold = shares a boundary (parcel outline drawn), amber = within 250 m, grey = neither |
 
 The live boundary layers are fetched on demand from
 `portal.spatial.nsw.gov.au` (NSW_Land_Parcel_Property_Theme and

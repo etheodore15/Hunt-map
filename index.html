@@ -156,16 +156,30 @@
   </div>
 
   <div class="sect">
-    <h2>For sale</h2>
+    <h2>For sale <span id="saleCount" style="color:#8fd19e;text-transform:none"></span></h2>
     <label class="toggle">
       <input type="checkbox" id="saleToggle" checked>
-      <span><span class="chip" style="background:#ffd600"></span>&gt;1 acre bordering state forest</span>
+      <span>Show for-sale properties</span>
+    </label>
+    <div class="ctl" style="margin-top:6px">
+      <label for="minAcres">Minimum size <span class="val" id="minAcresVal"></span></label>
+      <div style="display:flex;align-items:center;gap:7px">
+        <input type="number" id="minAcres" min="0" step="1" value="1" inputmode="numeric"
+               style="width:80px;background:#26313a;border:1px solid #3a444d;color:#eee;border-radius:6px;padding:5px 7px;font:13px system-ui">
+        <span style="color:#b9c4cc">acres and up</span>
+      </div>
+    </div>
+    <div style="margin:8px 0 4px;color:#b9c4cc;font-size:12px">Must border directly onto:</div>
+    <label class="toggle">
+      <input type="checkbox" id="reqSF" checked>
+      <span><span class="chip" style="background:#00e676"></span>State forest</span>
     </label>
     <label class="toggle">
-      <input type="checkbox" id="saleAllToggle">
-      <span><span class="chip" style="background:#90a4ae"></span>Other listings checked (don't border)</span>
+      <input type="checkbox" id="reqNP" checked>
+      <span><span class="chip" style="background:#e040fb"></span>National park / reserve / SCA</span>
     </label>
-    <div class="hint" id="saleHint">Listings snapshot checked against the NSW cadastre &amp; gazetted state forest boundaries.</div>
+    <div class="hint">Ticked = property must share a boundary with that tenure (either, if both ticked). Untick both to show every checked listing regardless.</div>
+    <div class="hint" id="saleHint"></div>
     <div class="btnrow" style="margin-top:8px">
       <button class="btn" id="saleZoomBtn">🔍 Zoom to results</button>
     </div>
@@ -282,31 +296,57 @@
   wireToggle('npwsToggle', npwsLayer);
 
   // --- Properties for sale (from listings.json, verified against cadastre) ---
-  var saleLayer = L.layerGroup();        // adjoins / near state forest
-  var saleAllLayer = L.layerGroup();     // checked but not bordering
+  // Each listing carries verified parcel acres plus measured distances to the
+  // nearest gazetted State Forest (sf_d/sf) and NPWS reserve (np_d/np).
+  var saleLayer = L.layerGroup();
+  var saleListings = [];
+  var ADJOIN_M = 15;   // <= this counts as sharing a boundary
+  var NEAR_M = 250;
 
+  function titleCase(s) {
+    return (s || '').toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+  function tenureLine(d, name, kind) {
+    if (d == null) return null;
+    if (d <= ADJOIN_M)
+      return '<b style="color:#1b5e20">Shares a boundary with ' + titleCase(name) + ' ' + kind + '</b>';
+    if (d <= NEAR_M)
+      return '<b style="color:#a06a00">' + Math.round(d) + ' m from ' + titleCase(name) + ' ' + kind + '</b>';
+    return null;
+  }
   function salePopup(l) {
     var div = document.createElement('div');
-    var borders = l.status === 'adjoins'
-      ? '<b style="color:#1b5e20">Shares a boundary with ' + titleCase(l.sf) + ' State Forest</b>'
-      : l.status === 'near'
-        ? '<b style="color:#a06a00">' + Math.round(l.dist_m) + ' m from ' + titleCase(l.sf) + ' State Forest</b> (does not adjoin)'
-        : 'Does not border a state forest (>400 m)';
+    var lines = [
+      tenureLine(l.sf_d, l.sf, 'State Forest'),
+      tenureLine(l.np_d, l.np, 'NP/Reserve')
+    ].filter(Boolean);
+    if (!lines.length) lines = ['Does not border state forest or NPWS reserve (>400 m)'];
     div.innerHTML = '<b>' + l.address + '</b><br>' +
-      l.size + ' — ' + l.price + '<br>' + borders +
+      l.size + ' (parcel ~' + Math.round(l.acres) + ' ac) — ' + l.price + '<br>' +
+      lines.join('<br>') +
       '<br><a href="' + l.url + '" target="_blank" rel="noopener">View listing ↗</a>';
     return div;
   }
-  function titleCase(s) {
-    return (s || 'a').toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+
+  function bordersSF(l) { return l.sf_d != null && l.sf_d <= ADJOIN_M; }
+  function bordersNP(l) { return l.np_d != null && l.np_d <= ADJOIN_M; }
+  function isNear(l) {
+    return (l.sf_d != null && l.sf_d <= NEAR_M) || (l.np_d != null && l.np_d <= NEAR_M);
   }
 
-  fetch('listings.json').then(function (r) { return r.json(); }).then(function (data) {
-    document.getElementById('saleHint').textContent =
-      'Listings snapshot ' + data.asOf + ', checked against the NSW cadastre & gazetted state forest boundaries.';
-    data.listings.forEach(function (l) {
-      if (l.status === 'adjoins' || l.status === 'near') {
-        var color = l.status === 'adjoins' ? '#ffd600' : '#ffab40';
+  function renderSale() {
+    saleLayer.clearLayers();
+    var minAc = parseFloat(document.getElementById('minAcres').value) || 0;
+    var reqSF = document.getElementById('reqSF').checked;
+    var reqNP = document.getElementById('reqNP').checked;
+    var shown = 0;
+    saleListings.forEach(function (l) {
+      if (l.acres < minAc) return;
+      if ((reqSF || reqNP) && !((reqSF && bordersSF(l)) || (reqNP && bordersNP(l)))) return;
+      shown++;
+      var borders = bordersSF(l) || bordersNP(l);
+      var color = borders ? '#ffd600' : (isNear(l) ? '#ffab40' : null);
+      if (color) {
         if (l.rings) {
           L.polygon(l.rings.map(function (ring) {
             return ring.map(function (c) { return [c[1], c[0]]; });
@@ -325,13 +365,23 @@
       } else {
         L.circleMarker([l.lat, l.lon], {
           radius: 6, color: '#546e7a', weight: 2, fillColor: '#90a4ae', fillOpacity: 0.8
-        }).bindPopup(function () { return salePopup(l); }).addTo(saleAllLayer);
+        }).bindPopup(function () { return salePopup(l); }).addTo(saleLayer);
       }
     });
+    document.getElementById('saleCount').textContent = '(' + shown + ' of ' + saleListings.length + ')';
+  }
+
+  fetch('listings.json').then(function (r) { return r.json(); }).then(function (data) {
+    saleListings = data.listings;
+    document.getElementById('saleHint').textContent =
+      'Listings snapshot ' + data.asOf + ', verified against the NSW cadastre, gazetted state forests and NPWS reserves.';
+    renderSale();
     if (document.getElementById('saleToggle').checked) saleLayer.addTo(map);
   });
   wireToggle('saleToggle', saleLayer);
-  wireToggle('saleAllToggle', saleAllLayer);
+  ['minAcres', 'reqSF', 'reqNP'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', renderSale);
+  });
   document.getElementById('saleZoomBtn').addEventListener('click', function () {
     var b = null;
     saleLayer.eachLayer(function (l) {

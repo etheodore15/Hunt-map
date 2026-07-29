@@ -1,6 +1,6 @@
 {
  "asOf": "2026-07-29",
- "criteria": "current listings > 1 acre within 30 km of the 9131-1N sheet, checked against NSW cadastre + gazetted State Forest boundaries",
+ "criteria": "current listings > 1 acre within 30 km of the 9131-1N sheet, checked against NSW cadastre + gazetted State Forest and NPWS reserve boundaries",
  "listings": [
   {
    "address": "28 Frost Road, Cooranbong",
@@ -10,8 +10,11 @@
    "lon": 151.439427,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://raywhitemorisset.com.au/properties/residential-for-sale/nsw/cooranbong-2265/acreage-semi-rural/3505653"
+   "url": "https://raywhitemorisset.com.au/properties/residential-for-sale/nsw/cooranbong-2265/acreage-semi-rural/3505653",
+   "acres": 39.2,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "358 Newport Road, Cooranbong",
@@ -21,8 +24,11 @@
    "lon": 151.469192,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22358%20Newport%20Road%20Cooranbong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22358%20Newport%20Road%20Cooranbong%22%20NSW%20for%20sale",
+   "acres": 11.7,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "371 Newport Road, Cooranbong",
@@ -32,8 +38,11 @@
    "lon": 151.464952,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22371%20Newport%20Road%20Cooranbong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22371%20Newport%20Road%20Cooranbong%22%20NSW%20for%20sale",
+   "acres": 4.6,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "302 Freemans Drive, Cooranbong",
@@ -43,8 +52,11 @@
    "lon": 151.463001,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22302%20Freemans%20Drive%20Cooranbong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22302%20Freemans%20Drive%20Cooranbong%22%20NSW%20for%20sale",
+   "acres": 1.8,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "2 Short Street, Eraring",
@@ -54,8 +66,11 @@
    "lon": 151.50913,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%222%20Short%20Street%20Eraring%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%222%20Short%20Street%20Eraring%22%20NSW%20for%20sale",
+   "acres": 2.5,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "4 Awaba Road, Eraring",
@@ -65,8 +80,11 @@
    "lon": 151.506632,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%224%20Awaba%20Road%20Eraring%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%224%20Awaba%20Road%20Eraring%22%20NSW%20for%20sale",
+   "acres": 2.5,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "516 Owens Road, Martinsville",
@@ -74,10 +92,69 @@
    "price": "$1.4M guide",
    "lat": -33.019371,
    "lon": 151.416673,
-   "status": "no",
+   "status": "adjoins",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22516%20Owens%20Road%20Martinsville%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22516%20Owens%20Road%20Martinsville%22%20NSW%20for%20sale",
+   "acres": 35.0,
+   "sf_d": null,
+   "np_d": 0.0,
+   "np": "WATAGANS",
+   "rings": [
+    [
+     [
+      151.419005,
+      -33.017672
+     ],
+     [
+      151.418286,
+      -33.02126
+     ],
+     [
+      151.414151,
+      -33.020644
+     ],
+     [
+      151.414045,
+      -33.020628
+     ],
+     [
+      151.414391,
+      -33.018901
+     ],
+     [
+      151.414507,
+      -33.018322
+     ],
+     [
+      151.41496,
+      -33.018446
+     ],
+     [
+      151.415792,
+      -33.018091
+     ],
+     [
+      151.416213,
+      -33.017851
+     ],
+     [
+      151.416586,
+      -33.017724
+     ],
+     [
+      151.417146,
+      -33.017477
+     ],
+     [
+      151.417352,
+      -33.017436
+     ],
+     [
+      151.419005,
+      -33.017672
+     ]
+    ]
+   ]
   },
   {
    "address": "56 Kemp Lane, Martinsville",
@@ -87,7 +164,6 @@
    "lon": 151.420264,
    "status": "adjoins",
    "sf": "OLNEY",
-   "dist_m": 0.0,
    "url": "https://www.domain.com.au/56-kemp-lane-martinsville-nsw-2265-2020550535",
    "rings": [
     [
@@ -736,7 +812,11 @@
       -33.053787
      ]
     ]
-   ]
+   ],
+   "acres": 218.7,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "333 Owens Road, Martinsville",
@@ -746,8 +826,11 @@
    "lon": 151.409418,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22333%20Owens%20Road%20Martinsville%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22333%20Owens%20Road%20Martinsville%22%20NSW%20for%20sale",
+   "acres": 37.4,
+   "sf_d": null,
+   "np_d": 333.7,
+   "np": "WATAGANS"
   },
   {
    "address": "396 Martinsville Road, Martinsville",
@@ -757,8 +840,11 @@
    "lon": 151.413687,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22396%20Martinsville%20Road%20Martinsville%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22396%20Martinsville%20Road%20Martinsville%22%20NSW%20for%20sale",
+   "acres": 2.4,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "131 Wilkinson Road, Martinsville",
@@ -768,8 +854,11 @@
    "lon": 151.391569,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22131%20Wilkinson%20Road%20Martinsville%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22131%20Wilkinson%20Road%20Martinsville%22%20NSW%20for%20sale",
+   "acres": 16.2,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "132 Wilkinson Road, Martinsville",
@@ -779,8 +868,11 @@
    "lon": 151.391701,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22132%20Wilkinson%20Road%20Martinsville%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22132%20Wilkinson%20Road%20Martinsville%22%20NSW%20for%20sale",
+   "acres": 8.8,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "28 Norman Avenue, Sunshine",
@@ -790,8 +882,11 @@
    "lon": 151.560587,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2228%20Norman%20Avenue%20Sunshine%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2228%20Norman%20Avenue%20Sunshine%22%20NSW%20for%20sale",
+   "acres": 3.0,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "230 Browns Road, Mandalong",
@@ -801,7 +896,6 @@
    "lon": 151.41516,
    "status": "near",
    "sf": "OLNEY",
-   "dist_m": 141.1,
    "url": "https://www.google.com/search?q=%22230%20Browns%20Road%20Mandalong%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -826,7 +920,11 @@
       -33.115403
      ]
     ]
-   ]
+   ],
+   "acres": 10.4,
+   "sf_d": 141.1,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1213 Dooralong Road, Dooralong",
@@ -836,8 +934,11 @@
    "lon": 151.352911,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%221213%20Dooralong%20Road%20Dooralong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%221213%20Dooralong%20Road%20Dooralong%22%20NSW%20for%20sale",
+   "acres": 31.0,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1355 Dooralong Road, Dooralong",
@@ -847,8 +948,11 @@
    "lon": 151.362368,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%221355%20Dooralong%20Road%20Dooralong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%221355%20Dooralong%20Road%20Dooralong%22%20NSW%20for%20sale",
+   "acres": 49.6,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "488 Ravensdale Road, Ravensdale",
@@ -856,10 +960,1199 @@
    "price": "EOI",
    "lat": -33.166001,
    "lon": 151.304799,
-   "status": "no",
+   "status": "near",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22488%20Ravensdale%20Road%20Ravensdale%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22488%20Ravensdale%20Road%20Ravensdale%22%20NSW%20for%20sale",
+   "acres": 57.0,
+   "sf_d": null,
+   "np_d": 188.5,
+   "np": "JILLIBY",
+   "rings": [
+    [
+     [
+      151.306479,
+      -33.16559
+     ],
+     [
+      151.306521,
+      -33.165591
+     ],
+     [
+      151.306587,
+      -33.165582
+     ],
+     [
+      151.306652,
+      -33.165562
+     ],
+     [
+      151.306717,
+      -33.165536
+     ],
+     [
+      151.306782,
+      -33.16551
+     ],
+     [
+      151.306848,
+      -33.165488
+     ],
+     [
+      151.306902,
+      -33.165473
+     ],
+     [
+      151.306956,
+      -33.165459
+     ],
+     [
+      151.307011,
+      -33.165446
+     ],
+     [
+      151.307066,
+      -33.165434
+     ],
+     [
+      151.307121,
+      -33.165425
+     ],
+     [
+      151.307173,
+      -33.165416
+     ],
+     [
+      151.307227,
+      -33.165406
+     ],
+     [
+      151.30728,
+      -33.1654
+     ],
+     [
+      151.307332,
+      -33.165399
+     ],
+     [
+      151.30738,
+      -33.165408
+     ],
+     [
+      151.307422,
+      -33.165426
+     ],
+     [
+      151.307463,
+      -33.16545
+     ],
+     [
+      151.307502,
+      -33.165481
+     ],
+     [
+      151.307536,
+      -33.165515
+     ],
+     [
+      151.307563,
+      -33.165551
+     ],
+     [
+      151.307579,
+      -33.165581
+     ],
+     [
+      151.307591,
+      -33.165612
+     ],
+     [
+      151.307601,
+      -33.165645
+     ],
+     [
+      151.307607,
+      -33.165679
+     ],
+     [
+      151.30761,
+      -33.165712
+     ],
+     [
+      151.307605,
+      -33.165763
+     ],
+     [
+      151.307589,
+      -33.165815
+     ],
+     [
+      151.307565,
+      -33.165867
+     ],
+     [
+      151.307538,
+      -33.165918
+     ],
+     [
+      151.307515,
+      -33.16597
+     ],
+     [
+      151.3075,
+      -33.166007
+     ],
+     [
+      151.307485,
+      -33.166045
+     ],
+     [
+      151.307469,
+      -33.166082
+     ],
+     [
+      151.307452,
+      -33.166118
+     ],
+     [
+      151.307433,
+      -33.166153
+     ],
+     [
+      151.307398,
+      -33.166203
+     ],
+     [
+      151.307359,
+      -33.166252
+     ],
+     [
+      151.307316,
+      -33.166298
+     ],
+     [
+      151.30727,
+      -33.166339
+     ],
+     [
+      151.307221,
+      -33.166376
+     ],
+     [
+      151.307155,
+      -33.166414
+     ],
+     [
+      151.307083,
+      -33.166443
+     ],
+     [
+      151.307007,
+      -33.166466
+     ],
+     [
+      151.306929,
+      -33.166487
+     ],
+     [
+      151.306853,
+      -33.166508
+     ],
+     [
+      151.306801,
+      -33.166522
+     ],
+     [
+      151.306696,
+      -33.166545
+     ],
+     [
+      151.306644,
+      -33.166559
+     ],
+     [
+      151.306594,
+      -33.166577
+     ],
+     [
+      151.306525,
+      -33.166612
+     ],
+     [
+      151.30646,
+      -33.166657
+     ],
+     [
+      151.306396,
+      -33.166705
+     ],
+     [
+      151.306332,
+      -33.166755
+     ],
+     [
+      151.306267,
+      -33.1668
+     ],
+     [
+      151.3062,
+      -33.166837
+     ],
+     [
+      151.306131,
+      -33.166871
+     ],
+     [
+      151.306062,
+      -33.166905
+     ],
+     [
+      151.305997,
+      -33.166943
+     ],
+     [
+      151.30594,
+      -33.166989
+     ],
+     [
+      151.305905,
+      -33.167024
+     ],
+     [
+      151.305872,
+      -33.167061
+     ],
+     [
+      151.305841,
+      -33.1671
+     ],
+     [
+      151.305815,
+      -33.167141
+     ],
+     [
+      151.305796,
+      -33.167184
+     ],
+     [
+      151.305784,
+      -33.167228
+     ],
+     [
+      151.305777,
+      -33.167275
+     ],
+     [
+      151.305774,
+      -33.167323
+     ],
+     [
+      151.305778,
+      -33.16737
+     ],
+     [
+      151.305789,
+      -33.167413
+     ],
+     [
+      151.305805,
+      -33.167449
+     ],
+     [
+      151.305826,
+      -33.167485
+     ],
+     [
+      151.305851,
+      -33.167518
+     ],
+     [
+      151.30588,
+      -33.167547
+     ],
+     [
+      151.305911,
+      -33.167568
+     ],
+     [
+      151.305957,
+      -33.167579
+     ],
+     [
+      151.30601,
+      -33.167575
+     ],
+     [
+      151.306068,
+      -33.167563
+     ],
+     [
+      151.306127,
+      -33.167547
+     ],
+     [
+      151.306184,
+      -33.167533
+     ],
+     [
+      151.306252,
+      -33.167521
+     ],
+     [
+      151.30632,
+      -33.167507
+     ],
+     [
+      151.306387,
+      -33.16749
+     ],
+     [
+      151.306453,
+      -33.167471
+     ],
+     [
+      151.306518,
+      -33.167448
+     ],
+     [
+      151.306557,
+      -33.167426
+     ],
+     [
+      151.306597,
+      -33.167399
+     ],
+     [
+      151.306636,
+      -33.167373
+     ],
+     [
+      151.306673,
+      -33.167354
+     ],
+     [
+      151.306708,
+      -33.16735
+     ],
+     [
+      151.306735,
+      -33.167358
+     ],
+     [
+      151.306762,
+      -33.167371
+     ],
+     [
+      151.306788,
+      -33.167389
+     ],
+     [
+      151.306812,
+      -33.167409
+     ],
+     [
+      151.306831,
+      -33.167431
+     ],
+     [
+      151.306851,
+      -33.167466
+     ],
+     [
+      151.306864,
+      -33.167508
+     ],
+     [
+      151.306871,
+      -33.167555
+     ],
+     [
+      151.306871,
+      -33.167601
+     ],
+     [
+      151.306865,
+      -33.167643
+     ],
+     [
+      151.306855,
+      -33.167671
+     ],
+     [
+      151.306842,
+      -33.167698
+     ],
+     [
+      151.306826,
+      -33.167724
+     ],
+     [
+      151.306808,
+      -33.16775
+     ],
+     [
+      151.306789,
+      -33.167774
+     ],
+     [
+      151.306759,
+      -33.167805
+     ],
+     [
+      151.306724,
+      -33.167832
+     ],
+     [
+      151.306687,
+      -33.167858
+     ],
+     [
+      151.306653,
+      -33.167885
+     ],
+     [
+      151.306626,
+      -33.167917
+     ],
+     [
+      151.306609,
+      -33.167951
+     ],
+     [
+      151.306596,
+      -33.167987
+     ],
+     [
+      151.306587,
+      -33.168025
+     ],
+     [
+      151.306581,
+      -33.168052
+     ],
+     [
+      151.302105,
+      -33.167471
+     ],
+     [
+      151.302481,
+      -33.165426
+     ],
+     [
+      151.302741,
+      -33.16401
+     ],
+     [
+      151.305978,
+      -33.164456
+     ],
+     [
+      151.305955,
+      -33.164493
+     ],
+     [
+      151.305934,
+      -33.164532
+     ],
+     [
+      151.305916,
+      -33.164573
+     ],
+     [
+      151.305901,
+      -33.164615
+     ],
+     [
+      151.305889,
+      -33.164657
+     ],
+     [
+      151.305885,
+      -33.164695
+     ],
+     [
+      151.305885,
+      -33.164734
+     ],
+     [
+      151.305887,
+      -33.164774
+     ],
+     [
+      151.305887,
+      -33.164813
+     ],
+     [
+      151.305882,
+      -33.164851
+     ],
+     [
+      151.305866,
+      -33.164897
+     ],
+     [
+      151.30584,
+      -33.164942
+     ],
+     [
+      151.305813,
+      -33.164986
+     ],
+     [
+      151.30579,
+      -33.16503
+     ],
+     [
+      151.30578,
+      -33.165075
+     ],
+     [
+      151.30578,
+      -33.165105
+     ],
+     [
+      151.305783,
+      -33.165135
+     ],
+     [
+      151.305789,
+      -33.165165
+     ],
+     [
+      151.305797,
+      -33.165195
+     ],
+     [
+      151.305807,
+      -33.165224
+     ],
+     [
+      151.305821,
+      -33.165261
+     ],
+     [
+      151.305839,
+      -33.165298
+     ],
+     [
+      151.305859,
+      -33.165333
+     ],
+     [
+      151.305883,
+      -33.165366
+     ],
+     [
+      151.305909,
+      -33.165396
+     ],
+     [
+      151.305937,
+      -33.165421
+     ],
+     [
+      151.305968,
+      -33.165444
+     ],
+     [
+      151.306002,
+      -33.165464
+     ],
+     [
+      151.306037,
+      -33.165482
+     ],
+     [
+      151.306072,
+      -33.165499
+     ],
+     [
+      151.306117,
+      -33.165517
+     ],
+     [
+      151.306164,
+      -33.165531
+     ],
+     [
+      151.306213,
+      -33.165543
+     ],
+     [
+      151.306261,
+      -33.165553
+     ],
+     [
+      151.30631,
+      -33.165562
+     ],
+     [
+      151.306352,
+      -33.165571
+     ],
+     [
+      151.306394,
+      -33.165579
+     ],
+     [
+      151.306437,
+      -33.165586
+     ],
+     [
+      151.306479,
+      -33.16559
+     ]
+    ],
+    [
+     [
+      151.309239,
+      -33.164891
+     ],
+     [
+      151.309164,
+      -33.165722
+     ],
+     [
+      151.308148,
+      -33.167572
+     ],
+     [
+      151.307074,
+      -33.167427
+     ],
+     [
+      151.307073,
+      -33.167416
+     ],
+     [
+      151.307067,
+      -33.167364
+     ],
+     [
+      151.307057,
+      -33.167314
+     ],
+     [
+      151.30704,
+      -33.16727
+     ],
+     [
+      151.307015,
+      -33.167236
+     ],
+     [
+      151.306989,
+      -33.167217
+     ],
+     [
+      151.306957,
+      -33.167203
+     ],
+     [
+      151.306922,
+      -33.167192
+     ],
+     [
+      151.306887,
+      -33.167184
+     ],
+     [
+      151.306852,
+      -33.167178
+     ],
+     [
+      151.306789,
+      -33.167177
+     ],
+     [
+      151.306723,
+      -33.167188
+     ],
+     [
+      151.306657,
+      -33.167207
+     ],
+     [
+      151.30659,
+      -33.167228
+     ],
+     [
+      151.306525,
+      -33.167247
+     ],
+     [
+      151.306466,
+      -33.167263
+     ],
+     [
+      151.306408,
+      -33.16728
+     ],
+     [
+      151.306349,
+      -33.167297
+     ],
+     [
+      151.306291,
+      -33.167314
+     ],
+     [
+      151.306232,
+      -33.167327
+     ],
+     [
+      151.306191,
+      -33.167337
+     ],
+     [
+      151.306149,
+      -33.16735
+     ],
+     [
+      151.306107,
+      -33.167361
+     ],
+     [
+      151.30607,
+      -33.167364
+     ],
+     [
+      151.306041,
+      -33.167356
+     ],
+     [
+      151.306022,
+      -33.167337
+     ],
+     [
+      151.306006,
+      -33.167311
+     ],
+     [
+      151.305993,
+      -33.16728
+     ],
+     [
+      151.305985,
+      -33.167248
+     ],
+     [
+      151.30598,
+      -33.167218
+     ],
+     [
+      151.305981,
+      -33.16718
+     ],
+     [
+      151.30599,
+      -33.167138
+     ],
+     [
+      151.306005,
+      -33.167098
+     ],
+     [
+      151.306025,
+      -33.16706
+     ],
+     [
+      151.306048,
+      -33.167029
+     ],
+     [
+      151.306078,
+      -33.167006
+     ],
+     [
+      151.306114,
+      -33.166989
+     ],
+     [
+      151.306154,
+      -33.166976
+     ],
+     [
+      151.306194,
+      -33.166964
+     ],
+     [
+      151.306232,
+      -33.166949
+     ],
+     [
+      151.306296,
+      -33.166919
+     ],
+     [
+      151.306358,
+      -33.166887
+     ],
+     [
+      151.30642,
+      -33.166856
+     ],
+     [
+      151.306483,
+      -33.166824
+     ],
+     [
+      151.306546,
+      -33.166794
+     ],
+     [
+      151.306594,
+      -33.166772
+     ],
+     [
+      151.306643,
+      -33.166749
+     ],
+     [
+      151.306692,
+      -33.166728
+     ],
+     [
+      151.306741,
+      -33.166708
+     ],
+     [
+      151.306791,
+      -33.166691
+     ],
+     [
+      151.306849,
+      -33.166678
+     ],
+     [
+      151.306908,
+      -33.16667
+     ],
+     [
+      151.306967,
+      -33.166664
+     ],
+     [
+      151.307026,
+      -33.166657
+     ],
+     [
+      151.307084,
+      -33.166646
+     ],
+     [
+      151.307132,
+      -33.166634
+     ],
+     [
+      151.307179,
+      -33.166621
+     ],
+     [
+      151.307226,
+      -33.166607
+     ],
+     [
+      151.307272,
+      -33.166591
+     ],
+     [
+      151.307316,
+      -33.166571
+     ],
+     [
+      151.307371,
+      -33.166542
+     ],
+     [
+      151.307425,
+      -33.166509
+     ],
+     [
+      151.307476,
+      -33.166472
+     ],
+     [
+      151.307524,
+      -33.166431
+     ],
+     [
+      151.307568,
+      -33.166388
+     ],
+     [
+      151.307606,
+      -33.166345
+     ],
+     [
+      151.307641,
+      -33.166299
+     ],
+     [
+      151.307673,
+      -33.16625
+     ],
+     [
+      151.307702,
+      -33.166199
+     ],
+     [
+      151.307725,
+      -33.166147
+     ],
+     [
+      151.307745,
+      -33.166089
+     ],
+     [
+      151.307759,
+      -33.166027
+     ],
+     [
+      151.307768,
+      -33.165964
+     ],
+     [
+      151.307775,
+      -33.165901
+     ],
+     [
+      151.307781,
+      -33.165838
+     ],
+     [
+      151.307785,
+      -33.165779
+     ],
+     [
+      151.307789,
+      -33.16572
+     ],
+     [
+      151.307791,
+      -33.165661
+     ],
+     [
+      151.307788,
+      -33.165603
+     ],
+     [
+      151.307781,
+      -33.165546
+     ],
+     [
+      151.307773,
+      -33.165502
+     ],
+     [
+      151.307765,
+      -33.165456
+     ],
+     [
+      151.307753,
+      -33.165411
+     ],
+     [
+      151.307737,
+      -33.165372
+     ],
+     [
+      151.307713,
+      -33.165339
+     ],
+     [
+      151.307669,
+      -33.165316
+     ],
+     [
+      151.307609,
+      -33.165309
+     ],
+     [
+      151.307539,
+      -33.165312
+     ],
+     [
+      151.307467,
+      -33.165317
+     ],
+     [
+      151.3074,
+      -33.165316
+     ],
+     [
+      151.307312,
+      -33.165307
+     ],
+     [
+      151.307223,
+      -33.165296
+     ],
+     [
+      151.307134,
+      -33.165285
+     ],
+     [
+      151.307046,
+      -33.165277
+     ],
+     [
+      151.306958,
+      -33.165276
+     ],
+     [
+      151.30689,
+      -33.165278
+     ],
+     [
+      151.306822,
+      -33.165281
+     ],
+     [
+      151.306754,
+      -33.165288
+     ],
+     [
+      151.306688,
+      -33.165299
+     ],
+     [
+      151.306624,
+      -33.165316
+     ],
+     [
+      151.306583,
+      -33.165334
+     ],
+     [
+      151.306544,
+      -33.165356
+     ],
+     [
+      151.306506,
+      -33.165379
+     ],
+     [
+      151.306467,
+      -33.1654
+     ],
+     [
+      151.306426,
+      -33.165413
+     ],
+     [
+      151.306355,
+      -33.165422
+     ],
+     [
+      151.306276,
+      -33.165421
+     ],
+     [
+      151.306198,
+      -33.165409
+     ],
+     [
+      151.306129,
+      -33.165385
+     ],
+     [
+      151.306079,
+      -33.16535
+     ],
+     [
+      151.306056,
+      -33.165319
+     ],
+     [
+      151.306038,
+      -33.165282
+     ],
+     [
+      151.306024,
+      -33.165242
+     ],
+     [
+      151.306013,
+      -33.165201
+     ],
+     [
+      151.306004,
+      -33.165161
+     ],
+     [
+      151.306004,
+      -33.165064
+     ],
+     [
+      151.306032,
+      -33.164962
+     ],
+     [
+      151.306076,
+      -33.164857
+     ],
+     [
+      151.306123,
+      -33.16475
+     ],
+     [
+      151.306162,
+      -33.164645
+     ],
+     [
+      151.306196,
+      -33.164538
+     ],
+     [
+      151.306232,
+      -33.164431
+     ],
+     [
+      151.306266,
+      -33.164324
+     ],
+     [
+      151.306295,
+      -33.164216
+     ],
+     [
+      151.306313,
+      -33.164107
+     ],
+     [
+      151.306317,
+      -33.164016
+     ],
+     [
+      151.306312,
+      -33.163924
+     ],
+     [
+      151.306304,
+      -33.163832
+     ],
+     [
+      151.306298,
+      -33.16374
+     ],
+     [
+      151.3063,
+      -33.163648
+     ],
+     [
+      151.306307,
+      -33.163585
+     ],
+     [
+      151.308616,
+      -33.16389
+     ],
+     [
+      151.309239,
+      -33.164891
+     ]
+    ]
+   ]
   },
   {
    "address": "371 Ravensdale Road, Ravensdale",
@@ -867,10 +2160,61 @@
    "price": "$2.75M guide",
    "lat": -33.174842,
    "lon": 151.302556,
-   "status": "no",
+   "status": "adjoins",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22371%20Ravensdale%20Road%20Ravensdale%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22371%20Ravensdale%20Road%20Ravensdale%22%20NSW%20for%20sale",
+   "acres": 21.9,
+   "sf_d": null,
+   "np_d": 0.0,
+   "np": "JILLIBY",
+   "rings": [
+    [
+     [
+      151.304062,
+      -33.174345
+     ],
+     [
+      151.303497,
+      -33.177226
+     ],
+     [
+      151.299182,
+      -33.176616
+     ],
+     [
+      151.298858,
+      -33.17657
+     ],
+     [
+      151.299005,
+      -33.176363
+     ],
+     [
+      151.300127,
+      -33.175995
+     ],
+     [
+      151.300771,
+      -33.175328
+     ],
+     [
+      151.302327,
+      -33.174556
+     ],
+     [
+      151.30272,
+      -33.174473
+     ],
+     [
+      151.302955,
+      -33.17419
+     ],
+     [
+      151.304062,
+      -33.174345
+     ]
+    ]
+   ]
   },
   {
    "address": "70 Sandra Street, Jilliby",
@@ -880,8 +2224,11 @@
    "lon": 151.405744,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2270%20Sandra%20Street%20Jilliby%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2270%20Sandra%20Street%20Jilliby%22%20NSW%20for%20sale",
+   "acres": 26.5,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "319 Jilliby Road, Jilliby",
@@ -891,8 +2238,11 @@
    "lon": 151.382598,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22319%20Jilliby%20Road%20Jilliby%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22319%20Jilliby%20Road%20Jilliby%22%20NSW%20for%20sale",
+   "acres": 19.3,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "46 Larapinta Drive, Wyee Point",
@@ -902,8 +2252,11 @@
    "lon": 151.507891,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2246%20Larapinta%20Drive%20Wyee%20Point%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2246%20Larapinta%20Drive%20Wyee%20Point%22%20NSW%20for%20sale",
+   "acres": 5.0,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "111 Bunning Creek Road, Yarramalong",
@@ -913,8 +2266,11 @@
    "lon": 151.265236,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22111%20Bunning%20Creek%20Road%20Yarramalong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22111%20Bunning%20Creek%20Road%20Yarramalong%22%20NSW%20for%20sale",
+   "acres": 7.0,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "3 Rose Hill Lane, Yarramalong",
@@ -924,8 +2280,11 @@
    "lon": 151.271015,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%223%20Rose%20Hill%20Lane%20Yarramalong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%223%20Rose%20Hill%20Lane%20Yarramalong%22%20NSW%20for%20sale",
+   "acres": 105.2,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "459 Kyola Road, Kulnura",
@@ -935,7 +2294,6 @@
    "lon": 151.166781,
    "status": "near",
    "sf": "MCPHERSON",
-   "dist_m": 168.7,
    "url": "https://www.google.com/search?q=%22459%20Kyola%20Road%20Kulnura%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1016,7 +2374,11 @@
       -33.22769
      ]
     ]
-   ]
+   ],
+   "acres": 26.7,
+   "sf_d": 168.7,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "939 George Downes Drive, Kulnura",
@@ -1026,7 +2388,6 @@
    "lon": 151.215808,
    "status": "near",
    "sf": "MCPHERSON",
-   "dist_m": 117.0,
    "url": "https://www.google.com/search?q=%22939%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1067,7 +2428,11 @@
       -33.233363
      ]
     ]
-   ]
+   ],
+   "acres": 54.7,
+   "sf_d": 117.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1266 George Downes Drive, Kulnura",
@@ -1077,8 +2442,11 @@
    "lon": 151.208945,
    "status": "no",
    "sf": "OLNEY",
-   "dist_m": 271.2,
-   "url": "https://www.google.com/search?q=%221266%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%221266%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
+   "acres": 45.4,
+   "sf_d": 271.2,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "176 Greta Road, Kulnura",
@@ -1088,8 +2456,11 @@
    "lon": 151.236617,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22176%20Greta%20Road%20Kulnura%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22176%20Greta%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "acres": 73.1,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "73 Forest Road, Kulnura",
@@ -1099,8 +2470,11 @@
    "lon": 151.262104,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2273%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2273%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "acres": 9.1,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "885 George Downes Drive, Kulnura",
@@ -1110,7 +2484,6 @@
    "lon": 151.216193,
    "status": "adjoins",
    "sf": "MCPHERSON",
-   "dist_m": 0.0,
    "url": "https://www.google.com/search?q=%22885%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1143,7 +2516,11 @@
       -33.238358
      ]
     ]
-   ]
+   ],
+   "acres": 25.8,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "35 Walkers Ridge Road, Kulnura",
@@ -1153,7 +2530,6 @@
    "lon": 151.205817,
    "status": "adjoins",
    "sf": "OLNEY",
-   "dist_m": 0.0,
    "url": "https://www.google.com/search?q=%2235%20Walkers%20Ridge%20Road%20Kulnura%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1230,7 +2606,11 @@
       -33.140639
      ]
     ]
-   ]
+   ],
+   "acres": 60.4,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1510 George Downes Drive, Kulnura",
@@ -1240,7 +2620,6 @@
    "lon": 151.201381,
    "status": "adjoins",
    "sf": "OLNEY",
-   "dist_m": 0.0,
    "url": "https://www.google.com/search?q=%221510%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1281,7 +2660,11 @@
       -33.192148
      ]
     ]
-   ]
+   ],
+   "acres": 39.8,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "241 Williams Road, Kulnura",
@@ -1291,8 +2674,11 @@
    "lon": 151.197973,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22241%20Williams%20Road%20Kulnura%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22241%20Williams%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "acres": 9.1,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "12 Greta Road, Kulnura",
@@ -1302,7 +2688,6 @@
    "lon": 151.223073,
    "status": "adjoins",
    "sf": "OLNEY",
-   "dist_m": 0.0,
    "url": "https://www.google.com/search?q=%2212%20Greta%20Road%20Kulnura%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1359,7 +2744,11 @@
       -33.215632
      ]
     ]
-   ]
+   ],
+   "acres": 49.6,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "323 Forest Road, Kulnura",
@@ -1367,10 +2756,61 @@
    "price": "Contact agent",
    "lat": -33.254827,
    "lon": 151.285944,
-   "status": "no",
+   "status": "adjoins",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22323%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22323%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "acres": 71.8,
+   "sf_d": null,
+   "np_d": 0.0,
+   "np": "JILLIBY",
+   "rings": [
+    [
+     [
+      151.286231,
+      -33.254733
+     ],
+     [
+      151.287247,
+      -33.256029
+     ],
+     [
+      151.287302,
+      -33.257617
+     ],
+     [
+      151.287493,
+      -33.25813
+     ],
+     [
+      151.287565,
+      -33.258324
+     ],
+     [
+      151.287912,
+      -33.259255
+     ],
+     [
+      151.287986,
+      -33.260895
+     ],
+     [
+      151.282432,
+      -33.260164
+     ],
+     [
+      151.283682,
+      -33.253381
+     ],
+     [
+      151.285072,
+      -33.254054
+     ],
+     [
+      151.286231,
+      -33.254733
+     ]
+    ]
+   ]
   },
   {
    "address": "234 Forest Road, Kulnura",
@@ -1380,8 +2820,11 @@
    "lon": 151.276645,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22234%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22234%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "acres": 12.3,
+   "sf_d": null,
+   "np_d": 259.8,
+   "np": "JILLIBY"
   },
   {
    "address": "187 Konda Road, Somersby",
@@ -1389,10 +2832,85 @@
    "price": "Contact agent",
    "lat": -33.350496,
    "lon": 151.264078,
-   "status": "no",
+   "status": "adjoins",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22187%20Konda%20Road%20Somersby%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22187%20Konda%20Road%20Somersby%22%20NSW%20for%20sale",
+   "acres": 49.8,
+   "sf_d": null,
+   "np_d": 0.0,
+   "np": "BRISBANE WATER",
+   "rings": [
+    [
+     [
+      151.262889,
+      -33.348644
+     ],
+     [
+      151.264147,
+      -33.349038
+     ],
+     [
+      151.265563,
+      -33.348846
+     ],
+     [
+      151.268428,
+      -33.350899
+     ],
+     [
+      151.268252,
+      -33.352868
+     ],
+     [
+      151.267321,
+      -33.35354
+     ],
+     [
+      151.267123,
+      -33.352738
+     ],
+     [
+      151.266606,
+      -33.352166
+     ],
+     [
+      151.265942,
+      -33.351882
+     ],
+     [
+      151.26528,
+      -33.352074
+     ],
+     [
+      151.263208,
+      -33.353019
+     ],
+     [
+      151.263044,
+      -33.353162
+     ],
+     [
+      151.262145,
+      -33.352733
+     ],
+     [
+      151.262751,
+      -33.351785
+     ],
+     [
+      151.262428,
+      -33.351562
+     ],
+     [
+      151.262146,
+      -33.350097
+     ],
+     [
+      151.262889,
+      -33.348644
+     ]
+    ]
+   ]
   },
   {
    "address": "627 Dog Trap Road, Somersby",
@@ -1402,7 +2920,6 @@
    "lon": 151.319133,
    "status": "near",
    "sf": "STRICKLAND",
-   "dist_m": 100.4,
    "url": "https://www.google.com/search?q=%22627%20Dog%20Trap%20Road%20Somersby%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1455,7 +2972,11 @@
       -33.36689
      ]
     ]
-   ]
+   ],
+   "acres": 23.6,
+   "sf_d": 100.4,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "80 Dog Trap Road, Ourimbah",
@@ -1465,8 +2986,11 @@
    "lon": 151.360497,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2280%20Dog%20Trap%20Road%20Ourimbah%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2280%20Dog%20Trap%20Road%20Ourimbah%22%20NSW%20for%20sale",
+   "acres": 2.5,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "15 Frederick Street, Ourimbah",
@@ -1474,9 +2998,8 @@
    "price": "$2.0M\u2013$2.2M",
    "lat": -33.345984,
    "lon": 151.354989,
-   "status": "near",
+   "status": "adjoins",
    "sf": "OURIMBAH",
-   "dist_m": 145.2,
    "url": "https://www.google.com/search?q=%2215%20Frederick%20Street%20Ourimbah%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1557,7 +3080,11 @@
       -33.344429
      ]
     ]
-   ]
+   ],
+   "acres": 21.7,
+   "sf_d": 145.2,
+   "np_d": 0.0,
+   "np": "JILLIBY"
   },
   {
    "address": "40 Bumbles Creek Road, Ourimbah",
@@ -1567,8 +3094,11 @@
    "lon": 151.318047,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2240%20Bumbles%20Creek%20Road%20Ourimbah%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2240%20Bumbles%20Creek%20Road%20Ourimbah%22%20NSW%20for%20sale",
+   "acres": 29.9,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "89 Elmo Street, Ourimbah",
@@ -1576,10 +3106,73 @@
    "price": "$1.29M\u2013$1.39M",
    "lat": -33.344245,
    "lon": 151.347373,
-   "status": "no",
+   "status": "adjoins",
    "sf": "OURIMBAH",
-   "dist_m": 262.4,
-   "url": "https://www.google.com/search?q=%2289%20Elmo%20Street%20Ourimbah%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2289%20Elmo%20Street%20Ourimbah%22%20NSW%20for%20sale",
+   "acres": 40.0,
+   "sf_d": 262.4,
+   "np_d": 0.0,
+   "np": "JILLIBY",
+   "rings": [
+    [
+     [
+      151.350123,
+      -33.341057
+     ],
+     [
+      151.349398,
+      -33.34462
+     ],
+     [
+      151.349301,
+      -33.344606
+     ],
+     [
+      151.34748,
+      -33.344345
+     ],
+     [
+      151.347373,
+      -33.34433
+     ],
+     [
+      151.34647,
+      -33.344201
+     ],
+     [
+      151.346189,
+      -33.34416
+     ],
+     [
+      151.345144,
+      -33.344011
+     ],
+     [
+      151.345865,
+      -33.340438
+     ],
+     [
+      151.34632,
+      -33.340505
+     ],
+     [
+      151.346536,
+      -33.340536
+     ],
+     [
+      151.346538,
+      -33.340536
+     ],
+     [
+      151.346807,
+      -33.340575
+     ],
+     [
+      151.350123,
+      -33.341057
+     ]
+    ]
+   ]
   },
   {
    "address": "125 Berecry Road, Mangrove Mountain",
@@ -1587,10 +3180,49 @@
    "price": "EOI 4 Aug",
    "lat": -33.35328,
    "lon": 151.16988,
-   "status": "no",
+   "status": "adjoins",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22125%20Berecry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22125%20Berecry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale",
+   "acres": 26.7,
+   "sf_d": null,
+   "np_d": 0.0,
+   "np": "POPRAN",
+   "rings": [
+    [
+     [
+      151.172279,
+      -33.355534
+     ],
+     [
+      151.172123,
+      -33.356339
+     ],
+     [
+      151.171792,
+      -33.355992
+     ],
+     [
+      151.168333,
+      -33.352355
+     ],
+     [
+      151.168452,
+      -33.35175
+     ],
+     [
+      151.172892,
+      -33.352376
+     ],
+     [
+      151.172712,
+      -33.353302
+     ],
+     [
+      151.172279,
+      -33.355534
+     ]
+    ]
+   ]
   },
   {
    "address": "66 Lombardy Road, Mangrove Mountain",
@@ -1600,8 +3232,11 @@
    "lon": 151.176849,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2266%20Lombardy%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2266%20Lombardy%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale",
+   "acres": 43.3,
+   "sf_d": null,
+   "np_d": 338.7,
+   "np": "POPRAN"
   },
   {
    "address": "2583 Wisemans Ferry Road, Mangrove Mountain",
@@ -1611,8 +3246,11 @@
    "lon": 151.183706,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%222583%20Wisemans%20Ferry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%222583%20Wisemans%20Ferry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale",
+   "acres": 96.8,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "2047 Wisemans Ferry Road, Mangrove Mountain",
@@ -1622,8 +3260,11 @@
    "lon": 151.210549,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%222047%20Wisemans%20Ferry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%222047%20Wisemans%20Ferry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale",
+   "acres": 61.1,
+   "sf_d": null,
+   "np_d": 442.9,
+   "np": "POPRAN"
   },
   {
    "address": "147 Andrews Road, Laguna",
@@ -1633,8 +3274,11 @@
    "lon": 151.124798,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22147%20Andrews%20Road%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22147%20Andrews%20Road%20Laguna%22%20NSW%20for%20sale",
+   "acres": 92.7,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "898 Yango Creek Road, Laguna",
@@ -1644,8 +3288,11 @@
    "lon": 151.109372,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22898%20Yango%20Creek%20Road%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22898%20Yango%20Creek%20Road%20Laguna%22%20NSW%20for%20sale",
+   "acres": 144.4,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "281 Watagan Creek Road, Laguna",
@@ -1655,8 +3302,11 @@
    "lon": 151.150805,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22281%20Watagan%20Creek%20Road%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22281%20Watagan%20Creek%20Road%20Laguna%22%20NSW%20for%20sale",
+   "acres": 107.7,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "3983 Great North Road, Laguna",
@@ -1666,8 +3316,11 @@
    "lon": 151.122503,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%223983%20Great%20North%20Road%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%223983%20Great%20North%20Road%20Laguna%22%20NSW%20for%20sale",
+   "acres": 124.9,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "540 Yango Creek Road, Laguna",
@@ -1677,8 +3330,11 @@
    "lon": 151.1115,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22540%20Yango%20Creek%20Road%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22540%20Yango%20Creek%20Road%20Laguna%22%20NSW%20for%20sale",
+   "acres": 30.1,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1379 Mount View Road, Millfield",
@@ -1688,8 +3344,11 @@
    "lon": 151.264754,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%221379%20Mount%20View%20Road%20Millfield%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%221379%20Mount%20View%20Road%20Millfield%22%20NSW%20for%20sale",
+   "acres": 132.9,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "300 Hayes Road, Millfield",
@@ -1699,7 +3358,6 @@
    "lon": 151.24485,
    "status": "adjoins",
    "sf": "CORRABARE",
-   "dist_m": 0.0,
    "url": "https://www.google.com/search?q=%22300%20Hayes%20Road%20Millfield%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -1902,7 +3560,11 @@
       -32.926338
      ]
     ]
-   ]
+   ],
+   "acres": 155.4,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1587 Mount View Road, Millfield",
@@ -1912,8 +3574,11 @@
    "lon": 151.246844,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%221587%20Mount%20View%20Road%20Millfield%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%221587%20Mount%20View%20Road%20Millfield%22%20NSW%20for%20sale",
+   "acres": 4.3,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "56 Dunlop Drive, Paxton",
@@ -1923,8 +3588,11 @@
    "lon": 151.29783,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2256%20Dunlop%20Drive%20Paxton%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2256%20Dunlop%20Drive%20Paxton%22%20NSW%20for%20sale",
+   "acres": 5.0,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "576 Sandy Creek Road, Quorrobolong",
@@ -1934,8 +3602,11 @@
    "lon": 151.428397,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22576%20Sandy%20Creek%20Road%20Quorrobolong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22576%20Sandy%20Creek%20Road%20Quorrobolong%22%20NSW%20for%20sale",
+   "acres": 4.6,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "626 Sandy Creek Road, Quorrobolong",
@@ -1945,8 +3616,11 @@
    "lon": 151.426302,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22626%20Sandy%20Creek%20Road%20Quorrobolong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22626%20Sandy%20Creek%20Road%20Quorrobolong%22%20NSW%20for%20sale",
+   "acres": 107.4,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "157 Rodney Road, Mount Vincent",
@@ -1956,8 +3630,11 @@
    "lon": 151.445458,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22157%20Rodney%20Road%20Mount%20Vincent%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22157%20Rodney%20Road%20Mount%20Vincent%22%20NSW%20for%20sale",
+   "acres": 25.1,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "389 Vermont Road, Mulbring",
@@ -1967,8 +3644,11 @@
    "lon": 151.437376,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22389%20Vermont%20Road%20Mulbring%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22389%20Vermont%20Road%20Mulbring%22%20NSW%20for%20sale",
+   "acres": 181.7,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "34 Cedar Street, Wollombi",
@@ -1978,8 +3658,11 @@
    "lon": 151.149934,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2234%20Cedar%20Street%20Wollombi%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2234%20Cedar%20Street%20Wollombi%22%20NSW%20for%20sale",
+   "acres": 54.3,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "3036 Great North Road, Wollombi",
@@ -1989,8 +3672,11 @@
    "lon": 151.141308,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%223036%20Great%20North%20Road%20Wollombi%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%223036%20Great%20North%20Road%20Wollombi%22%20NSW%20for%20sale",
+   "acres": 4.3,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "780 Milsons Arm Road, Wollombi",
@@ -2000,8 +3686,11 @@
    "lon": 151.194579,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22780%20Milsons%20Arm%20Road%20Wollombi%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22780%20Milsons%20Arm%20Road%20Wollombi%22%20NSW%20for%20sale",
+   "acres": 51.6,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "2938 Paynes Crossing Road, Wollombi",
@@ -2011,8 +3700,11 @@
    "lon": 151.136648,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%222938%20Paynes%20Crossing%20Road%20Wollombi%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%222938%20Paynes%20Crossing%20Road%20Wollombi%22%20NSW%20for%20sale",
+   "acres": 1.3,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "2814 Wollombi Road, Wollombi",
@@ -2022,8 +3714,11 @@
    "lon": 151.147257,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%222814%20Wollombi%20Road%20Wollombi%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%222814%20Wollombi%20Road%20Wollombi%22%20NSW%20for%20sale",
+   "acres": 1.4,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "35 Wilkinson Place, Kearsley",
@@ -2031,10 +3726,37 @@
    "price": "$1.35M\u2013$1.45M",
    "lat": -32.856579,
    "lon": 151.401148,
-   "status": "no",
+   "status": "near",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2235%20Wilkinson%20Place%20Kearsley%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2235%20Wilkinson%20Place%20Kearsley%22%20NSW%20for%20sale",
+   "acres": 5.0,
+   "sf_d": null,
+   "np_d": 99.4,
+   "np": "WERAKATA",
+   "rings": [
+    [
+     [
+      151.402989,
+      -32.856044
+     ],
+     [
+      151.402652,
+      -32.85713
+     ],
+     [
+      151.400823,
+      -32.856867
+     ],
+     [
+      151.401378,
+      -32.855812
+     ],
+     [
+      151.402989,
+      -32.856044
+     ]
+    ]
+   ]
   },
   {
    "address": "155 Q9 Lane, Ellalong",
@@ -2042,10 +3764,53 @@
    "price": "By negotiation",
    "lat": -32.966542,
    "lon": 151.320913,
-   "status": "no",
+   "status": "near",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22155%20Q9%20Lane%20Ellalong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22155%20Q9%20Lane%20Ellalong%22%20NSW%20for%20sale",
+   "acres": 106.5,
+   "sf_d": null,
+   "np_d": 19.6,
+   "np": "WATAGANS",
+   "rings": [
+    [
+     [
+      151.330475,
+      -32.964573
+     ],
+     [
+      151.329594,
+      -32.969048
+     ],
+     [
+      151.320412,
+      -32.967703
+     ],
+     [
+      151.320927,
+      -32.964835
+     ],
+     [
+      151.32108,
+      -32.963978
+     ],
+     [
+      151.321293,
+      -32.963881
+     ],
+     [
+      151.322346,
+      -32.963895
+     ],
+     [
+      151.323466,
+      -32.963546
+     ],
+     [
+      151.330475,
+      -32.964573
+     ]
+    ]
+   ]
   },
   {
    "address": "23 Mimosa Lane, Ellalong",
@@ -2055,8 +3820,11 @@
    "lon": 151.3097,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%2223%20Mimosa%20Lane%20Ellalong%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2223%20Mimosa%20Lane%20Ellalong%22%20NSW%20for%20sale",
+   "acres": 35.0,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "35 Dogwood Road, Laguna (Watagan)",
@@ -2066,8 +3834,11 @@
    "lon": 151.22822,
    "status": "no",
    "sf": "WATAGAN",
-   "dist_m": 283.3,
-   "url": "https://www.google.com/search?q=%2235%20Dogwood%20Road%2C%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2235%20Dogwood%20Road%2C%20Laguna%22%20NSW%20for%20sale",
+   "acres": 41.2,
+   "sf_d": 283.3,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "256 Olney Arm Road, Laguna (Dairy Arm)",
@@ -2077,8 +3848,11 @@
    "lon": 151.18898,
    "status": "no",
    "sf": null,
-   "dist_m": null,
-   "url": "https://www.google.com/search?q=%22256%20Olney%20Arm%20Road%2C%20Laguna%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22256%20Olney%20Arm%20Road%2C%20Laguna%22%20NSW%20for%20sale",
+   "acres": 94.1,
+   "sf_d": null,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "1473 Watagan Creek Road, Watagan",
@@ -2088,7 +3862,6 @@
    "lon": 151.25176,
    "status": "adjoins",
    "sf": "WATAGAN",
-   "dist_m": 0.0,
    "url": "https://www.google.com/search?q=%221473%20Watagan%20Creek%20Road%2C%20Watagan%22%20NSW%20for%20sale",
    "rings": [
     [
@@ -2411,7 +4184,11 @@
       -33.025261
      ]
     ]
-   ]
+   ],
+   "acres": 118.3,
+   "sf_d": 0.0,
+   "np_d": null,
+   "np": null
   },
   {
    "address": "524 Ravensdale Road, Ravensdale",
@@ -2421,8 +4198,11 @@
    "lon": 151.30462,
    "status": "no",
    "sf": "OLNEY",
-   "dist_m": 258.7,
-   "url": "https://www.google.com/search?q=%22524%20Ravensdale%20Road%2C%20Ravensdale%22%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22524%20Ravensdale%20Road%2C%20Ravensdale%22%20NSW%20for%20sale",
+   "acres": 38.6,
+   "sf_d": 258.7,
+   "np_d": null,
+   "np": null
   }
  ]
 }
