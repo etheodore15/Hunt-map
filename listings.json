@@ -1,6 +1,6 @@
 {
  "asOf": "2026-07-29",
- "criteria": "current listings > 1 acre, checked against NSW cadastre + gazetted State Forest boundaries",
+ "criteria": "current listings > 1 acre within 30 km of the 9131-1N sheet, checked against NSW cadastre + gazetted State Forest boundaries",
  "listings": [
   {
    "address": "28 Frost Road, Cooranbong",
@@ -22,7 +22,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22358%20Newport%20Road%22%20Cooranbong%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22358%20Newport%20Road%20Cooranbong%22%20NSW%20for%20sale"
   },
   {
    "address": "371 Newport Road, Cooranbong",
@@ -33,7 +33,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22371%20Newport%20Road%22%20Cooranbong%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22371%20Newport%20Road%20Cooranbong%22%20NSW%20for%20sale"
   },
   {
    "address": "302 Freemans Drive, Cooranbong",
@@ -44,7 +44,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22302%20Freemans%20Drive%22%20Cooranbong%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22302%20Freemans%20Drive%20Cooranbong%22%20NSW%20for%20sale"
   },
   {
    "address": "2 Short Street, Eraring",
@@ -55,7 +55,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%222%20Short%20Street%22%20Eraring%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%222%20Short%20Street%20Eraring%22%20NSW%20for%20sale"
   },
   {
    "address": "4 Awaba Road, Eraring",
@@ -66,7 +66,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%224%20Awaba%20Road%22%20Eraring%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%224%20Awaba%20Road%20Eraring%22%20NSW%20for%20sale"
   },
   {
    "address": "516 Owens Road, Martinsville",
@@ -77,7 +77,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22516%20Owens%20Road%22%20Martinsville%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22516%20Owens%20Road%20Martinsville%22%20NSW%20for%20sale"
   },
   {
    "address": "56 Kemp Lane, Martinsville",
@@ -747,7 +747,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22333%20Owens%20Road%22%20Martinsville%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22333%20Owens%20Road%20Martinsville%22%20NSW%20for%20sale"
   },
   {
    "address": "396 Martinsville Road, Martinsville",
@@ -758,7 +758,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22396%20Martinsville%20Road%22%20Martinsville%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22396%20Martinsville%20Road%20Martinsville%22%20NSW%20for%20sale"
   },
   {
    "address": "131 Wilkinson Road, Martinsville",
@@ -769,7 +769,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22131%20Wilkinson%20Road%22%20Martinsville%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22131%20Wilkinson%20Road%20Martinsville%22%20NSW%20for%20sale"
   },
   {
    "address": "132 Wilkinson Road, Martinsville",
@@ -780,7 +780,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%22132%20Wilkinson%20Road%22%20Martinsville%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%22132%20Wilkinson%20Road%20Martinsville%22%20NSW%20for%20sale"
   },
   {
    "address": "28 Norman Avenue, Sunshine",
@@ -791,7 +791,7 @@
    "status": "no",
    "sf": null,
    "dist_m": null,
-   "url": "https://www.google.com/search?q=%2228%20Norman%20Avenue%22%20Sunshine%20NSW%20for%20sale"
+   "url": "https://www.google.com/search?q=%2228%20Norman%20Avenue%20Sunshine%22%20NSW%20for%20sale"
   },
   {
    "address": "230 Browns Road, Mandalong",
@@ -802,7 +802,7 @@
    "status": "near",
    "sf": "OLNEY",
    "dist_m": 141.1,
-   "url": "https://www.google.com/search?q=%22230+Browns+Road%22+Mandalong+NSW+for+sale",
+   "url": "https://www.google.com/search?q=%22230%20Browns%20Road%20Mandalong%22%20NSW%20for%20sale",
    "rings": [
     [
      [
@@ -827,6 +827,1602 @@
      ]
     ]
    ]
+  },
+  {
+   "address": "1213 Dooralong Road, Dooralong",
+   "size": "12.22 ha (30 ac)",
+   "price": "Contact agent",
+   "lat": -33.17235,
+   "lon": 151.352911,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%221213%20Dooralong%20Road%20Dooralong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "1355 Dooralong Road, Dooralong",
+   "size": "20.23 ha (50 ac)",
+   "price": "Contact agent",
+   "lat": -33.166193,
+   "lon": 151.362368,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%221355%20Dooralong%20Road%20Dooralong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "488 Ravensdale Road, Ravensdale",
+   "size": "49.1 ha (121 ac)",
+   "price": "EOI",
+   "lat": -33.166001,
+   "lon": 151.304799,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22488%20Ravensdale%20Road%20Ravensdale%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "371 Ravensdale Road, Ravensdale",
+   "size": "8.67 ha (21 ac)",
+   "price": "$2.75M guide",
+   "lat": -33.174842,
+   "lon": 151.302556,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22371%20Ravensdale%20Road%20Ravensdale%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "70 Sandra Street, Jilliby",
+   "size": "11.33 ha (28 ac)",
+   "price": "EOI",
+   "lat": -33.22,
+   "lon": 151.405744,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2270%20Sandra%20Street%20Jilliby%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "319 Jilliby Road, Jilliby",
+   "size": "7.61 ha (19 ac)",
+   "price": "$3.85M guide",
+   "lat": -33.241402,
+   "lon": 151.382598,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22319%20Jilliby%20Road%20Jilliby%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "46 Larapinta Drive, Wyee Point",
+   "size": "2.03 ha (5 ac)",
+   "price": "Price on request",
+   "lat": -33.146894,
+   "lon": 151.507891,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2246%20Larapinta%20Drive%20Wyee%20Point%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "111 Bunning Creek Road, Yarramalong",
+   "size": "2.83 ha (7 ac)",
+   "price": "$1.8M",
+   "lat": -33.203733,
+   "lon": 151.265236,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22111%20Bunning%20Creek%20Road%20Yarramalong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "3 Rose Hill Lane, Yarramalong",
+   "size": "42.09 ha (104 ac)",
+   "price": "Contact agent",
+   "lat": -33.207111,
+   "lon": 151.271015,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%223%20Rose%20Hill%20Lane%20Yarramalong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "459 Kyola Road, Kulnura",
+   "size": "10.52 ha (26 ac)",
+   "price": "Contact agent",
+   "lat": -33.226468,
+   "lon": 151.166781,
+   "status": "near",
+   "sf": "MCPHERSON",
+   "dist_m": 168.7,
+   "url": "https://www.google.com/search?q=%22459%20Kyola%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.166809,
+      -33.22769
+     ],
+     [
+      151.166033,
+      -33.231204
+     ],
+     [
+      151.164618,
+      -33.230982
+     ],
+     [
+      151.164615,
+      -33.230981
+     ],
+     [
+      151.164956,
+      -33.229389
+     ],
+     [
+      151.1654,
+      -33.228948
+     ],
+     [
+      151.165397,
+      -33.228867
+     ],
+     [
+      151.165368,
+      -33.228043
+     ],
+     [
+      151.164342,
+      -33.227978
+     ],
+     [
+      151.164151,
+      -33.227965
+     ],
+     [
+      151.164134,
+      -33.227881
+     ],
+     [
+      151.163567,
+      -33.227421
+     ],
+     [
+      151.163753,
+      -33.226591
+     ],
+     [
+      151.163873,
+      -33.226497
+     ],
+     [
+      151.164128,
+      -33.226341
+     ],
+     [
+      151.164145,
+      -33.226334
+     ],
+     [
+      151.165366,
+      -33.225817
+     ],
+     [
+      151.167146,
+      -33.226163
+     ],
+     [
+      151.166809,
+      -33.22769
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "939 George Downes Drive, Kulnura",
+   "size": "21.45 ha (53 ac)",
+   "price": "Price on request",
+   "lat": -33.23559,
+   "lon": 151.215808,
+   "status": "near",
+   "sf": "MCPHERSON",
+   "dist_m": 117.0,
+   "url": "https://www.google.com/search?q=%22939%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.216675,
+      -33.233363
+     ],
+     [
+      151.216808,
+      -33.23892
+     ],
+     [
+      151.212703,
+      -33.238358
+     ],
+     [
+      151.213956,
+      -33.231536
+     ],
+     [
+      151.21502,
+      -33.23169
+     ],
+     [
+      151.21483,
+      -33.232806
+     ],
+     [
+      151.215594,
+      -33.232812
+     ],
+     [
+      151.215729,
+      -33.233477
+     ],
+     [
+      151.216675,
+      -33.233363
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "1266 George Downes Drive, Kulnura",
+   "size": "18.56 ha (46 ac)",
+   "price": "Contact agent",
+   "lat": -33.21278,
+   "lon": 151.208945,
+   "status": "no",
+   "sf": "OLNEY",
+   "dist_m": 271.2,
+   "url": "https://www.google.com/search?q=%221266%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "176 Greta Road, Kulnura",
+   "size": "29.54 ha (73 ac)",
+   "price": "Contact agent",
+   "lat": -33.227853,
+   "lon": 151.236617,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22176%20Greta%20Road%20Kulnura%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "73 Forest Road, Kulnura",
+   "size": "3.29 ha (8 ac)",
+   "price": "$1.99M\u2013$2.1M",
+   "lat": -33.245658,
+   "lon": 151.262104,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2273%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "885 George Downes Drive, Kulnura",
+   "size": "10.12 ha (25 ac)",
+   "price": "$2.45M",
+   "lat": -33.240559,
+   "lon": 151.216193,
+   "status": "adjoins",
+   "sf": "MCPHERSON",
+   "dist_m": 0.0,
+   "url": "https://www.google.com/search?q=%22885%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.212703,
+      -33.238358
+     ],
+     [
+      151.216808,
+      -33.23892
+     ],
+     [
+      151.216852,
+      -33.240753
+     ],
+     [
+      151.211122,
+      -33.239974
+     ],
+     [
+      151.211455,
+      -33.238232
+     ],
+     [
+      151.212696,
+      -33.2384
+     ],
+     [
+      151.212703,
+      -33.238358
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "35 Walkers Ridge Road, Kulnura",
+   "size": "24.28 ha (60 ac)",
+   "price": "Contact agent",
+   "lat": -33.137001,
+   "lon": 151.205817,
+   "status": "adjoins",
+   "sf": "OLNEY",
+   "dist_m": 0.0,
+   "url": "https://www.google.com/search?q=%2235%20Walkers%20Ridge%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.214226,
+      -33.140639
+     ],
+     [
+      151.214189,
+      -33.140816
+     ],
+     [
+      151.21344,
+      -33.141114
+     ],
+     [
+      151.212781,
+      -33.141863
+     ],
+     [
+      151.211908,
+      -33.141639
+     ],
+     [
+      151.211312,
+      -33.142104
+     ],
+     [
+      151.209767,
+      -33.142322
+     ],
+     [
+      151.209657,
+      -33.141972
+     ],
+     [
+      151.209618,
+      -33.141294
+     ],
+     [
+      151.209193,
+      -33.140986
+     ],
+     [
+      151.207332,
+      -33.138405
+     ],
+     [
+      151.205301,
+      -33.136837
+     ],
+     [
+      151.205397,
+      -33.136746
+     ],
+     [
+      151.205607,
+      -33.135817
+     ],
+     [
+      151.21051,
+      -33.137535
+     ],
+     [
+      151.212032,
+      -33.138805
+     ],
+     [
+      151.213121,
+      -33.140076
+     ],
+     [
+      151.214226,
+      -33.140639
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "1510 George Downes Drive, Kulnura",
+   "size": "16.13 ha (40 ac)",
+   "price": "Contact agent",
+   "lat": -33.193252,
+   "lon": 151.201381,
+   "status": "adjoins",
+   "sf": "OLNEY",
+   "dist_m": 0.0,
+   "url": "https://www.google.com/search?q=%221510%20George%20Downes%20Drive%20Kulnura%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.201333,
+      -33.192148
+     ],
+     [
+      151.211719,
+      -33.193628
+     ],
+     [
+      151.211419,
+      -33.195013
+     ],
+     [
+      151.210017,
+      -33.194816
+     ],
+     [
+      151.20567,
+      -33.194205
+     ],
+     [
+      151.200537,
+      -33.193485
+     ],
+     [
+      151.200541,
+      -33.193471
+     ],
+     [
+      151.201006,
+      -33.192108
+     ],
+     [
+      151.201333,
+      -33.192148
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "241 Williams Road, Kulnura",
+   "size": "3.64 ha (9 ac)",
+   "price": "Contact agent",
+   "lat": -33.223656,
+   "lon": 151.197973,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22241%20Williams%20Road%20Kulnura%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "12 Greta Road, Kulnura",
+   "size": "20.23 ha (50 ac)",
+   "price": "$1.85M",
+   "lat": -33.22348,
+   "lon": 151.223073,
+   "status": "adjoins",
+   "sf": "OLNEY",
+   "dist_m": 0.0,
+   "url": "https://www.google.com/search?q=%2212%20Greta%20Road%20Kulnura%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.22424,
+      -33.215632
+     ],
+     [
+      151.226202,
+      -33.215914
+     ],
+     [
+      151.224574,
+      -33.223967
+     ],
+     [
+      151.224124,
+      -33.223891
+     ],
+     [
+      151.223844,
+      -33.225245
+     ],
+     [
+      151.222891,
+      -33.22509
+     ],
+     [
+      151.223033,
+      -33.22432
+     ],
+     [
+      151.222563,
+      -33.224244
+     ],
+     [
+      151.223097,
+      -33.221382
+     ],
+     [
+      151.22353,
+      -33.219062
+     ],
+     [
+      151.2231,
+      -33.219
+     ],
+     [
+      151.223783,
+      -33.215567
+     ],
+     [
+      151.22424,
+      -33.215632
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "323 Forest Road, Kulnura",
+   "size": "27.11 ha (67 ac)",
+   "price": "Contact agent",
+   "lat": -33.254827,
+   "lon": 151.285944,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22323%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "234 Forest Road, Kulnura",
+   "size": "5.26 ha (13 ac)",
+   "price": "Contact agent",
+   "lat": -33.251233,
+   "lon": 151.276645,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22234%20Forest%20Road%20Kulnura%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "187 Konda Road, Somersby",
+   "size": "20.23 ha (50 ac)",
+   "price": "Contact agent",
+   "lat": -33.350496,
+   "lon": 151.264078,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22187%20Konda%20Road%20Somersby%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "627 Dog Trap Road, Somersby",
+   "size": "9.31 ha (23 ac)",
+   "price": "Contact agent",
+   "lat": -33.365929,
+   "lon": 151.319133,
+   "status": "near",
+   "sf": "STRICKLAND",
+   "dist_m": 100.4,
+   "url": "https://www.google.com/search?q=%22627%20Dog%20Trap%20Road%20Somersby%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.32277,
+      -33.36689
+     ],
+     [
+      151.315495,
+      -33.366441
+     ],
+     [
+      151.315848,
+      -33.364825
+     ],
+     [
+      151.316809,
+      -33.365181
+     ],
+     [
+      151.317847,
+      -33.365349
+     ],
+     [
+      151.31922,
+      -33.365181
+     ],
+     [
+      151.319229,
+      -33.365181
+     ],
+     [
+      151.319691,
+      -33.365181
+     ],
+     [
+      151.320492,
+      -33.365182
+     ],
+     [
+      151.321592,
+      -33.365453
+     ],
+     [
+      151.322618,
+      -33.366813
+     ],
+     [
+      151.32277,
+      -33.36689
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "80 Dog Trap Road, Ourimbah",
+   "size": "1.01 ha (2.5 ac)",
+   "price": "$2.55M\u2013$2.7M",
+   "lat": -33.353339,
+   "lon": 151.360497,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2280%20Dog%20Trap%20Road%20Ourimbah%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "15 Frederick Street, Ourimbah",
+   "size": "8.46 ha (21 ac)",
+   "price": "$2.0M\u2013$2.2M",
+   "lat": -33.345984,
+   "lon": 151.354989,
+   "status": "near",
+   "sf": "OURIMBAH",
+   "dist_m": 145.2,
+   "url": "https://www.google.com/search?q=%2215%20Frederick%20Street%20Ourimbah%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.353311,
+      -33.344429
+     ],
+     [
+      151.354476,
+      -33.344594
+     ],
+     [
+      151.355679,
+      -33.345503
+     ],
+     [
+      151.355988,
+      -33.345737
+     ],
+     [
+      151.357364,
+      -33.346131
+     ],
+     [
+      151.357178,
+      -33.346946
+     ],
+     [
+      151.357122,
+      -33.347189
+     ],
+     [
+      151.35711,
+      -33.347189
+     ],
+     [
+      151.35649,
+      -33.347123
+     ],
+     [
+      151.355685,
+      -33.347044
+     ],
+     [
+      151.354844,
+      -33.346973
+     ],
+     [
+      151.35458,
+      -33.347046
+     ],
+     [
+      151.353219,
+      -33.347138
+     ],
+     [
+      151.352795,
+      -33.347215
+     ],
+     [
+      151.352615,
+      -33.347217
+     ],
+     [
+      151.352641,
+      -33.347086
+     ],
+     [
+      151.353027,
+      -33.345139
+     ],
+     [
+      151.353172,
+      -33.344409
+     ],
+     [
+      151.353311,
+      -33.344429
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "40 Bumbles Creek Road, Ourimbah",
+   "size": "12.02 ha (30 ac)",
+   "price": "$2.59M\u2013$2.75M",
+   "lat": -33.34994,
+   "lon": 151.318047,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2240%20Bumbles%20Creek%20Road%20Ourimbah%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "89 Elmo Street, Ourimbah",
+   "size": "16.11 ha (40 ac)",
+   "price": "$1.29M\u2013$1.39M",
+   "lat": -33.344245,
+   "lon": 151.347373,
+   "status": "no",
+   "sf": "OURIMBAH",
+   "dist_m": 262.4,
+   "url": "https://www.google.com/search?q=%2289%20Elmo%20Street%20Ourimbah%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "125 Berecry Road, Mangrove Mountain",
+   "size": "10.81 ha (27 ac)",
+   "price": "EOI 4 Aug",
+   "lat": -33.35328,
+   "lon": 151.16988,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22125%20Berecry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "66 Lombardy Road, Mangrove Mountain",
+   "size": "16.59 ha (41 ac)",
+   "price": "Contact agent",
+   "lat": -33.33483,
+   "lon": 151.176849,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2266%20Lombardy%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "2583 Wisemans Ferry Road, Mangrove Mountain",
+   "size": "39.86 ha (98 ac)",
+   "price": "Contact agent",
+   "lat": -33.311369,
+   "lon": 151.183706,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%222583%20Wisemans%20Ferry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "2047 Wisemans Ferry Road, Mangrove Mountain",
+   "size": "24.28 ha (60 ac)",
+   "price": "Contact agent",
+   "lat": -33.298522,
+   "lon": 151.210549,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%222047%20Wisemans%20Ferry%20Road%20Mangrove%20Mountain%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "147 Andrews Road, Laguna",
+   "size": "37.35 ha (92 ac)",
+   "price": "$1.4M guide",
+   "lat": -32.964587,
+   "lon": 151.124798,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22147%20Andrews%20Road%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "898 Yango Creek Road, Laguna",
+   "size": "58.2 ha (144 ac)",
+   "price": "$2.0M guide",
+   "lat": -32.994335,
+   "lon": 151.109372,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22898%20Yango%20Creek%20Road%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "281 Watagan Creek Road, Laguna",
+   "size": "45 ha (111 ac)",
+   "price": "Contact agent",
+   "lat": -33.00353,
+   "lon": 151.150805,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22281%20Watagan%20Creek%20Road%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "3983 Great North Road, Laguna",
+   "size": "50.42 ha (125 ac)",
+   "price": "$2.6M\u2013$2.7M",
+   "lat": -33.008025,
+   "lon": 151.122503,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%223983%20Great%20North%20Road%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "540 Yango Creek Road, Laguna",
+   "size": "12.14 ha (30 ac)",
+   "price": "$1.95M guide",
+   "lat": -32.975458,
+   "lon": 151.1115,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22540%20Yango%20Creek%20Road%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "1379 Mount View Road, Millfield",
+   "size": "52.61 ha (130 ac)",
+   "price": "$2.1M guide",
+   "lat": -32.86517,
+   "lon": 151.264754,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%221379%20Mount%20View%20Road%20Millfield%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "300 Hayes Road, Millfield",
+   "size": "65.37 ha (162 ac)",
+   "price": "$1.6M guide",
+   "lat": -32.923318,
+   "lon": 151.24485,
+   "status": "adjoins",
+   "sf": "CORRABARE",
+   "dist_m": 0.0,
+   "url": "https://www.google.com/search?q=%22300%20Hayes%20Road%20Millfield%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.251062,
+      -32.924432
+     ],
+     [
+      151.250798,
+      -32.925893
+     ],
+     [
+      151.246779,
+      -32.925381
+     ],
+     [
+      151.243495,
+      -32.92496
+     ],
+     [
+      151.242798,
+      -32.929149
+     ],
+     [
+      151.242792,
+      -32.929188
+     ],
+     [
+      151.242517,
+      -32.93084
+     ],
+     [
+      151.238247,
+      -32.930357
+     ],
+     [
+      151.238766,
+      -32.929956
+     ],
+     [
+      151.239649,
+      -32.928651
+     ],
+     [
+      151.240041,
+      -32.928309
+     ],
+     [
+      151.241458,
+      -32.926383
+     ],
+     [
+      151.241552,
+      -32.925947
+     ],
+     [
+      151.240889,
+      -32.925204
+     ],
+     [
+      151.240785,
+      -32.923736
+     ],
+     [
+      151.240593,
+      -32.923183
+     ],
+     [
+      151.241254,
+      -32.922459
+     ],
+     [
+      151.241332,
+      -32.921952
+     ],
+     [
+      151.241934,
+      -32.921637
+     ],
+     [
+      151.2421,
+      -32.921358
+     ],
+     [
+      151.242208,
+      -32.921178
+     ],
+     [
+      151.243081,
+      -32.921285
+     ],
+     [
+      151.247364,
+      -32.921812
+     ],
+     [
+      151.249446,
+      -32.922034
+     ],
+     [
+      151.251145,
+      -32.922214
+     ],
+     [
+      151.251452,
+      -32.922254
+     ],
+     [
+      151.251198,
+      -32.92367
+     ],
+     [
+      151.251145,
+      -32.923966
+     ],
+     [
+      151.251062,
+      -32.924432
+     ]
+    ],
+    [
+     [
+      151.241255,
+      -32.926338
+     ],
+     [
+      151.240218,
+      -32.927719
+     ],
+     [
+      151.24043,
+      -32.926002
+     ],
+     [
+      151.240308,
+      -32.925812
+     ],
+     [
+      151.239198,
+      -32.924094
+     ],
+     [
+      151.239041,
+      -32.923458
+     ],
+     [
+      151.239475,
+      -32.922265
+     ],
+     [
+      151.23967,
+      -32.921083
+     ],
+     [
+      151.239656,
+      -32.921044
+     ],
+     [
+      151.23959,
+      -32.920856
+     ],
+     [
+      151.241989,
+      -32.921151
+     ],
+     [
+      151.241892,
+      -32.921331
+     ],
+     [
+      151.241818,
+      -32.921466
+     ],
+     [
+      151.241149,
+      -32.921809
+     ],
+     [
+      151.241034,
+      -32.922414
+     ],
+     [
+      151.240204,
+      -32.923079
+     ],
+     [
+      151.240564,
+      -32.923747
+     ],
+     [
+      151.240684,
+      -32.925251
+     ],
+     [
+      151.241331,
+      -32.925986
+     ],
+     [
+      151.241255,
+      -32.926338
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "1587 Mount View Road, Millfield",
+   "size": "1.78 ha (4.4 ac)",
+   "price": "By negotiation",
+   "lat": -32.876565,
+   "lon": 151.246844,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%221587%20Mount%20View%20Road%20Millfield%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "56 Dunlop Drive, Paxton",
+   "size": "2.03 ha (5 ac)",
+   "price": "$1.275M",
+   "lat": -32.901542,
+   "lon": 151.29783,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2256%20Dunlop%20Drive%20Paxton%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "576 Sandy Creek Road, Quorrobolong",
+   "size": "1.9 ha (4.7 ac)",
+   "price": "$1.3M\u2013$1.4M",
+   "lat": -32.928406,
+   "lon": 151.428397,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22576%20Sandy%20Creek%20Road%20Quorrobolong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "626 Sandy Creek Road, Quorrobolong",
+   "size": "40.47 ha (100 ac)",
+   "price": "Price on request",
+   "lat": -32.92876,
+   "lon": 151.426302,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22626%20Sandy%20Creek%20Road%20Quorrobolong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "157 Rodney Road, Mount Vincent",
+   "size": "10.12 ha (25 ac)",
+   "price": "By negotiation",
+   "lat": -32.946445,
+   "lon": 151.445458,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22157%20Rodney%20Road%20Mount%20Vincent%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "389 Vermont Road, Mulbring",
+   "size": "72.84 ha (180 ac)",
+   "price": "By negotiation",
+   "lat": -32.912983,
+   "lon": 151.437376,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22389%20Vermont%20Road%20Mulbring%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "34 Cedar Street, Wollombi",
+   "size": "21.48 ha (53 ac)",
+   "price": "$1.3M\u2013$1.4M",
+   "lat": -32.942024,
+   "lon": 151.149934,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2234%20Cedar%20Street%20Wollombi%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "3036 Great North Road, Wollombi",
+   "size": "1.7 ha (4.2 ac)",
+   "price": "Contact agent",
+   "lat": -32.941768,
+   "lon": 151.141308,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%223036%20Great%20North%20Road%20Wollombi%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "780 Milsons Arm Road, Wollombi",
+   "size": "19.7 ha (49 ac)",
+   "price": "$650k",
+   "lat": -32.998026,
+   "lon": 151.194579,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22780%20Milsons%20Arm%20Road%20Wollombi%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "2938 Paynes Crossing Road, Wollombi",
+   "size": "4,806 m\u00b2 (1.2 ac)",
+   "price": "$260k guide",
+   "lat": -32.93462,
+   "lon": 151.136648,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%222938%20Paynes%20Crossing%20Road%20Wollombi%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "2814 Wollombi Road, Wollombi",
+   "size": "5,463 m\u00b2 (1.35 ac)",
+   "price": "$895k",
+   "lat": -32.935514,
+   "lon": 151.147257,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%222814%20Wollombi%20Road%20Wollombi%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "35 Wilkinson Place, Kearsley",
+   "size": "2.02 ha (5 ac)",
+   "price": "$1.35M\u2013$1.45M",
+   "lat": -32.856579,
+   "lon": 151.401148,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2235%20Wilkinson%20Place%20Kearsley%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "155 Q9 Lane, Ellalong",
+   "size": "42.09 ha (104 ac)",
+   "price": "By negotiation",
+   "lat": -32.966542,
+   "lon": 151.320913,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22155%20Q9%20Lane%20Ellalong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "23 Mimosa Lane, Ellalong",
+   "size": "14.07 ha (35 ac)",
+   "price": "$750k\u2013$800k",
+   "lat": -32.936874,
+   "lon": 151.3097,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%2223%20Mimosa%20Lane%20Ellalong%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "35 Dogwood Road, Laguna (Watagan)",
+   "size": "16.19 ha (40 ac)",
+   "price": "$1.25M\u2013$1.3M",
+   "lat": -33.00927,
+   "lon": 151.22822,
+   "status": "no",
+   "sf": "WATAGAN",
+   "dist_m": 283.3,
+   "url": "https://www.google.com/search?q=%2235%20Dogwood%20Road%2C%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "256 Olney Arm Road, Laguna (Dairy Arm)",
+   "size": "40.76 ha (101 ac)",
+   "price": "$930k guide",
+   "lat": -33.04519,
+   "lon": 151.18898,
+   "status": "no",
+   "sf": null,
+   "dist_m": null,
+   "url": "https://www.google.com/search?q=%22256%20Olney%20Arm%20Road%2C%20Laguna%22%20NSW%20for%20sale"
+  },
+  {
+   "address": "1473 Watagan Creek Road, Watagan",
+   "size": "'Oaklyn' \u2014 47.9 ha (118 ac)",
+   "price": "$1.7M guide",
+   "lat": -33.02439,
+   "lon": 151.25176,
+   "status": "adjoins",
+   "sf": "WATAGAN",
+   "dist_m": 0.0,
+   "url": "https://www.google.com/search?q=%221473%20Watagan%20Creek%20Road%2C%20Watagan%22%20NSW%20for%20sale",
+   "rings": [
+    [
+     [
+      151.252196,
+      -33.020658
+     ],
+     [
+      151.253015,
+      -33.023037
+     ],
+     [
+      151.253014,
+      -33.023037
+     ],
+     [
+      151.252848,
+      -33.023266
+     ],
+     [
+      151.252058,
+      -33.023888
+     ],
+     [
+      151.251832,
+      -33.024969
+     ],
+     [
+      151.251315,
+      -33.027443
+     ],
+     [
+      151.24841,
+      -33.027011
+     ],
+     [
+      151.248999,
+      -33.024181
+     ],
+     [
+      151.249717,
+      -33.020758
+     ],
+     [
+      151.250165,
+      -33.018578
+     ],
+     [
+      151.250632,
+      -33.018374
+     ],
+     [
+      151.251114,
+      -33.018743
+     ],
+     [
+      151.251815,
+      -33.019725
+     ],
+     [
+      151.252196,
+      -33.020658
+     ]
+    ],
+    [
+     [
+      151.254887,
+      -33.020516
+     ],
+     [
+      151.254373,
+      -33.023693
+     ],
+     [
+      151.253594,
+      -33.023379
+     ],
+     [
+      151.253436,
+      -33.023271
+     ],
+     [
+      151.253287,
+      -33.02317
+     ],
+     [
+      151.253252,
+      -33.023073
+     ],
+     [
+      151.252402,
+      -33.020603
+     ],
+     [
+      151.252011,
+      -33.019648
+     ],
+     [
+      151.251283,
+      -33.018627
+     ],
+     [
+      151.250836,
+      -33.018285
+     ],
+     [
+      151.252826,
+      -33.017414
+     ],
+     [
+      151.252914,
+      -33.01748
+     ],
+     [
+      151.253411,
+      -33.018074
+     ],
+     [
+      151.253472,
+      -33.018243
+     ],
+     [
+      151.253548,
+      -33.018439
+     ],
+     [
+      151.253557,
+      -33.018569
+     ],
+     [
+      151.253729,
+      -33.018758
+     ],
+     [
+      151.253859,
+      -33.018855
+     ],
+     [
+      151.253916,
+      -33.018912
+     ],
+     [
+      151.253997,
+      -33.01903
+     ],
+     [
+      151.254066,
+      -33.019047
+     ],
+     [
+      151.254283,
+      -33.019298
+     ],
+     [
+      151.254379,
+      -33.019325
+     ],
+     [
+      151.254296,
+      -33.019674
+     ],
+     [
+      151.254281,
+      -33.019847
+     ],
+     [
+      151.254382,
+      -33.020074
+     ],
+     [
+      151.254675,
+      -33.020301
+     ],
+     [
+      151.254712,
+      -33.020395
+     ],
+     [
+      151.254844,
+      -33.020498
+     ],
+     [
+      151.254887,
+      -33.020516
+     ]
+    ],
+    [
+     [
+      151.255022,
+      -33.019678
+     ],
+     [
+      151.254896,
+      -33.020457
+     ],
+     [
+      151.254853,
+      -33.020454
+     ],
+     [
+      151.254738,
+      -33.020294
+     ],
+     [
+      151.254421,
+      -33.020033
+     ],
+     [
+      151.254355,
+      -33.019833
+     ],
+     [
+      151.254355,
+      -33.019646
+     ],
+     [
+      151.254442,
+      -33.019365
+     ],
+     [
+      151.254398,
+      -33.019302
+     ],
+     [
+      151.254376,
+      -33.019269
+     ],
+     [
+      151.254167,
+      -33.019091
+     ],
+     [
+      151.254134,
+      -33.019085
+     ],
+     [
+      151.254053,
+      -33.018991
+     ],
+     [
+      151.253848,
+      -33.018785
+     ],
+     [
+      151.253683,
+      -33.018681
+     ],
+     [
+      151.25361,
+      -33.018569
+     ],
+     [
+      151.253598,
+      -33.018444
+     ],
+     [
+      151.253484,
+      -33.01805
+     ],
+     [
+      151.253043,
+      -33.017467
+     ],
+     [
+      151.252904,
+      -33.01738
+     ],
+     [
+      151.253268,
+      -33.017221
+     ],
+     [
+      151.255043,
+      -33.016215
+     ],
+     [
+      151.254939,
+      -33.016711
+     ],
+     [
+      151.256624,
+      -33.016961
+     ],
+     [
+      151.256494,
+      -33.018534
+     ],
+     [
+      151.255022,
+      -33.019678
+     ]
+    ],
+    [
+     [
+      151.257635,
+      -33.025261
+     ],
+     [
+      151.257405,
+      -33.026359
+     ],
+     [
+      151.255944,
+      -33.026143
+     ],
+     [
+      151.255627,
+      -33.026096
+     ],
+     [
+      151.255949,
+      -33.024554
+     ],
+     [
+      151.25625,
+      -33.02468
+     ],
+     [
+      151.257635,
+      -33.025261
+     ]
+    ]
+   ]
+  },
+  {
+   "address": "524 Ravensdale Road, Ravensdale",
+   "size": "part of 49.1 ha (121 ac)",
+   "price": "EOI",
+   "lat": -33.16333,
+   "lon": 151.30462,
+   "status": "no",
+   "sf": "OLNEY",
+   "dist_m": 258.7,
+   "url": "https://www.google.com/search?q=%22524%20Ravensdale%20Road%2C%20Ravensdale%22%20NSW%20for%20sale"
   }
  ]
 }

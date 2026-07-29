@@ -166,6 +166,9 @@
       <span><span class="chip" style="background:#90a4ae"></span>Other listings checked (don't border)</span>
     </label>
     <div class="hint" id="saleHint">Listings snapshot checked against the NSW cadastre &amp; gazetted state forest boundaries.</div>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="btn" id="saleZoomBtn">🔍 Zoom to results</button>
+    </div>
   </div>
 
   <div class="sect">
@@ -329,6 +332,14 @@
   });
   wireToggle('saleToggle', saleLayer);
   wireToggle('saleAllToggle', saleAllLayer);
+  document.getElementById('saleZoomBtn').addEventListener('click', function () {
+    var b = null;
+    saleLayer.eachLayer(function (l) {
+      var lb = l.getBounds ? l.getBounds() : L.latLngBounds([l.getLatLng()]);
+      b = b ? b.extend(lb) : L.latLngBounds(lb.getSouthWest(), lb.getNorthEast());
+    });
+    if (b) map.fitBounds(b.pad(0.1));
+  });
 
   // --- Map key ---
   function toggleKey() { document.body.classList.toggle('key-open'); }
