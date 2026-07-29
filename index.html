@@ -150,6 +150,11 @@
       <input type="checkbox" id="npwsToggle">
       <span><span class="chip" style="background:#e040fb"></span>National parks &amp; reserves</span>
     </label>
+    <label class="toggle">
+      <input type="checkbox" id="huntExToggle" checked>
+      <span><span class="chip" style="background:#ff1744"></span>Hunting exclusion zones (indicative)</span>
+    </label>
+    <div class="hint">Exclusion zones are FCNSW's <i>indicative permanent</i> areas only — the authoritative map, including temporary harvesting closures, comes with your DPIRD written permission / Hunt NSW app.</div>
     <div class="hint">Current NSW Spatial Services data — property lot lines appear once you zoom in past ~1:100,000.</div>
     <div class="btnrow" style="margin-top:8px">
       <button class="btn" id="keyBtn">🗺 Map key</button>
@@ -174,6 +179,13 @@
                style="width:80px;background:#26313a;border:1px solid #3a444d;color:#eee;border-radius:6px;padding:5px 7px;font:13px system-ui">
         <span style="color:#b9c4cc">acres and up</span>
       </div>
+    </div>
+    <div class="ctl">
+      <label for="forestName">Bordering forest / reserve</label>
+      <select id="forestName"
+              style="width:100%;background:#26313a;border:1px solid #3a444d;color:#eee;border-radius:6px;padding:5px 7px;font:13px system-ui">
+        <option value="">Any</option>
+      </select>
     </div>
     <div style="margin:8px 0 4px;color:#b9c4cc;font-size:12px">Must border directly onto:</div>
     <label class="toggle">
@@ -301,6 +313,36 @@
   wireToggle('sfToggle', sfLayer);
   wireToggle('npwsToggle', npwsLayer);
 
+  // --- FCNSW indicative permanent hunting exclusion zones (live) ---
+  var huntExLayer = L.layerGroup();
+  var huntExLoaded = false;
+  function loadHuntEx() {
+    if (huntExLoaded) return;
+    huntExLoaded = true;
+    var url = 'https://services2.arcgis.com/iCBB4zKDwkw2iwDD/arcgis/rest/services/' +
+      'FCNSW_Indicative_Permanent_Hunting_Exclusions/FeatureServer/0/query' +
+      '?where=1%3D1&geometry=%7B%22xmin%22%3A150.9%2C%22ymin%22%3A-33.45%2C%22xmax%22%3A151.85%2C%22ymax%22%3A-32.7%7D' +
+      '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects' +
+      '&outFields=Description&returnGeometry=true&outSR=4326&f=geojson';
+    fetch(url).then(function (r) { return r.json(); }).then(function (gj) {
+      L.geoJSON(gj, {
+        style: { color: '#ff1744', weight: 2, dashArray: '6 4', fillColor: '#ff1744', fillOpacity: 0.22 },
+        attribution: 'Hunting exclusions © Forestry Corporation of NSW (indicative)',
+        onEachFeature: function (f, layer) {
+          layer.bindPopup('<b style="color:#b71c1c">Hunting exclusion zone</b><br>' +
+            'FCNSW indicative <i>permanent</i> exclusion — no hunting.<br>' +
+            'Temporary closures are NOT shown; always follow your DPIRD written-permission map.');
+        }
+      }).addTo(huntExLayer);
+    }).catch(function () { huntExLoaded = false; });
+  }
+  document.getElementById('huntExToggle').addEventListener('change', function () {
+    if (this.checked) { loadHuntEx(); huntExLayer.addTo(map); }
+    else { map.removeLayer(huntExLayer); }
+  });
+  loadHuntEx();
+  huntExLayer.addTo(map);
+
   // --- Properties for sale (from listings.json, verified against cadastre) ---
   // Each listing carries verified parcel acres plus measured distances to the
   // nearest gazetted State Forest (sf_d/sf) and NPWS reserve (np_d/np).
@@ -337,6 +379,12 @@
 
   function bordersSF(l) { return l.sf_d != null && l.sf_d <= ADJOIN_M; }
   function bordersNP(l) { return l.np_d != null && l.np_d <= ADJOIN_M; }
+  function forestNameFilter() { return document.getElementById('forestName').value; }
+  function matchesForestName(sfName, npName, bSF, bNP) {
+    var want = forestNameFilter();
+    if (!want) return true;
+    return (bSF && sfName === want) || (bNP && npName === want);
+  }
   function isNear(l) {
     return (l.sf_d != null && l.sf_d <= NEAR_M) || (l.np_d != null && l.np_d <= NEAR_M);
   }
@@ -350,6 +398,7 @@
     saleListings.forEach(function (l) {
       if (l.acres < minAc) return;
       if ((reqSF || reqNP) && !((reqSF && bordersSF(l)) || (reqNP && bordersNP(l)))) return;
+      if (!matchesForestName(l.sf, l.np, bordersSF(l), bordersNP(l))) return;
       shown++;
       var borders = bordersSF(l) || bordersNP(l);
       var color = borders ? '#ffd600' : (isNear(l) ? '#ffab40' : null);
@@ -421,6 +470,7 @@
     cadParcels.forEach(function (p) {
       if (p.a < minAc) return;
       if ((reqSF || reqNP) && !((reqSF && p.sf) || (reqNP && p.np))) return;
+      if (!matchesForestName(p.sf, p.np, !!p.sf, !!p.np)) return;
       shown++;
       var borders = p.sf || p.np;
       L.polygon(p.rings.map(function (ring) {
@@ -436,14 +486,42 @@
     document.getElementById('cadCount').textContent = '(' + shown + ')';
   }
 
+  function populateForestNames() {
+    var sfNames = {}, npNames = {};
+    cadParcels.forEach(function (p) {
+      if (p.sf) sfNames[p.sf] = 1;
+      if (p.np) npNames[p.np] = 1;
+    });
+    saleListings.forEach(function (l) {
+      if (bordersSF(l)) sfNames[l.sf] = 1;
+      if (bordersNP(l)) npNames[l.np] = 1;
+    });
+    var sel = document.getElementById('forestName');
+    function addGroup(label, names) {
+      var keys = Object.keys(names).sort();
+      if (!keys.length) return;
+      var og = document.createElement('optgroup');
+      og.label = label;
+      keys.forEach(function (n) {
+        var o = document.createElement('option');
+        o.value = n; o.textContent = titleCase(n);
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    }
+    addGroup('State forests', sfNames);
+    addGroup('Parks & reserves', npNames);
+  }
+
   fetch('properties.json').then(function (r) { return r.json(); }).then(function (data) {
     cadParcels = data.parcels;
+    populateForestNames();
     renderCad();
     if (document.getElementById('cadToggle').checked) cadLayer.addTo(map);
   });
   wireToggle('cadToggle', cadLayer);
 
-  ['minAcres', 'reqSF', 'reqNP'].forEach(function (id) {
+  ['minAcres', 'reqSF', 'reqNP', 'forestName'].forEach(function (id) {
     document.getElementById(id).addEventListener('input', function () {
       renderSale(); renderCad();
     });
