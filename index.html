@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hunt Map — Morisset 9131-1N Topo / Satellite Overlay</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  #map { height: 100%; background: #1a1a1a; }
+  .panel {
+    position: absolute; top: 10px; right: 10px; z-index: 1000;
+    background: rgba(20, 24, 28, 0.88); color: #eee;
+    font: 13px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding: 12px 14px; border-radius: 10px; width: 240px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.5);
+  }
+  .panel h1 { font-size: 14px; margin: 0 0 2px; }
+  .panel .sub { font-size: 11px; color: #9fb2a8; margin-bottom: 10px; }
+  .ctl { margin-bottom: 10px; }
+  .ctl label { display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .ctl label .val { color: #8fd19e; font-variant-numeric: tabular-nums; }
+  .ctl input[type=range] { width: 100%; accent-color: #4caf72; }
+  .toggle { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; }
+  .toggle input { accent-color: #4caf72; }
+  .hint { font-size: 11px; color: #8a949e; margin-top: 8px; border-top: 1px solid #333c44; padding-top: 8px; }
+  .credit { font-size: 10px; color: #6b757f; margin-top: 6px; }
+  .collapse-btn {
+    position: absolute; top: 6px; right: 8px; background: none; border: none;
+    color: #9fb2a8; cursor: pointer; font-size: 14px; padding: 2px 4px;
+  }
+  .panel.collapsed > *:not(.collapse-btn):not(h1) { display: none; }
+  /* keep topo overlay crisp when zoomed in */
+  .topo-overlay { image-rendering: auto; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="panel" id="panel">
+  <button class="collapse-btn" id="collapseBtn" title="Collapse">▾</button>
+  <h1>Morisset 9131-1N</h1>
+  <div class="sub">1:25,000 topo (2017) over satellite — state forest boundaries in green</div>
+
+  <div class="ctl">
+    <label>Topo map opacity <span class="val" id="topoVal">70%</span></label>
+    <input type="range" id="topoOpacity" min="0" max="100" value="70">
+  </div>
+
+  <div class="ctl">
+    <label>Satellite opacity <span class="val" id="satVal">100%</span></label>
+    <input type="range" id="satOpacity" min="0" max="100" value="100">
+  </div>
+
+  <label class="toggle">
+    <input type="checkbox" id="blendMode" checked>
+    <span>See-through paper (multiply blend)</span>
+  </label>
+
+  <label class="toggle">
+    <input type="checkbox" id="topoToggle" checked>
+    <span>Show topo overlay</span>
+  </label>
+
+  <div class="hint">
+    Multiply blend hides the white map paper so linework (boundaries, contours, tracks)
+    sits directly on the imagery. Turn it off and use the opacity slider to compare layers instead.
+  </div>
+  <div class="credit">
+    Topo: © NSW Spatial Services (9131-1N, 2017). Imagery: Esri World Imagery.
+  </div>
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script>
+  // Georeferenced bounds extracted from the GeoPDF viewport (GDA94 -> WGS84 lat/lon).
+  // The image morisset_topo.webp is warped to be axis-aligned in Web Mercator,
+  // so a plain imageOverlay lines up exactly with the tile grid.
+  var BOUNDS = L.latLngBounds([-33.13084, 151.23591], [-32.99409, 151.51389]);
+
+  var map = L.map('map', {
+    center: BOUNDS.getCenter(),
+    zoom: 12,
+    maxZoom: 19,
+    zoomSnap: 0.5
+  });
+  map.fitBounds(BOUNDS);
+
+  var satellite = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
+    }).addTo(map);
+
+  var IMG_RELATIVE = 'morisset_topo.webp';
+  var IMG_FALLBACK = 'https://raw.githubusercontent.com/etheodore15/Hunt-map/claude/forest-boundaries-satellite-overlay-f0loyz/morisset_topo.webp';
+
+  var topo = L.imageOverlay(IMG_RELATIVE, BOUNDS, {
+    opacity: 0.7,
+    interactive: false,
+    className: 'topo-overlay'
+  }).addTo(map);
+
+  // If the relative path can't be served (e.g. some HTML preview proxies), fall
+  // back to the raw GitHub URL.
+  topo.on('error', function () {
+    if (topo._url !== IMG_FALLBACK) topo.setUrl(IMG_FALLBACK);
+  });
+
+  L.control.scale({ imperial: false }).addTo(map);
+
+  // --- UI wiring ---
+  var topoSlider = document.getElementById('topoOpacity');
+  var satSlider = document.getElementById('satOpacity');
+  var topoVal = document.getElementById('topoVal');
+  var satVal = document.getElementById('satVal');
+  var blendBox = document.getElementById('blendMode');
+  var topoBox = document.getElementById('topoToggle');
+
+  function applyBlend() {
+    var el = topo.getElement();
+    if (el) el.style.mixBlendMode = blendBox.checked ? 'multiply' : 'normal';
+  }
+  topo.on('load', applyBlend);
+  topo.on('add', function () { setTimeout(applyBlend, 0); });
+
+  topoSlider.addEventListener('input', function () {
+    topo.setOpacity(this.value / 100);
+    topoVal.textContent = this.value + '%';
+  });
+
+  satSlider.addEventListener('input', function () {
+    satellite.setOpacity(this.value / 100);
+    satVal.textContent = this.value + '%';
+  });
+
+  blendBox.addEventListener('change', applyBlend);
+
+  topoBox.addEventListener('change', function () {
+    if (this.checked) { topo.addTo(map); applyBlend(); }
+    else { map.removeLayer(topo); }
+  });
+
+  document.getElementById('collapseBtn').addEventListener('click', function () {
+    var p = document.getElementById('panel');
+    p.classList.toggle('collapsed');
+    this.textContent = p.classList.contains('collapsed') ? '▸' : '▾';
+  });
+
+  applyBlend();
+</script>
+</body>
+</html>
