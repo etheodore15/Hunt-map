@@ -156,6 +156,19 @@
   </div>
 
   <div class="sect">
+    <h2>For sale</h2>
+    <label class="toggle">
+      <input type="checkbox" id="saleToggle" checked>
+      <span><span class="chip" style="background:#ffd600"></span>&gt;1 acre bordering state forest</span>
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="saleAllToggle">
+      <span><span class="chip" style="background:#90a4ae"></span>Other listings checked (don't border)</span>
+    </label>
+    <div class="hint" id="saleHint">Listings snapshot checked against the NSW cadastre &amp; gazetted state forest boundaries.</div>
+  </div>
+
+  <div class="sect">
     <h2>Notes <span id="noteCount" style="color:#8fd19e"></span></h2>
     <div class="btnrow">
       <button class="btn" id="addNoteBtn">📍 Add note</button>
@@ -264,6 +277,58 @@
   wireToggle('lotsToggle', lotsLayer);
   wireToggle('sfToggle', sfLayer);
   wireToggle('npwsToggle', npwsLayer);
+
+  // --- Properties for sale (from listings.json, verified against cadastre) ---
+  var saleLayer = L.layerGroup();        // adjoins / near state forest
+  var saleAllLayer = L.layerGroup();     // checked but not bordering
+
+  function salePopup(l) {
+    var div = document.createElement('div');
+    var borders = l.status === 'adjoins'
+      ? '<b style="color:#1b5e20">Shares a boundary with ' + titleCase(l.sf) + ' State Forest</b>'
+      : l.status === 'near'
+        ? '<b style="color:#a06a00">' + Math.round(l.dist_m) + ' m from ' + titleCase(l.sf) + ' State Forest</b> (does not adjoin)'
+        : 'Does not border a state forest (>400 m)';
+    div.innerHTML = '<b>' + l.address + '</b><br>' +
+      l.size + ' — ' + l.price + '<br>' + borders +
+      '<br><a href="' + l.url + '" target="_blank" rel="noopener">View listing ↗</a>';
+    return div;
+  }
+  function titleCase(s) {
+    return (s || 'a').toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  fetch('listings.json').then(function (r) { return r.json(); }).then(function (data) {
+    document.getElementById('saleHint').textContent =
+      'Listings snapshot ' + data.asOf + ', checked against the NSW cadastre & gazetted state forest boundaries.';
+    data.listings.forEach(function (l) {
+      if (l.status === 'adjoins' || l.status === 'near') {
+        var color = l.status === 'adjoins' ? '#ffd600' : '#ffab40';
+        if (l.rings) {
+          L.polygon(l.rings.map(function (ring) {
+            return ring.map(function (c) { return [c[1], c[0]]; });
+          }), { color: color, weight: 3, fillColor: color, fillOpacity: 0.15 })
+            .bindPopup(function () { return salePopup(l); }).addTo(saleLayer);
+        }
+        L.marker([l.lat, l.lon], {
+          icon: L.divIcon({
+            className: '',
+            html: '<div style="background:' + color + ';border:2px solid #333;border-radius:50%;' +
+                  'width:26px;height:26px;line-height:23px;text-align:center;font-weight:bold;' +
+                  'font-size:15px;color:#333;box-shadow:0 1px 5px rgba(0,0,0,.5)">$</div>',
+            iconSize: [26, 26], iconAnchor: [13, 13]
+          })
+        }).bindPopup(function () { return salePopup(l); }).addTo(saleLayer);
+      } else {
+        L.circleMarker([l.lat, l.lon], {
+          radius: 6, color: '#546e7a', weight: 2, fillColor: '#90a4ae', fillOpacity: 0.8
+        }).bindPopup(function () { return salePopup(l); }).addTo(saleAllLayer);
+      }
+    });
+    if (document.getElementById('saleToggle').checked) saleLayer.addTo(map);
+  });
+  wireToggle('saleToggle', saleLayer);
+  wireToggle('saleAllToggle', saleAllLayer);
 
   // --- Map key ---
   function toggleKey() { document.body.classList.toggle('key-open'); }
