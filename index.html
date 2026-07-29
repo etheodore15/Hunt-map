@@ -45,16 +45,36 @@
     color: #9fb2a8; cursor: pointer; font-size: 15px; padding: 2px 5px;
   }
   .hide-btn:hover { color: #fff; }
-  /* small round button shown when the panel is hidden */
-  #showBtn {
+  /* floating buttons shown when the panel is hidden */
+  #fabStack {
     position: absolute; top: 10px; right: 10px; z-index: 1000; display: none;
+    flex-direction: column; gap: 8px;
+  }
+  #fabStack button {
     width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
-    background: rgba(20, 24, 28, 0.9); color: #8fd19e; font-size: 19px;
+    background: rgba(20, 24, 28, 0.9); color: #8fd19e; font-size: 18px;
     box-shadow: 0 2px 10px rgba(0,0,0,.5);
   }
-  #showBtn:hover { background: rgba(35, 42, 48, 0.95); }
+  #fabStack button:hover { background: rgba(35, 42, 48, 0.95); }
+  #fabStack button.armed { background: #7a5b1e; }
   body.panel-hidden .panel { display: none; }
-  body.panel-hidden #showBtn { display: block; }
+  body.panel-hidden #fabStack { display: flex; }
+  /* map key viewer */
+  #keyPanel {
+    position: absolute; bottom: 30px; left: 10px; z-index: 1000; display: none;
+    background: rgba(20, 24, 28, 0.95); border-radius: 10px; padding: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.6);
+    max-height: calc(100vh - 80px); width: 320px; max-width: calc(100vw - 40px);
+  }
+  #keyPanel .keyscroll { overflow-y: auto; max-height: calc(100vh - 120px); border-radius: 6px; }
+  #keyPanel img { width: 100%; display: block; }
+  #keyPanel .keyclose {
+    position: absolute; top: -9px; right: -9px; width: 26px; height: 26px;
+    border-radius: 50%; border: none; cursor: pointer; font-size: 13px;
+    background: #2e6b45; color: #fff; box-shadow: 0 1px 6px rgba(0,0,0,.5);
+  }
+  body.key-open #keyPanel { display: block; }
+  .chip { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
   body.note-mode #map { cursor: crosshair; }
   /* note popup */
   .note-pop textarea {
@@ -74,7 +94,16 @@
 <body>
 <div id="map"></div>
 
-<button id="showBtn" title="Show controls">☰</button>
+<div id="fabStack">
+  <button id="showBtn" title="Show controls">☰</button>
+  <button id="fabNote" title="Add note">📍</button>
+  <button id="fabKey" title="Map key">🗺</button>
+</div>
+
+<div id="keyPanel">
+  <button class="keyclose" id="keyClose" title="Close key">✕</button>
+  <div class="keyscroll"><img src="legend.webp" alt="Map key for Morisset 9131-1N"></div>
+</div>
 
 <div class="panel" id="panel">
   <button class="hide-btn" id="hideBtn" title="Hide controls">✕</button>
@@ -105,6 +134,26 @@
     <input type="checkbox" id="topoToggle" checked>
     <span>Show topo overlay</span>
   </label>
+
+  <div class="sect">
+    <h2>Live boundaries</h2>
+    <label class="toggle">
+      <input type="checkbox" id="lotsToggle">
+      <span><span class="chip" style="background:#ff9100"></span>Property lots (cadastre)</span>
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="sfToggle">
+      <span><span class="chip" style="background:#00e676"></span>State forest</span>
+    </label>
+    <label class="toggle">
+      <input type="checkbox" id="npwsToggle">
+      <span><span class="chip" style="background:#e040fb"></span>National parks &amp; reserves</span>
+    </label>
+    <div class="hint">Current NSW Spatial Services data — property lot lines appear once you zoom in past ~1:100,000.</div>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="btn" id="keyBtn">🗺 Map key</button>
+    </div>
+  </div>
 
   <div class="sect">
     <h2>Notes <span id="noteCount" style="color:#8fd19e"></span></h2>
@@ -164,6 +213,63 @@
   });
 
   L.control.scale({ imperial: false }).addTo(map);
+
+  // --- Live boundary overlays (NSW Spatial Services ArcGIS export, outline-only) ---
+  // Requests one 256px export image per tile so the dynamic services behave
+  // like an ordinary tile layer, always above topo + satellite.
+  map.createPane('boundaryPane');
+  map.getPane('boundaryPane').style.zIndex = 320;
+
+  var WORLD = 2 * Math.PI * 6378137;
+  var ArcGISExportLayer = L.TileLayer.extend({
+    initialize: function (serverUrl, dynamicLayers, options) {
+      this._exportUrl = serverUrl + '/export?bboxSR=3857&imageSR=3857&size=256,256' +
+        '&transparent=true&format=png32&f=image&dynamicLayers=' +
+        encodeURIComponent(JSON.stringify(dynamicLayers));
+      L.TileLayer.prototype.initialize.call(this, '', options);
+    },
+    getTileUrl: function (coords) {
+      var res = WORLD / Math.pow(2, coords.z);
+      var x0 = -WORLD / 2 + coords.x * res;
+      var y1 = WORLD / 2 - coords.y * res;
+      return this._exportUrl + '&bbox=' + [x0, y1 - res, x0 + res, y1].join(',');
+    }
+  });
+
+  function outlineLayer(mapLayerId, color, width) {
+    return [{
+      id: 100 + mapLayerId,
+      source: { type: 'mapLayer', mapLayerId: mapLayerId },
+      drawingInfo: { renderer: { type: 'simple', symbol: {
+        type: 'esriSFS', style: 'esriSFSNull',
+        outline: { type: 'esriSLS', style: 'esriSLSSolid', color: color, width: width }
+      } } }
+    }];
+  }
+
+  var PORTAL = 'https://portal.spatial.nsw.gov.au/server/rest/services';
+  var boundaryOpts = { pane: 'boundaryPane', maxZoom: 19, attribution: 'Boundaries © NSW Spatial Services' };
+  var lotsLayer = new ArcGISExportLayer(PORTAL + '/NSW_Land_Parcel_Property_Theme/MapServer',
+    outlineLayer(8, [255, 145, 0, 255], 1.2), boundaryOpts);
+  var sfLayer = new ArcGISExportLayer(PORTAL + '/NSW_Administrative_Boundaries_Theme/MapServer',
+    outlineLayer(3, [0, 230, 118, 255], 2.5), boundaryOpts);
+  var npwsLayer = new ArcGISExportLayer(PORTAL + '/NSW_Administrative_Boundaries_Theme/MapServer',
+    outlineLayer(6, [224, 64, 251, 255], 2.5), boundaryOpts);
+
+  function wireToggle(id, layer) {
+    document.getElementById(id).addEventListener('change', function () {
+      if (this.checked) layer.addTo(map); else map.removeLayer(layer);
+    });
+  }
+  wireToggle('lotsToggle', lotsLayer);
+  wireToggle('sfToggle', sfLayer);
+  wireToggle('npwsToggle', npwsLayer);
+
+  // --- Map key ---
+  function toggleKey() { document.body.classList.toggle('key-open'); }
+  document.getElementById('keyBtn').addEventListener('click', toggleKey);
+  document.getElementById('fabKey').addEventListener('click', toggleKey);
+  document.getElementById('keyClose').addEventListener('click', toggleKey);
 
   // --- Layer controls ---
   var topoSlider = document.getElementById('topoOpacity');
@@ -311,8 +417,10 @@
     document.body.classList.toggle('note-mode', on);
     addNoteBtn.classList.toggle('armed', on);
     addNoteBtn.textContent = on ? 'Tap the map…' : '📍 Add note';
+    document.getElementById('fabNote').classList.toggle('armed', on);
   }
   addNoteBtn.addEventListener('click', function () { setAddMode(!addMode); });
+  document.getElementById('fabNote').addEventListener('click', function () { setAddMode(!addMode); });
 
   map.on('click', function (e) {
     if (!addMode) return;

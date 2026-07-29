@@ -22,8 +22,16 @@ Open **`index.html`** — either:
 | **Topo on top / Satellite on top** | Swaps the stacking order of the two layers |
 | **See-through paper** | Multiply blend — the white paper disappears so boundaries, contours and tracks draw directly on the satellite photo |
 | **Show topo overlay** | Quick on/off toggle |
-| **✕ / ☰** | Hides the whole control panel behind a small button for a full-screen map |
+| **✕ / ☰** | Hides the whole control panel behind floating buttons (☰ controls, 📍 add note, 🗺 map key) for a full-screen map |
+| **Live boundaries** | Current NSW Spatial Services layers drawn on top: property lots / cadastre (orange), state forest (green), national parks & reserves (magenta) |
+| **🗺 Map key** | Shows the sheet's full legend (extracted from the GeoPDF) in a scrollable panel |
 | **📍 Add note** | Arm it, then tap the map to drop a pin — pins are draggable, editable and deletable, persist in your browser (localStorage), and **Export** downloads them as GeoJSON for GPS apps |
+
+The live boundary layers are fetched on demand from
+`portal.spatial.nsw.gov.au` (NSW_Land_Parcel_Property_Theme and
+NSW_Administrative_Boundaries_Theme, rendered outline-only), so unlike the 2017
+topo sheet they reflect current data. Property lot lines only render once
+zoomed in past ~1:100,000 (a limit of the NSW service).
 
 ## How it was made
 
