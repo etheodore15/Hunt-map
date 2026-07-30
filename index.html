@@ -234,8 +234,10 @@
     <h2>Notes <span id="noteCount" style="color:#8fd19e"></span></h2>
     <div class="btnrow">
       <button class="btn" id="addNoteBtn">📍 Add note</button>
-      <button class="btn" id="exportBtn" title="Download notes as GeoJSON">Export</button>
+      <button class="btn" id="exportBtn" title="Download notes + trips as GeoJSON">Export</button>
+      <button class="btn" id="importBtn" title="Import a Hunt Map GeoJSON export">Import</button>
     </div>
+    <input type="file" id="importFile" accept=".geojson,.json,application/geo+json,application/json" style="display:none">
     <div class="hint" id="noteHint">Tap "Add note", then tap the map. Drag a pin to move it; tap it to edit. Notes are saved in this browser.</div>
   </div>
 
@@ -1107,29 +1109,125 @@
     markers[n.id].openPopup();
   });
 
+  // Export notes AND trip logs as one GeoJSON file (also the import format,
+  // so markers can move between the web page and the Android app).
   document.getElementById('exportBtn').addEventListener('click', function () {
-    var gj = {
-      type: 'FeatureCollection',
-      features: notes.map(function (n) {
-        return {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [n.lng, n.lat] },
-          properties: { name: (n.text || '').split('\n')[0] || 'Note', description: n.text || '' }
-        };
-      })
-    };
+    var feats = notes.map(function (n) {
+      return {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [n.lng, n.lat] },
+        properties: { kind: 'note', name: (n.text || '').split('\n')[0] || 'Note', description: n.text || '' }
+      };
+    });
+    trips.forEach(function (t) {
+      feats.push({
+        type: 'Feature',
+        geometry: { type: 'LineString', coordinates: t.points.map(function (p) { return [p[1], p[0]]; }) },
+        properties: {
+          kind: 'trip', name: t.label, description: t.notes || '',
+          color: t.color, times: t.points.map(function (p) { return p[2]; })
+        }
+      });
+    });
+    var gj = { type: 'FeatureCollection', features: feats };
     var blob = new Blob([JSON.stringify(gj, null, 2)], { type: 'application/geo+json' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'hunt-map-notes.geojson';
+    a.download = 'hunt-map-export.geojson';
     a.click();
     URL.revokeObjectURL(a.href);
+  });
+
+  // Import a previously exported file: merges notes and trips, skipping
+  // anything already present.
+  document.getElementById('importBtn').addEventListener('click', function () {
+    document.getElementById('importFile').click();
+  });
+  document.getElementById('importFile').addEventListener('change', function () {
+    var file = this.files[0];
+    this.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var added = { notes: 0, trips: 0 }, skipped = 0;
+      var gj;
+      try { gj = JSON.parse(reader.result); }
+      catch (e) { alert('That file is not valid JSON/GeoJSON.'); return; }
+      (gj.features || []).forEach(function (f) {
+        var g = f.geometry || {}, pr = f.properties || {};
+        if (g.type === 'Point') {
+          var lng = g.coordinates[0], lat = g.coordinates[1];
+          var text = pr.description || pr.name || '';
+          var dup = notes.some(function (n) {
+            return Math.abs(n.lat - lat) < 1e-6 && Math.abs(n.lng - lng) < 1e-6 && (n.text || '') === text;
+          });
+          if (dup) { skipped++; return; }
+          var n = { id: 'n' + Date.now() + Math.floor(Math.random() * 100000), lat: lat, lng: lng, text: text };
+          notes.push(n); addMarker(n); added.notes++;
+        } else if (g.type === 'LineString' && g.coordinates.length >= 2) {
+          var label = pr.name || 'Imported trip';
+          var dup2 = trips.some(function (t) {
+            return t.label === label && t.points.length === g.coordinates.length;
+          });
+          if (dup2) { skipped++; return; }
+          var times = pr.times || [];
+          var t0 = Date.now();
+          var pts = g.coordinates.map(function (c, i) {
+            return [c[1], c[0], times[i] || (t0 + i * 1000)];
+          });
+          var t = {
+            id: 't' + Date.now() + Math.floor(Math.random() * 100000),
+            label: label, color: pr.color || TRIP_PALETTE[trips.length % TRIP_PALETTE.length],
+            notes: pr.description || '', visible: true, points: pts
+          };
+          trips.push(t); drawTrip(t); added.trips++;
+        }
+      });
+      saveNotes(); saveTrips(); renderTripList();
+      alert('Imported ' + added.notes + ' note(s) and ' + added.trips + ' trip(s)' +
+        (skipped ? ', skipped ' + skipped + ' duplicate(s).' : '.'));
+    };
+    reader.readAsText(file);
   });
 
   loadNotes();
   notes.forEach(addMarker);
   saveNotes();
   applyBlend();
+
+  // --- In-app update check (native Android builds only) ---
+  // CI publishes every build as a GitHub release tagged v<versionCode>; the
+  // app compares its own build number and prompts when a newer APK exists.
+  if (BgGeo) {
+    var AppInfo = window.Capacitor.registerPlugin('App');
+    Promise.all([
+      AppInfo.getInfo(),
+      fetch('https://api.github.com/repos/etheodore15/Hunt-map/releases/latest').then(function (r) { return r.json(); })
+    ]).then(function (res) {
+      var current = parseInt(res[0].build, 10) || 0;
+      var latest = parseInt((res[1].tag_name || '').replace(/^v/, ''), 10) || 0;
+      var apk = (res[1].assets || []).filter(function (a) { return /\.apk$/.test(a.name); })[0];
+      if (latest > current && apk) {
+        var bar = document.createElement('div');
+        bar.style.cssText = 'position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1200;' +
+          'background:#2e6b45;color:#fff;padding:9px 14px;border-radius:9px;font:13px system-ui;' +
+          'box-shadow:0 2px 12px rgba(0,0,0,.5);display:flex;gap:10px;align-items:center;max-width:calc(100vw - 30px)';
+        var span = document.createElement('span');
+        span.textContent = 'Update available: ' + (res[1].name || 'v' + latest);
+        var dl = document.createElement('a');
+        dl.href = apk.browser_download_url;
+        dl.target = '_blank';
+        dl.textContent = 'Download';
+        dl.style.cssText = 'color:#ffd600;font-weight:bold;text-decoration:none';
+        var x = document.createElement('button');
+        x.textContent = '✕';
+        x.style.cssText = 'background:none;border:none;color:#cfe8d8;cursor:pointer;font-size:14px';
+        x.addEventListener('click', function () { bar.remove(); });
+        bar.appendChild(span); bar.appendChild(dl); bar.appendChild(x);
+        document.body.appendChild(bar);
+      }
+    }).catch(function () {});
+  }
 
   // --- Persist UI settings (layers, filters, sliders, base map, panel) ---
   var SETTINGS_KEY = 'huntmap-settings-v1';

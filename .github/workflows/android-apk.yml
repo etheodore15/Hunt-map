@@ -15,6 +15,9 @@ on:
       - package.json
       - .github/workflows/android-apk.yml
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,6 +34,26 @@ jobs:
           node-version: '22'
           cache: npm
 
+      # Keep ONE debug signing key across builds so the app can update
+      # over the top instead of demanding an uninstall. If this cache is
+      # ever evicted a fresh key is made and the next update needs a
+      # one-time uninstall/reinstall.
+      - name: Restore signing key
+        id: keystore-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: huntmap-debug-keystore-v1
+
+      - name: Create signing key (first run only)
+        if: steps.keystore-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.android
+          keytool -genkeypair -v -keystore ~/.android/debug.keystore \
+            -alias androiddebugkey -storepass android -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10950 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
       - name: Install dependencies
         run: npm ci
 
@@ -41,6 +64,9 @@ jobs:
         run: npx cap sync android
 
       - name: Build debug APK
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: 1.0.${{ github.run_number }}
         run: |
           cd android
           chmod +x gradlew
@@ -52,3 +78,19 @@ jobs:
           name: hunt-map-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+
+      - name: Rename APK for release
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk hunt-map-v1.0.${{ github.run_number }}.apk
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Hunt Map v1.0.${{ github.run_number }}
+          body: |
+            Automated build from ${{ github.sha }}.
+            Install the attached APK. If Android refuses to update over your
+            installed version (signature change), uninstall the old app first —
+            your notes, trips and settings live in app storage and are removed
+            by an uninstall, so export them first via the panel's Export button.
+          files: hunt-map-v1.0.${{ github.run_number }}.apk

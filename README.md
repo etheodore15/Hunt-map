@@ -76,12 +76,24 @@ Android shell, adding what a browser can't do:
   logs live in the WebView's storage and survive app restarts (the web
   version persists them too, via localStorage).
 
-### Get the APK
+### Get the APK / updates
 
-Every push to this branch builds a debug APK in GitHub Actions
-(**Actions → Build Android APK → hunt-map-debug-apk** artifact). Download,
-unzip, copy `app-debug.apk` to your phone and install it (allow
-"install from unknown sources").
+Every push to this branch builds the APK and publishes it as a **GitHub
+Release** (Releases page → latest → attached `hunt-map-v1.0.N.apk`); the
+same file is also an Actions artifact. Install it once from the Releases
+page — after that **the app checks for new releases on launch and shows an
+"Update available — Download" banner** when the repo has moved on. Builds
+are signed with a persistent CI key so updates install over the top
+(if the key cache is ever lost you'll get a one-time "app not installed"
+and need to uninstall/reinstall — export your notes/trips first).
+
+### Moving your data between web and app
+
+**Export** (Notes section) downloads one GeoJSON containing all notes *and*
+trip logs; **Import** reads that file back and merges it, skipping
+duplicates. Use it to carry your web markers into the Android app (or
+between phones): Export on the web page → share the file to your phone →
+Import inside the app.
 
 ### Build locally
 
