@@ -1,0 +1,8 @@
+{
+  "appId": "au.com.huntmap.morisset",
+  "appName": "Hunt Map",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}

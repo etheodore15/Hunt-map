@@ -63,3 +63,35 @@ Watagans National Park and Jilliby State Conservation Area.
 > NSW authorities before relying on it in the field.
 
 Topo map © NSW Spatial Services. Satellite imagery © Esri World Imagery.
+
+## Native Android app
+
+The repo doubles as a Capacitor project that wraps the same app in a native
+Android shell, adding what a browser can't do:
+
+- **Background GPS trip logging** — a foreground service (persistent
+  notification) keeps fixes flowing with the screen off or the app in the
+  background, via `@capacitor-community/background-geolocation`.
+- **Persistent state** — settings, active layers, filters, notes and trip
+  logs live in the WebView's storage and survive app restarts (the web
+  version persists them too, via localStorage).
+
+### Get the APK
+
+Every push to this branch builds a debug APK in GitHub Actions
+(**Actions → Build Android APK → hunt-map-debug-apk** artifact). Download,
+unzip, copy `app-debug.apk` to your phone and install it (allow
+"install from unknown sources").
+
+### Build locally
+
+```bash
+npm install
+npm run sync          # copies web assets into www/ and syncs the android project
+npx cap open android  # opens Android Studio; or: cd android && ./gradlew assembleDebug
+```
+
+On first GPS use the app asks for location permission — choose
+**"While using the app"** and allow **precise** location. The trip logger
+then keeps recording with the screen locked; a notification shows while the
+service is active.

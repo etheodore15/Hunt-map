@@ -1,0 +1,17 @@
+{
+  "name": "hunt-map",
+  "version": "1.0.0",
+  "description": "Morisset 9131-1N topo / satellite overlay with property finder, trip logging and hunting exclusion zones",
+  "private": true,
+  "scripts": {
+    "prep": "./scripts/prepare-www.sh",
+    "sync": "npm run prep && npx cap sync android",
+    "android": "npm run sync && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor-community/background-geolocation": "^1.2.26",
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/cli": "^8.4.2",
+    "@capacitor/core": "^8.4.2"
+  }
+}

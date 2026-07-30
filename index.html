@@ -571,6 +571,11 @@
   fetch('properties.json').then(function (r) { return r.json(); }).then(function (data) {
     cadParcels = data.parcels;
     populateForestNames();
+    // restore a persisted forest-name selection now that the options exist
+    if (savedSettings && savedSettings.forestName) {
+      document.getElementById('forestName').value = savedSettings.forestName;
+      renderSale();
+    }
     renderCad();
     if (document.getElementById('cadToggle').checked) cadLayer.addTo(map);
   });
@@ -593,6 +598,13 @@
   });
 
   // --- Live GPS position ---
+  // In the native Android app (Capacitor), GPS comes from the
+  // BackgroundGeolocation plugin, whose foreground service keeps fixes
+  // flowing with the screen off. In a plain browser we fall back to
+  // navigator.geolocation via Leaflet.
+  var BgGeo = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())
+    ? window.Capacitor.registerPlugin('BackgroundGeolocation') : null;
+  var bgWatcherId = null;
   var gpsOn = false, gpsFollow = true, gpsMarker = null, gpsRing = null, gpsFirstFix = true;
 
   function gpsButtons(on) {
@@ -637,17 +649,43 @@
   function startGps() {
     gpsOn = true; gpsFollow = true; gpsFirstFix = true;
     gpsButtons(true);
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
-    map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 0, timeout: 3600000 });
+    if (BgGeo) {
+      BgGeo.addWatcher({
+        backgroundMessage: 'GPS tracking / trip logging is running',
+        backgroundTitle: 'Hunt Map',
+        requestPermissions: true,
+        stale: false,
+        distanceFilter: 0
+      }, function (location, error) {
+        if (error) {
+          if (error.code === 'NOT_AUTHORIZED') {
+            stopGps();
+            alert('Location permission is required. Enable it for Hunt Map in Android settings.');
+          }
+          return;
+        }
+        onLocationFound({
+          latlng: L.latLng(location.latitude, location.longitude),
+          accuracy: location.accuracy || 0
+        });
+      }).then(function (id) { bgWatcherId = id; });
+    } else {
+      map.on('locationfound', onLocationFound);
+      map.on('locationerror', onLocationError);
+      map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 0, timeout: 3600000 });
+    }
   }
   function stopGps() {
     if (recording) stopTrip();   // no more fixes will arrive — save the log
     gpsOn = false;
     gpsButtons(false);
-    map.stopLocate();
-    map.off('locationfound', onLocationFound);
-    map.off('locationerror', onLocationError);
+    if (BgGeo) {
+      if (bgWatcherId) { BgGeo.removeWatcher({ id: bgWatcherId }); bgWatcherId = null; }
+    } else {
+      map.stopLocate();
+      map.off('locationfound', onLocationFound);
+      map.off('locationerror', onLocationError);
+    }
     if (gpsMarker) { map.removeLayer(gpsMarker); gpsMarker = null; }
     if (gpsRing) { map.removeLayer(gpsRing); gpsRing = null; }
   }
@@ -1092,6 +1130,58 @@
   notes.forEach(addMarker);
   saveNotes();
   applyBlend();
+
+  // --- Persist UI settings (layers, filters, sliders, base map, panel) ---
+  var SETTINGS_KEY = 'huntmap-settings-v1';
+  var SETTING_IDS = ['topoOpacity', 'satOpacity', 'blendMode', 'topoToggle', 'lotsToggle',
+    'sfToggle', 'npwsToggle', 'huntExToggle', 'saleToggle', 'cadToggle',
+    'minAcres', 'forestName', 'reqSF', 'reqNP'];
+  var savedSettings = null;
+  try { savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY)); } catch (e) {}
+
+  function saveSettings() {
+    var s = {};
+    SETTING_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      s[id] = (el.type === 'checkbox') ? el.checked : el.value;
+    });
+    s.baseOsm = document.getElementById('baseOsm').classList.contains('active');
+    s.topoOnTop = topoOnTop;
+    s.panelHidden = document.body.classList.contains('panel-hidden');
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  }
+
+  function applySettings(s) {
+    if (!s) return;
+    SETTING_IDS.forEach(function (id) {
+      if (!(id in s) || id === 'forestName') return;  // forest list loads async
+      var el = document.getElementById(id);
+      if (el.type === 'checkbox') {
+        if (el.checked !== s[id]) {
+          el.checked = s[id];
+          el.dispatchEvent(new Event('change'));
+          el.dispatchEvent(new Event('input'));
+        }
+      } else if (String(el.value) !== String(s[id])) {
+        el.value = s[id];
+        el.dispatchEvent(new Event('input'));
+        el.dispatchEvent(new Event('change'));
+      }
+    });
+    if (s.baseOsm) setBase(true);
+    if (s.topoOnTop === false) setOrder(false);
+    if (s.panelHidden) document.body.classList.add('panel-hidden');
+  }
+
+  applySettings(savedSettings);
+  SETTING_IDS.forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener('change', saveSettings);
+    el.addEventListener('input', saveSettings);
+  });
+  ['baseSat', 'baseOsm', 'orderTopoTop', 'orderSatTop', 'hideBtn', 'showBtn'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function () { setTimeout(saveSettings, 0); });
+  });
 </script>
 </body>
 </html>
