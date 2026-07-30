@@ -244,8 +244,10 @@
     <div class="btnrow">
       <button class="btn" id="tripBtn">▶ Start trip log</button>
     </div>
+    <div class="hint" id="gpsQual" style="margin-top:6px"></div>
     <div id="tripList"></div>
     <div class="hint">Records your GPS track while on. Stopping saves the trip automatically — then tap its name to zoom, ✏ to rename, 📝 for a note, the swatch to recolour, 👁 to hide/show, 🗑 to delete.</div>
+    <div class="hint"><b>For a clean track:</b> keep the screen on with the page in the foreground (the app requests a wake lock, but a locked phone stops GPS updates), and make sure your browser has "Precise location" allowed. Coarse network fixes and impossible jumps are filtered out automatically.</div>
   </div>
 
   <div class="credit">
@@ -601,7 +603,8 @@
 
   function onLocationFound(e) {
     var ll = e.latlng, acc = e.accuracy || 0;
-    if (recording) tripPush(ll);
+    gpsQuality(acc);
+    if (recording) tripPush(ll, acc);
     if (!gpsMarker) {
       gpsRing = L.circle(ll, { radius: acc, color: '#2196f3', weight: 1.5,
         fillColor: '#2196f3', fillOpacity: 0.12, interactive: false }).addTo(map);
@@ -636,7 +639,7 @@
     gpsButtons(true);
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
-    map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 5000, timeout: 3600000 });
+    map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 0, timeout: 3600000 });
   }
   function stopGps() {
     if (recording) stopTrip();   // no more fixes will arrive — save the log
@@ -751,15 +754,70 @@
     });
   }
 
-  function tripPush(ll) {
+  // Fix-quality gate. Coarse network/cell-tower fixes (accuracy in the
+  // hundreds of metres) arrive whenever the phone wakes from sleep or loses
+  // satellite view — recording those is what makes a track "bounce". Only
+  // GNSS-grade fixes are logged, and physically impossible teleports between
+  // consecutive fixes are held back until a second fix confirms them.
+  var TRIP_ACC_MAX = 35;      // metres — reject anything coarser
+  var TRIP_SPEED_MAX = 55;    // m/s (~200 km/h) — faster than this = teleport
+  var pendingPoint = null;
+
+  function tripPush(ll, acc) {
+    if (acc > TRIP_ACC_MAX) return;                // coarse fix — not GPS
     var p = [Math.round(ll.lat * 1e6) / 1e6, Math.round(ll.lng * 1e6) / 1e6, Date.now()];
     var last = recPoints[recPoints.length - 1];
-    if (last && haversineM(last, p) < 5) return;   // thin GPS jitter
+    if (last) {
+      if (haversineM(last, p) < 5) return;         // thin jitter while stopped
+      var dt = (p[2] - last[2]) / 1000;
+      if (dt > 0 && haversineM(last, p) / dt > TRIP_SPEED_MAX) {
+        // Impossible jump. Hold it: if the next good fix lands near this one,
+        // the receiver genuinely relocated (e.g. after a canyon) — accept both.
+        if (pendingPoint && haversineM(pendingPoint, p) < 100) {
+          recPoints.push(pendingPoint, p);
+          if (recLine) { recLine.addLatLng([pendingPoint[0], pendingPoint[1]]); recLine.addLatLng([p[0], p[1]]); }
+          pendingPoint = null;
+          localStorage.setItem(TRIP_ACTIVE_KEY, JSON.stringify({ color: recColor, points: recPoints }));
+        } else {
+          pendingPoint = p;
+        }
+        return;
+      }
+    }
+    pendingPoint = null;
     recPoints.push(p);
     if (recLine) recLine.addLatLng([p[0], p[1]]);
     // checkpoint so a page reload can't lose the log
     localStorage.setItem(TRIP_ACTIVE_KEY, JSON.stringify({ color: recColor, points: recPoints }));
   }
+
+  // Live fix-quality readout + wake lock keep the logger honest and awake.
+  function gpsQuality(acc) {
+    var el = document.getElementById('gpsQual');
+    if (!el) return;
+    if (!gpsOn) { el.textContent = ''; return; }
+    if (acc <= TRIP_ACC_MAX) {
+      el.textContent = 'GPS fix: ±' + Math.round(acc) + ' m';
+      el.style.color = '#8fd19e';
+    } else {
+      el.textContent = 'Poor fix (±' + Math.round(acc) + ' m) — coarse points not logged';
+      el.style.color = '#ffab40';
+    }
+  }
+
+  var wakeLock = null;
+  function acquireWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    navigator.wakeLock.request('screen').then(function (wl) {
+      wakeLock = wl;
+    }).catch(function () {});
+  }
+  function releaseWakeLock() {
+    if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && recording) acquireWakeLock();
+  });
   function tripButtons() {
     document.getElementById('tripBtn').classList.toggle('armed', recording);
     document.getElementById('fabTrip').classList.toggle('armed', recording);
@@ -769,8 +827,10 @@
     recording = true;
     recColor = TRIP_PALETTE[trips.length % TRIP_PALETTE.length];
     recPoints = [];
+    pendingPoint = null;
     recLine = L.polyline([], { color: recColor, weight: 4, opacity: 0.9, dashArray: '8 6' }).addTo(map);
     if (!gpsOn) startGps();
+    acquireWakeLock();
     tripButtons();
   }
   function finishTrip(points, color, labelSuffix) {
@@ -786,9 +846,11 @@
   }
   function stopTrip() {
     recording = false;
+    releaseWakeLock();
     if (recLine) { map.removeLayer(recLine); recLine = null; }
     if (recPoints.length >= 2) finishTrip(recPoints, recColor);
     recPoints = [];
+    pendingPoint = null;
     localStorage.removeItem(TRIP_ACTIVE_KEY);
     tripButtons();
   }
