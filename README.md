@@ -17,20 +17,12 @@ Open **`index.html`** — either:
 
 | Control | What it does |
 |---|---|
-| **Topo map opacity** | Fades the topo sheet in/out over the imagery |
-| **Satellite opacity** | Dims the imagery (map background is dark) |
-| **Topo on top / Satellite on top** | Swaps the stacking order of the two layers |
-| **Satellite / Streets (OSM)** | Switches the basemap between Esri satellite imagery and OpenStreetMap (roads, road names — handy for navigation); the opacity slider applies to whichever is active |
-| **🎯 My location** | Live GPS tracking: blue dot + accuracy ring following your device position (browser location permission required; works in the field on the https:// page). The map follows you until you pan away — tap again to re-centre, tap once more to stop |
-| **🧭 Trip logs** | Start/stop GPS track recording at any time (auto-starts GPS if needed). Stopping saves the trip automatically — no prompt. Each saved trip can be renamed, annotated, recoloured, hidden/shown or deleted from the Trip logs list; tap its name to zoom to it. Tracks persist in the browser and survive page reloads (an interrupted recording is recovered on next load) |
-| **See-through paper** | Multiply blend — the white paper disappears so boundaries, contours and tracks draw directly on the satellite photo |
-| **Show topo overlay** | Quick on/off toggle |
-| **✕ / ☰** | Hides the whole control panel behind floating buttons (☰ controls, 📍 add note, 🗺 map key) for a full-screen map |
-| **Live boundaries** | Current NSW Spatial Services layers drawn on top: property lots / cadastre (orange), state forest (green), national parks & reserves (magenta), and FCNSW **indicative permanent hunting exclusion zones** (red dashed — permanent exclusions only; temporary harvesting closures come with your DPIRD written permission / Hunt NSW app) |
-| **🗺 Map key** | Shows the sheet's full legend (extracted from the GeoPDF) in a scrollable panel |
-| **🚶 Street View** | Arm it, then tap anywhere on the map to open Google Street View at that spot (new tab, keyless deep link). Every property and note popup also carries a Street View link |
-| **📍 Add note** | Arm it, then tap the map to drop a pin — pins are draggable, editable and deletable, persist in your browser (localStorage), and **Export** downloads them as GeoJSON for GPS apps |
-| **Property finder** | Two layers driven by shared filters — **minimum size in acres**, a **bordering forest/reserve name** dropdown (e.g. only parcels touching Olney State Forest), and **must border: state forest and/or NPWS park/reserve/SCA**. Gold = for-sale listings (amber = within 250 m, grey = neither). Teal = *all* cadastral properties: every parcel bordering a state forest or NPWS reserve within ~30 km of the sheet (from 1 acre), plus all parcels ≥~50 acres region-wide, precomputed from the NSW cadastre with ground-corrected areas |
+| **In the field** | The top section: 🎯 My location (live GPS with follow/re-centre/stop states), ⏺ Start trip log (auto-saves on stop; per-trip rename/note/recolour/show-hide/delete; live fix-quality readout), 📍 Add note |
+| **Map layers** | One view switch — **Topo / Blend / Satellite** — plus a Topo strength slider and a Satellite / Streets (OSM) background picker. "Advanced layering" holds the order swap and background brightness. 🗺 Map key shows the app symbols and the full topo legend |
+| **Boundaries** | Live NSW layers: hunting exclusion zones (permanent only, with a safety callout), state forest, national parks & reserves, lot boundaries (with a zoom-in prompt) |
+| **Property finder** (collapsed by default) | For-sale listings and matching parcels driven by: minimum acres, a **must-border** choice (SF / park / either / anything), and a subordinate forest-name picker. Zero-result guidance, result counts, zoom-to-results, Street View |
+| **Notes & data** | Export / Import — one GeoJSON bundling notes + trips, portable between web and the app |
+| **✕ / floating buttons** | Hiding the panel leaves thumb-reach buttons bottom-right (☰ menu, 🗺 key, 📍 note, ⏺/⏹ trip, 🎯 location) with a live GPS-accuracy badge while tracking. Armed modes show a visible banner that cancels on tap or after 30 s |
 
 The live boundary layers are fetched on demand from
 `portal.spatial.nsw.gov.au` (NSW_Land_Parcel_Property_Theme and

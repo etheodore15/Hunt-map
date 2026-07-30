@@ -10,7 +10,7 @@
   #map { height: 100%; background: #1a1a1a; }
   .panel {
     position: absolute; top: 10px; right: 10px; z-index: 1000;
-    background: rgba(20, 24, 28, 0.9); color: #eee;
+    background: rgba(20, 24, 28, 0.95); color: #eee;
     font: 13px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     padding: 12px 14px; border-radius: 10px; width: 250px;
     box-shadow: 0 2px 12px rgba(0,0,0,.5);
@@ -31,7 +31,21 @@
   }
   .seg button.active { background: #2e6b45; color: #fff; }
   .sect { border-top: 1px solid #333c44; margin-top: 10px; padding-top: 9px; }
-  .sect h2 { font-size: 12px; margin: 0 0 7px; color: #b9c4cc; text-transform: uppercase; letter-spacing: .04em; }
+  .sect > summary {
+    font-size: 12px; margin: 0 0 7px; color: #b9c4cc; text-transform: uppercase;
+    letter-spacing: .04em; font-weight: 600; cursor: pointer; list-style: none;
+    display: flex; align-items: center; gap: 6px; user-select: none;
+  }
+  .sect > summary::before { content: '▸'; color: #5f6b74; transition: transform .12s; }
+  .sect[open] > summary::before { transform: rotate(90deg); }
+  .more { margin-top: 7px; }
+  .more > summary { font-size: 11px; color: #7f96a8; cursor: pointer; list-style: none; user-select: none; }
+  .more > summary::before { content: 'ⓘ '; }
+  .warn {
+    margin-top: 7px; padding: 6px 8px; border-left: 3px solid #ff1744;
+    background: rgba(255, 23, 68, 0.10); border-radius: 4px;
+    color: #ffb4a8; font-size: 11.5px;
+  }
   .btnrow { display: flex; gap: 6px; }
   .btn {
     flex: 1; background: #26313a; border: 1px solid #3a444d; color: #dde5ea;
@@ -39,25 +53,39 @@
   }
   .btn:hover { background: #303d48; }
   .btn.armed { background: #7a5b1e; border-color: #a87f2c; color: #fff; }
-  .hint { font-size: 11px; color: #8a949e; margin-top: 8px; }
-  .credit { font-size: 10px; color: #6b757f; margin-top: 8px; border-top: 1px solid #333c44; padding-top: 7px; }
+  .hint { font-size: 12px; color: #9aa6b0; margin-top: 8px; }
+  .credit { font-size: 11px; color: #7d8791; margin-top: 8px; border-top: 1px solid #333c44; padding-top: 7px; }
   .hide-btn {
     position: absolute; top: 6px; right: 8px; background: none; border: none;
     color: #9fb2a8; cursor: pointer; font-size: 15px; padding: 2px 5px;
   }
   .hide-btn:hover { color: #fff; }
-  /* floating buttons shown when the panel is hidden */
+  /* floating buttons shown when the panel is hidden — bottom-right, thumb reach */
   #fabStack {
-    position: absolute; top: 10px; right: 10px; z-index: 1000; display: none;
-    flex-direction: column; gap: 8px;
+    position: absolute; bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+    right: 12px; z-index: 1000; display: none;
+    flex-direction: column; gap: 9px; align-items: center;
   }
   #fabStack button {
-    width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
-    background: rgba(20, 24, 28, 0.9); color: #8fd19e; font-size: 18px;
+    width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+    background: rgba(20, 24, 28, 0.92); color: #8fd19e; font-size: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,.5);
   }
   #fabStack button:hover { background: rgba(35, 42, 48, 0.95); }
   #fabStack button.armed { background: #7a5b1e; }
+  #fabQual {
+    display: none; font: 11px system-ui, sans-serif; padding: 3px 8px;
+    border-radius: 10px; background: rgba(20, 24, 28, 0.92); color: #8fd19e;
+    box-shadow: 0 1px 6px rgba(0,0,0,.5); white-space: nowrap;
+  }
+  /* armed-mode pill: the one visible signal that a map tap will do something */
+  #modePill {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 1150; display: none; align-items: center; gap: 8px;
+    background: #7a5b1e; color: #fff; padding: 9px 14px; border-radius: 20px;
+    font: 13px system-ui, sans-serif; box-shadow: 0 2px 12px rgba(0,0,0,.55);
+    cursor: pointer; max-width: calc(100vw - 30px);
+  }
   body.panel-hidden .panel { display: none; }
   body.panel-hidden #fabStack { display: flex; }
   /* map key viewer */
@@ -106,6 +134,23 @@
   }
   .note-pop .btnrow .save { background: #2e6b45; border-color: #2e6b45; color: #fff; }
   .note-pop .btnrow .del { color: #a22; }
+  /* app-symbol legend inside the map key */
+  .applegend { color: #dde5ea; font: 12px system-ui, sans-serif; padding: 4px 4px 8px; }
+  .applegend .row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .applegend .sym { width: 26px; text-align: center; flex: none; }
+  /* touch sizing for phones/tablets (this ships as an APK) */
+  @media (pointer: coarse) {
+    .panel { font-size: 14px; width: 268px; }
+    .btn { min-height: 44px; font-size: 14px; }
+    .toggle { min-height: 34px; }
+    .hide-btn { width: 38px; height: 34px; font-size: 18px; }
+    .trip-row button { width: 36px; height: 36px; font-size: 18px; padding: 0; }
+    .trip-row input[type=color] { width: 32px; height: 28px; }
+    .trip-row input[type=checkbox] { width: 20px; height: 20px; }
+    .seg button { padding: 10px 4px; font-size: 13px; }
+    #minAcres { min-height: 40px; }
+    select#forestName { min-height: 40px; }
+  }
 </style>
 </head>
 <body>
@@ -113,144 +158,171 @@
 
 <div id="fabStack">
   <button id="showBtn" title="Show controls">☰</button>
-  <button id="fabNote" title="Add note">📍</button>
   <button id="fabKey" title="Map key">🗺</button>
-  <button id="fabSv" title="Street View: tap the map">🚶</button>
+  <button id="fabNote" title="Add note">📍</button>
+  <button id="fabTrip" title="Trip log: start / stop">⏺</button>
   <button id="fabGps" title="My location">🎯</button>
-  <button id="fabTrip" title="Trip log on/off">🧭</button>
+  <div id="fabQual"></div>
 </div>
+
+<div id="modePill"></div>
 
 <div id="keyPanel">
   <button class="keyclose" id="keyClose" title="Close key">✕</button>
-  <div class="keyscroll"><img src="legend.webp" alt="Map key for Morisset 9131-1N"></div>
+  <div class="keyscroll">
+    <div class="applegend">
+      <b style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#b9c4cc">App symbols</b>
+      <div class="row"><span class="sym"><span style="display:inline-block;background:#ffd600;border:2px solid #333;border-radius:50%;width:18px;height:18px;line-height:15px;font-weight:bold;font-size:11px;color:#333">$</span></span> For sale — borders forest / reserve</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;background:#ffab40;border:2px solid #333;border-radius:50%;width:18px;height:18px;line-height:15px;font-weight:bold;font-size:11px;color:#333">$</span></span> For sale — within 250&nbsp;m, not adjoining</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;background:#90a4ae;border:2px solid #546e7a;border-radius:50%;width:11px;height:11px"></span></span> For sale — not near forest</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;border:2px solid #26c6da;background:rgba(38,198,218,.15);width:20px;height:13px"></span></span> Parcel borders forest / reserve</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;border:2px solid #b0bec5;background:rgba(176,190,197,.1);width:20px;height:13px"></span></span> Parcel ≥50&nbsp;ac, not bordering</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;border:2px dashed #ff1744;background:rgba(255,23,68,.22);width:20px;height:13px"></span></span> Hunting exclusion zone (permanent)</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;background:#2196f3;border:3px solid #fff;border-radius:50%;width:12px;height:12px"></span></span> Your GPS position</div>
+      <div class="row"><span class="sym"><span style="display:inline-block;background:#ff6d00;border-radius:2px;width:20px;height:4px"></span></span> Trip log track</div>
+      <b style="font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#b9c4cc">Topo sheet legend</b>
+    </div>
+    <img src="legend.webp" alt="Map key for Morisset 9131-1N">
+  </div>
 </div>
 
 <div class="panel" id="panel">
   <button class="hide-btn" id="hideBtn" title="Hide controls">✕</button>
   <h1>Morisset 9131-1N</h1>
-  <div class="sub">1:25,000 topo (2017) over satellite — state forest boundaries in green</div>
+  <div class="sub">1:25,000 topo (2017) over satellite imagery</div>
 
-  <div class="ctl">
-    <label>Topo map opacity <span class="val" id="topoVal">70%</span></label>
-    <input type="range" id="topoOpacity" min="0" max="100" value="70">
-  </div>
+  <details class="sect" id="sect-field" open>
+    <summary>In the field <span id="tripCount" style="color:#8fd19e;text-transform:none"></span></summary>
+    <div class="btnrow">
+      <button class="btn" id="gpsBtn" title="Show my live GPS position">🎯 My location</button>
+      <button class="btn" id="tripBtn">⏺ Start trip log</button>
+    </div>
+    <div class="hint" id="gpsQual" style="margin-top:6px"></div>
+    <div class="btnrow" style="margin-top:6px">
+      <button class="btn" id="addNoteBtn">📍 Add note</button>
+    </div>
+    <div id="tripList"></div>
+    <div class="hint">Stopping a log saves the trip automatically. Tap a trip's name to zoom to it; ✏ rename, 📝 note, colour swatch to recolour, tick-box to show/hide, 🗑 delete.</div>
+    <details class="more">
+      <summary>Clean-track tips</summary>
+      <div class="hint">Keep the screen on with the app in the foreground (a wake lock is requested, but a locked phone stops browser GPS — the Android app keeps logging in the background). Allow "Precise location". Coarse network fixes and impossible jumps are filtered out automatically.</div>
+    </details>
+  </details>
 
-  <div class="seg" id="baseSeg" title="Base layer">
-    <button id="baseSat" class="active">Satellite</button>
-    <button id="baseOsm">Streets (OSM)</button>
-  </div>
+  <details class="sect" id="sect-layers" open>
+    <summary>Map layers</summary>
+    <div class="seg" id="viewSeg" title="View mode">
+      <button id="viewTopo">Topo</button>
+      <button id="viewBlend" class="active">Blend</button>
+      <button id="viewSat">Satellite</button>
+    </div>
+    <div class="ctl" id="topoStrengthCtl">
+      <label>Topo strength <span class="val" id="topoVal">100%</span></label>
+      <input type="range" id="topoOpacity" min="0" max="100" value="100">
+    </div>
+    <div class="seg" id="baseSeg" title="Background imagery">
+      <button id="baseSat" class="active">Satellite</button>
+      <button id="baseOsm">Streets (OSM)</button>
+    </div>
+    <details class="more">
+      <summary>Advanced layering</summary>
+      <label class="toggle" style="margin-top:6px">
+        <input type="checkbox" id="satOnTop">
+        <span>Satellite on top of topo</span>
+      </label>
+      <div class="ctl">
+        <label>Background brightness <span class="val" id="satVal">100%</span></label>
+        <input type="range" id="satOpacity" min="0" max="100" value="100">
+      </div>
+      <div class="hint">With "Satellite on top", lower the brightness or the topo underneath stays hidden.</div>
+    </details>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="btn" id="keyBtn">🗺 Map key</button>
+    </div>
+  </details>
 
-  <div class="ctl">
-    <label>Basemap opacity <span class="val" id="satVal">100%</span></label>
-    <input type="range" id="satOpacity" min="0" max="100" value="100">
-  </div>
-
-  <div class="seg" id="orderSeg" title="Layer order">
-    <button id="orderTopoTop" class="active">Topo on top</button>
-    <button id="orderSatTop">Satellite on top</button>
-  </div>
-
-  <label class="toggle">
-    <input type="checkbox" id="blendMode" checked>
-    <span>See-through paper (multiply blend)</span>
-  </label>
-
-  <label class="toggle">
-    <input type="checkbox" id="topoToggle" checked>
-    <span>Show topo overlay</span>
-  </label>
-
-  <div class="sect">
-    <h2>Live boundaries</h2>
+  <details class="sect" id="sect-bounds" open>
+    <summary>Boundaries</summary>
     <label class="toggle">
-      <input type="checkbox" id="lotsToggle">
-      <span><span class="chip" style="background:#ff9100"></span>Property lots (cadastre)</span>
+      <input type="checkbox" id="huntExToggle" checked>
+      <span><span class="chip" style="background:rgba(255,23,68,.25);border:1.5px dashed #ff1744"></span>Hunting exclusion zones (permanent only)</span>
     </label>
-    <label class="toggle">
+    <div class="warn">⚠ Permanent exclusions only. Temporary closures are NOT shown — always follow your DPIRD written-permission map.</div>
+    <label class="toggle" style="margin-top:8px">
       <input type="checkbox" id="sfToggle">
-      <span><span class="chip" style="background:#00e676"></span>State forest</span>
+      <span><span class="chip" style="background:#00e676"></span>State forest (live)</span>
     </label>
     <label class="toggle">
       <input type="checkbox" id="npwsToggle">
       <span><span class="chip" style="background:#e040fb"></span>National parks &amp; reserves</span>
     </label>
     <label class="toggle">
-      <input type="checkbox" id="huntExToggle" checked>
-      <span><span class="chip" style="background:#ff1744"></span>Hunting exclusion zones (indicative)</span>
+      <input type="checkbox" id="lotsToggle">
+      <span><span class="chip" style="background:#ff9100"></span>Lot boundaries (live lines) <span id="lotsZoomNote" style="color:#ffab40;font-size:11px"></span></span>
     </label>
-    <div class="hint">Exclusion zones are FCNSW's <i>indicative permanent</i> areas only — the authoritative map, including temporary harvesting closures, comes with your DPIRD written permission / Hunt NSW app.</div>
-    <div class="hint">Current NSW Spatial Services data — property lot lines appear once you zoom in past ~1:100,000.</div>
-    <div class="btnrow" style="margin-top:8px">
-      <button class="btn" id="keyBtn">🗺 Map key</button>
-      <button class="btn" id="svBtn" title="Tap the map to open Google Street View there">🚶 Street View</button>
-    </div>
-    <div class="btnrow" style="margin-top:6px">
-      <button class="btn" id="gpsBtn" title="Show my live GPS position">🎯 My location</button>
-    </div>
-  </div>
+    <div class="hint">Live NSW Spatial Services data. Lot lines appear when you zoom in close.</div>
+  </details>
 
-  <div class="sect">
-    <h2>Property finder</h2>
+  <details class="sect" id="sect-finder">
+    <summary>Property finder</summary>
     <label class="toggle">
       <input type="checkbox" id="saleToggle" checked>
       <span><span class="chip" style="background:#ffd600"></span>For-sale listings <span id="saleCount" style="color:#8fd19e"></span></span>
     </label>
     <label class="toggle">
       <input type="checkbox" id="cadToggle" checked>
-      <span><span class="chip" style="background:#26c6da"></span>All properties (cadastre) <span id="cadCount" style="color:#8fd19e"></span></span>
+      <span><span class="chip" style="background:#26c6da"></span>Matching parcels <span id="cadCount" style="color:#8fd19e"></span></span>
     </label>
-    <div class="ctl" style="margin-top:6px">
-      <label for="minAcres">Minimum size <span class="val" id="minAcresVal"></span></label>
+    <div class="hint" style="margin-top:2px">Filtered by the settings below — tap a parcel for details. Symbols are in the 🗺 Map key.</div>
+    <div class="ctl" style="margin-top:8px">
+      <label for="minAcres">Minimum size</label>
       <div style="display:flex;align-items:center;gap:7px">
         <input type="number" id="minAcres" min="0" step="1" value="50" inputmode="numeric"
                style="width:80px;background:#26313a;border:1px solid #3a444d;color:#eee;border-radius:6px;padding:5px 7px;font:13px system-ui">
         <span style="color:#b9c4cc">acres and up</span>
       </div>
+      <div class="hint" id="floorNote" style="display:none;color:#ffab40">Below 50 ac, only parcels bordering forest / reserve are in the data.</div>
     </div>
-    <div class="ctl">
-      <label for="forestName">Bordering forest / reserve</label>
+    <div style="margin:8px 0 4px;color:#b9c4cc;font-size:12px">Must border directly onto:</div>
+    <label class="toggle">
+      <input type="radio" name="borderReq" id="reqEither" value="either" checked>
+      <span>State forest or park / reserve</span>
+    </label>
+    <label class="toggle">
+      <input type="radio" name="borderReq" id="reqSF" value="sf">
+      <span>State forest only</span>
+    </label>
+    <label class="toggle">
+      <input type="radio" name="borderReq" id="reqNP" value="np">
+      <span>Park / reserve / SCA only</span>
+    </label>
+    <label class="toggle">
+      <input type="radio" name="borderReq" id="reqAny" value="any">
+      <span>Anything — no border needed</span>
+    </label>
+    <div class="ctl" style="margin-top:6px">
+      <label for="forestName">Which forest / reserve</label>
       <select id="forestName"
               style="width:100%;background:#26313a;border:1px solid #3a444d;color:#eee;border-radius:6px;padding:5px 7px;font:13px system-ui">
         <option value="">Any</option>
       </select>
     </div>
-    <div style="margin:8px 0 4px;color:#b9c4cc;font-size:12px">Must border directly onto:</div>
-    <label class="toggle">
-      <input type="checkbox" id="reqSF" checked>
-      <span><span class="chip" style="background:#00e676"></span>State forest</span>
-    </label>
-    <label class="toggle">
-      <input type="checkbox" id="reqNP" checked>
-      <span><span class="chip" style="background:#e040fb"></span>National park / reserve / SCA</span>
-    </label>
-    <div class="hint">Ticked = property must share a boundary with that tenure (either, if both ticked). Untick both to drop the border requirement. Non-bordering cadastre parcels are included from ~50 acres up; bordering ones from 1 acre.</div>
     <div class="hint" id="saleHint"></div>
     <div class="btnrow" style="margin-top:8px">
       <button class="btn" id="saleZoomBtn">🔍 Zoom to results</button>
+      <button class="btn" id="svBtn" title="Tap the map to open Google Street View there">🚶 Street View</button>
     </div>
-  </div>
+  </details>
 
-  <div class="sect">
-    <h2>Notes <span id="noteCount" style="color:#8fd19e"></span></h2>
+  <details class="sect" id="sect-notes">
+    <summary>Notes &amp; data <span id="noteCount" style="color:#8fd19e;text-transform:none"></span></summary>
     <div class="btnrow">
-      <button class="btn" id="addNoteBtn">📍 Add note</button>
       <button class="btn" id="exportBtn" title="Download notes + trips as GeoJSON">Export</button>
       <button class="btn" id="importBtn" title="Import a Hunt Map GeoJSON export">Import</button>
     </div>
     <input type="file" id="importFile" accept=".geojson,.json,application/geo+json,application/json" style="display:none">
-    <div class="hint" id="noteHint">Tap "Add note", then tap the map. Drag a pin to move it; tap it to edit. Notes are saved in this browser.</div>
-  </div>
-
-  <div class="sect">
-    <h2>Trip logs <span id="tripCount" style="color:#8fd19e"></span></h2>
-    <div class="btnrow">
-      <button class="btn" id="tripBtn">▶ Start trip log</button>
-    </div>
-    <div class="hint" id="gpsQual" style="margin-top:6px"></div>
-    <div id="tripList"></div>
-    <div class="hint">Records your GPS track while on. Stopping saves the trip automatically — then tap its name to zoom, ✏ to rename, 📝 for a note, the swatch to recolour, 👁 to hide/show, 🗑 to delete.</div>
-    <div class="hint"><b>For a clean track:</b> keep the screen on with the page in the foreground (the app requests a wake lock, but a locked phone stops GPS updates), and make sure your browser has "Precise location" allowed. Coarse network fixes and impossible jumps are filtered out automatically.</div>
-  </div>
+    <div class="hint" id="noteHint">"Add note" is under In the field. Drag a pin to move it; tap it to edit. Export bundles notes + trips into one file the app can import.</div>
+  </details>
 
   <div class="credit">
     Topo: © NSW Spatial Services (9131-1N, 2017). Imagery: Esri World Imagery.
@@ -306,7 +378,7 @@
   var IMG_FALLBACK = 'https://raw.githubusercontent.com/etheodore15/Hunt-map/claude/forest-boundaries-satellite-overlay-f0loyz/morisset_topo.webp';
 
   var topo = L.imageOverlay(IMG_RELATIVE, BOUNDS, {
-    opacity: 0.7,
+    opacity: 1,
     interactive: false,
     pane: 'topoPane'
   }).addTo(map);
@@ -369,6 +441,16 @@
   wireToggle('lotsToggle', lotsLayer);
   wireToggle('sfToggle', sfLayer);
   wireToggle('npwsToggle', npwsLayer);
+
+  // The NSW service only renders lot lines past ~1:100k — say so instead of
+  // looking broken when the layer is on at low zoom.
+  function updateLotsZoomNote() {
+    var el = document.getElementById('lotsZoomNote');
+    el.textContent = (document.getElementById('lotsToggle').checked && map.getZoom() < 13)
+      ? '— zoom in to see' : '';
+  }
+  map.on('zoomend', updateLotsZoomNote);
+  document.getElementById('lotsToggle').addEventListener('change', updateLotsZoomNote);
 
   // --- FCNSW indicative permanent hunting exclusion zones (live) ---
   var huntExLayer = L.layerGroup();
@@ -436,10 +518,22 @@
 
   function bordersSF(l) { return l.sf_d != null && l.sf_d <= ADJOIN_M; }
   function bordersNP(l) { return l.np_d != null && l.np_d <= ADJOIN_M; }
-  function forestNameFilter() { return document.getElementById('forestName').value; }
+  // One border-requirement radio group; the name select is subordinate to it
+  // (disabled on "Anything", options filtered to the chosen tenure type).
+  function borderReq() {
+    var r = document.querySelector('input[name=borderReq]:checked');
+    return r ? r.value : 'either';
+  }
+  function passBorder(bSF, bNP) {
+    var m = borderReq();
+    if (m === 'any') return true;
+    if (m === 'sf') return bSF;
+    if (m === 'np') return bNP;
+    return bSF || bNP;
+  }
   function matchesForestName(sfName, npName, bSF, bNP) {
-    var want = forestNameFilter();
-    if (!want) return true;
+    var want = document.getElementById('forestName').value;
+    if (!want || borderReq() === 'any') return true;
     return (bSF && sfName === want) || (bNP && npName === want);
   }
   function isNear(l) {
@@ -449,12 +543,10 @@
   function renderSale() {
     saleLayer.clearLayers();
     var minAc = parseFloat(document.getElementById('minAcres').value) || 0;
-    var reqSF = document.getElementById('reqSF').checked;
-    var reqNP = document.getElementById('reqNP').checked;
     var shown = 0;
     saleListings.forEach(function (l) {
       if (l.acres < minAc) return;
-      if ((reqSF || reqNP) && !((reqSF && bordersSF(l)) || (reqNP && bordersNP(l)))) return;
+      if (!passBorder(bordersSF(l), bordersNP(l))) return;
       if (!matchesForestName(l.sf, l.np, bordersSF(l), bordersNP(l))) return;
       shown++;
       var borders = bordersSF(l) || bordersNP(l);
@@ -482,14 +574,18 @@
       }
     });
     document.getElementById('saleCount').textContent = '(' + shown + ' of ' + saleListings.length + ')';
+    saleShown = shown;
+    updateResultState();
   }
 
   fetch('listings.json').then(function (r) { return r.json(); }).then(function (data) {
     saleListings = data.listings;
-    document.getElementById('saleHint').textContent =
-      'Listings snapshot ' + data.asOf + ', verified against the NSW cadastre, gazetted state forests and NPWS reserves.';
+    saleBaseHint = 'Listings snapshot ' + data.asOf + ', verified against the NSW cadastre, gazetted state forests and NPWS reserves.';
+    document.getElementById('saleHint').textContent = saleBaseHint;
     renderSale();
     if (document.getElementById('saleToggle').checked) saleLayer.addTo(map);
+  }).catch(function () {
+    document.getElementById('saleHint').textContent = 'For-sale data unavailable (offline?).';
   });
   wireToggle('saleToggle', saleLayer);
 
@@ -521,12 +617,10 @@
     cadLayer.clearLayers();
     if (!cadParcels.length) return;
     var minAc = parseFloat(document.getElementById('minAcres').value) || 0;
-    var reqSF = document.getElementById('reqSF').checked;
-    var reqNP = document.getElementById('reqNP').checked;
     var shown = 0;
     cadParcels.forEach(function (p) {
       if (p.a < minAc) return;
-      if ((reqSF || reqNP) && !((reqSF && p.sf) || (reqNP && p.np))) return;
+      if (!passBorder(!!p.sf, !!p.np)) return;
       if (!matchesForestName(p.sf, p.np, !!p.sf, !!p.np)) return;
       shown++;
       var borders = p.sf || p.np;
@@ -540,20 +634,52 @@
         fillOpacity: borders ? 0.12 : 0.06
       }).bindPopup(function () { return cadPopup(p); }).addTo(cadLayer);
     });
-    document.getElementById('cadCount').textContent = '(' + shown + ')';
+    document.getElementById('cadCount').textContent = '(' + shown + ' of ' + cadParcels.length + ')';
+    cadShown = shown;
+    updateResultState();
   }
 
+  // Zero-result guidance + data-floor note + zoom-button enablement.
+  var saleShown = 0, cadShown = 0, saleBaseHint = '';
+  function updateResultState() {
+    var minAc = parseFloat(document.getElementById('minAcres').value) || 0;
+    document.getElementById('floorNote').style.display =
+      (minAc < 49 && borderReq() === 'any') ? 'block' : 'none';
+    var hint = document.getElementById('saleHint');
+    if (saleShown + cadShown === 0 && (saleListings.length || cadParcels.length)) {
+      hint.textContent = 'No matches — lower the minimum size, pick "Anything", or clear the forest name.';
+      hint.style.color = '#ffab40';
+    } else {
+      hint.textContent = saleBaseHint;
+      hint.style.color = '';
+    }
+    document.getElementById('saleZoomBtn').disabled = (saleShown + cadShown === 0);
+    document.getElementById('saleZoomBtn').style.opacity = (saleShown + cadShown === 0) ? 0.5 : 1;
+  }
+
+  var forestNames = { sf: {}, np: {} };
   function populateForestNames() {
-    var sfNames = {}, npNames = {};
     cadParcels.forEach(function (p) {
-      if (p.sf) sfNames[p.sf] = 1;
-      if (p.np) npNames[p.np] = 1;
+      if (p.sf) forestNames.sf[p.sf] = 1;
+      if (p.np) forestNames.np[p.np] = 1;
     });
     saleListings.forEach(function (l) {
-      if (bordersSF(l)) sfNames[l.sf] = 1;
-      if (bordersNP(l)) npNames[l.np] = 1;
+      if (bordersSF(l)) forestNames.sf[l.sf] = 1;
+      if (bordersNP(l)) forestNames.np[l.np] = 1;
     });
+    updateForestSelect();
+  }
+
+  // Rebuild the name select to match the border-requirement mode: disabled on
+  // "Anything", SF names only in "sf" mode, reserves only in "np" mode.
+  function updateForestSelect() {
     var sel = document.getElementById('forestName');
+    var mode = borderReq();
+    var prev = sel.value;
+    sel.innerHTML = '';
+    var any = document.createElement('option');
+    any.value = ''; any.textContent = 'Any';
+    sel.appendChild(any);
     function addGroup(label, names) {
       var keys = Object.keys(names).sort();
       if (!keys.length) return;
@@ -566,8 +692,13 @@
       });
       sel.appendChild(og);
     }
-    addGroup('State forests', sfNames);
-    addGroup('Parks & reserves', npNames);
+    if (mode === 'sf' || mode === 'either') addGroup('State forests', forestNames.sf);
+    if (mode === 'np' || mode === 'either') addGroup('Parks & reserves', forestNames.np);
+    sel.disabled = (mode === 'any');
+    sel.style.opacity = sel.disabled ? 0.45 : 1;
+    // keep the previous choice when it's still available, else reset to Any
+    sel.value = prev;
+    if (sel.value !== prev) sel.value = '';
   }
 
   fetch('properties.json').then(function (r) { return r.json(); }).then(function (data) {
@@ -580,12 +711,24 @@
     }
     renderCad();
     if (document.getElementById('cadToggle').checked) cadLayer.addTo(map);
+  }).catch(function () {
+    document.getElementById('saleHint').textContent = 'Parcel data unavailable (offline?).';
   });
   wireToggle('cadToggle', cadLayer);
 
-  ['minAcres', 'reqSF', 'reqNP', 'forestName'].forEach(function (id) {
-    document.getElementById(id).addEventListener('input', function () {
-      renderSale(); renderCad();
+  // Typing in the acres box re-renders thousands of canvas polygons — debounce
+  // so "150" doesn't render at 1, then 15, then 150.
+  var filterTimer = null;
+  function refilter() { renderSale(); renderCad(); }
+  document.getElementById('minAcres').addEventListener('input', function () {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(refilter, 300);
+  });
+  document.getElementById('forestName').addEventListener('input', refilter);
+  ['reqEither', 'reqSF', 'reqNP', 'reqAny'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', function () {
+      updateForestSelect();
+      refilter();
     });
   });
   document.getElementById('saleZoomBtn').addEventListener('click', function () {
@@ -609,10 +752,14 @@
   var bgWatcherId = null;
   var gpsOn = false, gpsFollow = true, gpsMarker = null, gpsRing = null, gpsFirstFix = true;
 
-  function gpsButtons(on) {
-    document.getElementById('gpsBtn').classList.toggle('armed', on);
-    document.getElementById('fabGps').classList.toggle('armed', on);
-    document.getElementById('gpsBtn').textContent = on ? '🎯 Tracking… (tap to stop)' : '🎯 My location';
+  // The GPS button has three honest states: off, tracking+following, and
+  // tracking-but-panned-away (where a tap re-centres rather than stops).
+  function gpsButtons() {
+    var b = document.getElementById('gpsBtn');
+    b.classList.toggle('armed', gpsOn);
+    document.getElementById('fabGps').classList.toggle('armed', gpsOn);
+    b.textContent = !gpsOn ? '🎯 My location'
+      : (gpsFollow ? '🎯 Tracking… (tap to stop)' : '🎯 Re-centre on me');
   }
 
   function onLocationFound(e) {
@@ -650,7 +797,7 @@
 
   function startGps() {
     gpsOn = true; gpsFollow = true; gpsFirstFix = true;
-    gpsButtons(true);
+    gpsButtons();
     if (BgGeo) {
       BgGeo.addWatcher({
         backgroundMessage: 'GPS tracking / trip logging is running',
@@ -680,7 +827,8 @@
   function stopGps() {
     if (recording) stopTrip();   // no more fixes will arrive — save the log
     gpsOn = false;
-    gpsButtons(false);
+    gpsButtons();
+    gpsQuality(0);
     if (BgGeo) {
       if (bgWatcherId) { BgGeo.removeWatcher({ id: bgWatcherId }); bgWatcherId = null; }
     } else {
@@ -696,10 +844,15 @@
     else if (!gpsFollow && gpsMarker) {
       // already tracking but not following: re-centre instead of stopping
       gpsFollow = true;
+      gpsButtons();
       map.panTo(gpsMarker.getLatLng());
-    } else { stopGps(); }
+    } else {
+      // never let a "stop GPS" tap silently end an active trip recording
+      if (recording && !confirm('A trip is recording. Stop GPS and save the trip?')) return;
+      stopGps();
+    }
   }
-  map.on('dragstart', function () { gpsFollow = false; });
+  map.on('dragstart', function () { if (gpsFollow) { gpsFollow = false; gpsButtons(); } });
   document.getElementById('gpsBtn').addEventListener('click', toggleGps);
   document.getElementById('fabGps').addEventListener('click', toggleGps);
 
@@ -832,16 +985,25 @@
   }
 
   // Live fix-quality readout + wake lock keep the logger honest and awake.
+  // Mirrored on a floating badge so it stays visible with the panel hidden.
   function gpsQuality(acc) {
     var el = document.getElementById('gpsQual');
-    if (!el) return;
-    if (!gpsOn) { el.textContent = ''; return; }
-    if (acc <= TRIP_ACC_MAX) {
-      el.textContent = 'GPS fix: ±' + Math.round(acc) + ' m';
-      el.style.color = '#8fd19e';
-    } else {
-      el.textContent = 'Poor fix (±' + Math.round(acc) + ' m) — coarse points not logged';
-      el.style.color = '#ffab40';
+    var fab = document.getElementById('fabQual');
+    if (!gpsOn) {
+      if (el) el.textContent = '';
+      if (fab) fab.style.display = 'none';
+      return;
+    }
+    var good = acc <= TRIP_ACC_MAX;
+    if (el) {
+      el.textContent = good ? 'GPS fix: ±' + Math.round(acc) + ' m'
+        : 'Poor fix (±' + Math.round(acc) + ' m) — coarse points not logged';
+      el.style.color = good ? '#8fd19e' : '#ffab40';
+    }
+    if (fab) {
+      fab.style.display = 'block';
+      fab.textContent = '±' + Math.round(acc) + ' m';
+      fab.style.color = good ? '#8fd19e' : '#ffab40';
     }
   }
 
@@ -860,8 +1022,11 @@
   });
   function tripButtons() {
     document.getElementById('tripBtn').classList.toggle('armed', recording);
-    document.getElementById('fabTrip').classList.toggle('armed', recording);
-    document.getElementById('tripBtn').textContent = recording ? '⏹ Stop & save trip' : '▶ Start trip log';
+    var fab = document.getElementById('fabTrip');
+    fab.classList.toggle('armed', recording);
+    fab.textContent = recording ? '⏹' : '⏺';   // glyph change beats a tint in sunlight
+    fab.title = recording ? 'Stop & save trip log' : 'Start trip log';
+    document.getElementById('tripBtn').textContent = recording ? '⏹ Stop & save trip' : '⏺ Start trip log';
   }
   function startTrip() {
     recording = true;
@@ -924,11 +1089,36 @@
     if (on && typeof setAddMode === 'function') setAddMode(false);
     document.body.classList.toggle('note-mode', on || (typeof addMode !== 'undefined' && addMode));
     document.getElementById('svBtn').classList.toggle('armed', on);
-    document.getElementById('fabSv').classList.toggle('armed', on);
     document.getElementById('svBtn').textContent = on ? 'Tap the map…' : '🚶 Street View';
+    updateModePill();
   }
   document.getElementById('svBtn').addEventListener('click', function () { setSvMode(!svMode); });
-  document.getElementById('fabSv').addEventListener('click', function () { setSvMode(!svMode); });
+
+  // A visible, tappable banner is the one reliable signal that the next map
+  // tap will do something special — amber button tints are easy to miss and
+  // invisible when the panel is hidden. Auto-disarms after 30 s of no tap.
+  var modeTimer = null;
+  function updateModePill() {
+    var pill = document.getElementById('modePill');
+    clearTimeout(modeTimer);
+    if (typeof addMode !== 'undefined' && addMode) {
+      pill.textContent = '📍 Tap the map to place a note — tap here to cancel';
+    } else if (svMode) {
+      pill.textContent = '🚶 Tap the map to open Street View — tap here to cancel';
+    } else {
+      pill.style.display = 'none';
+      return;
+    }
+    pill.style.display = 'flex';
+    modeTimer = setTimeout(function () {
+      if (typeof setAddMode === 'function') setAddMode(false);
+      setSvMode(false);
+    }, 30000);
+  }
+  document.getElementById('modePill').addEventListener('click', function () {
+    if (typeof setAddMode === 'function') setAddMode(false);
+    setSvMode(false);
+  });
   map.on('click', function (e) {
     if (!svMode) return;
     setSvMode(false);
@@ -942,33 +1132,50 @@
   document.getElementById('keyClose').addEventListener('click', toggleKey);
 
   // --- Layer controls ---
+  // One view-mode switch drives what used to be four separate controls:
+  //   Topo      — topo sheet on top, no blend
+  //   Blend     — topo on top, multiply blend (paper vanishes over the photo)
+  //   Satellite — topo hidden
+  // "Advanced layering" holds the rarely-needed order swap and background dim.
   var topoSlider = document.getElementById('topoOpacity');
   var satSlider = document.getElementById('satOpacity');
   var topoVal = document.getElementById('topoVal');
   var satVal = document.getElementById('satVal');
-  var blendBox = document.getElementById('blendMode');
-  var topoBox = document.getElementById('topoToggle');
   var topoOnTop = true;
+  var viewMode = 'blend';
 
   function applyBlend() {
     var el = topo.getElement();
-    // Multiply blend only makes sense while the topo sheet sits above the
-    // imagery; underneath it would just blend into the dark page background.
-    if (el) el.style.mixBlendMode = (blendBox.checked && topoOnTop) ? 'multiply' : 'normal';
+    // Multiply only works while the topo sheet sits above the imagery.
+    if (el) el.style.mixBlendMode = (viewMode === 'blend' && topoOnTop) ? 'multiply' : 'normal';
   }
   topo.on('load', applyBlend);
   topo.on('add', function () { setTimeout(applyBlend, 0); });
+
+  function setViewMode(mode) {
+    viewMode = mode;
+    document.getElementById('viewTopo').classList.toggle('active', mode === 'topo');
+    document.getElementById('viewBlend').classList.toggle('active', mode === 'blend');
+    document.getElementById('viewSat').classList.toggle('active', mode === 'sat');
+    document.getElementById('topoStrengthCtl').style.opacity = mode === 'sat' ? 0.4 : 1;
+    if (mode === 'sat') { if (map.hasLayer(topo)) map.removeLayer(topo); }
+    else if (!map.hasLayer(topo)) { topo.addTo(map); }
+    applyBlend();
+  }
+  document.getElementById('viewTopo').addEventListener('click', function () { setViewMode('topo'); });
+  document.getElementById('viewBlend').addEventListener('click', function () { setViewMode('blend'); });
+  document.getElementById('viewSat').addEventListener('click', function () { setViewMode('sat'); });
 
   function setOrder(topoTop) {
     topoOnTop = topoTop;
     map.getPane('topoPane').style.zIndex = topoTop ? 260 : 210;
     map.getPane('satPane').style.zIndex = topoTop ? 210 : 260;
-    document.getElementById('orderTopoTop').classList.toggle('active', topoTop);
-    document.getElementById('orderSatTop').classList.toggle('active', !topoTop);
+    document.getElementById('satOnTop').checked = !topoTop;
     applyBlend();
   }
-  document.getElementById('orderTopoTop').addEventListener('click', function () { setOrder(true); });
-  document.getElementById('orderSatTop').addEventListener('click', function () { setOrder(false); });
+  document.getElementById('satOnTop').addEventListener('change', function () {
+    setOrder(!this.checked);
+  });
 
   topoSlider.addEventListener('input', function () {
     topo.setOpacity(this.value / 100);
@@ -979,13 +1186,6 @@
     satellite.setOpacity(this.value / 100);
     osm.setOpacity(this.value / 100);
     satVal.textContent = this.value + '%';
-  });
-
-  blendBox.addEventListener('change', applyBlend);
-
-  topoBox.addEventListener('change', function () {
-    if (this.checked) { topo.addTo(map); applyBlend(); }
-    else { map.removeLayer(topo); }
   });
 
   // --- Panel show / hide ---
@@ -1090,6 +1290,7 @@
     addNoteBtn.classList.toggle('armed', on);
     addNoteBtn.textContent = on ? 'Tap the map…' : '📍 Add note';
     document.getElementById('fabNote').classList.toggle('armed', on);
+    updateModePill();
   }
   addNoteBtn.addEventListener('click', function () { setAddMode(!addMode); });
   document.getElementById('fabNote').addEventListener('click', function () { setAddMode(!addMode); });
@@ -1229,23 +1430,44 @@
     }).catch(function () {});
   }
 
-  // --- Persist UI settings (layers, filters, sliders, base map, panel) ---
-  var SETTINGS_KEY = 'huntmap-settings-v1';
-  var SETTING_IDS = ['topoOpacity', 'satOpacity', 'blendMode', 'topoToggle', 'lotsToggle',
-    'sfToggle', 'npwsToggle', 'huntExToggle', 'saleToggle', 'cadToggle',
-    'minAcres', 'forestName', 'reqSF', 'reqNP'];
+  // --- Persist UI settings (layers, filters, sliders, view mode, sections) ---
+  var SETTINGS_KEY = 'huntmap-settings-v2';
+  var SETTING_IDS = ['topoOpacity', 'satOpacity', 'lotsToggle', 'sfToggle', 'npwsToggle',
+    'huntExToggle', 'saleToggle', 'cadToggle', 'minAcres', 'forestName'];
+  var SECTION_IDS = ['sect-field', 'sect-layers', 'sect-bounds', 'sect-finder', 'sect-notes'];
   var savedSettings = null;
   try { savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY)); } catch (e) {}
+  // migrate a v1 settings blob (pre-redesign control set) once
+  if (!savedSettings) {
+    try {
+      var v1 = JSON.parse(localStorage.getItem('huntmap-settings-v1'));
+      if (v1) {
+        savedSettings = v1;
+        savedSettings.viewMode = (v1.topoToggle === false) ? 'sat'
+          : (v1.blendMode === false ? 'topo' : 'blend');
+        savedSettings.borderReq = (v1.reqSF && v1.reqNP) ? 'either'
+          : (v1.reqSF ? 'sf' : (v1.reqNP ? 'np' : 'any'));
+        localStorage.removeItem('huntmap-settings-v1');
+      }
+    } catch (e) {}
+  }
 
   function saveSettings() {
     var s = {};
     SETTING_IDS.forEach(function (id) {
       var el = document.getElementById(id);
+      if (!el) return;
       s[id] = (el.type === 'checkbox') ? el.checked : el.value;
     });
+    s.viewMode = viewMode;
+    s.borderReq = borderReq();
     s.baseOsm = document.getElementById('baseOsm').classList.contains('active');
     s.topoOnTop = topoOnTop;
     s.panelHidden = document.body.classList.contains('panel-hidden');
+    s.sections = {};
+    SECTION_IDS.forEach(function (id) {
+      s.sections[id] = document.getElementById(id).open;
+    });
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
   }
 
@@ -1254,6 +1476,7 @@
     SETTING_IDS.forEach(function (id) {
       if (!(id in s) || id === 'forestName') return;  // forest list loads async
       var el = document.getElementById(id);
+      if (!el) return;
       if (el.type === 'checkbox') {
         if (el.checked !== s[id]) {
           el.checked = s[id];
@@ -1266,20 +1489,45 @@
         el.dispatchEvent(new Event('change'));
       }
     });
+    if (s.viewMode) setViewMode(s.viewMode);
+    if (s.borderReq) {
+      var radio = document.querySelector('input[name=borderReq][value=' + s.borderReq + ']');
+      if (radio && !radio.checked) {
+        radio.checked = true;
+        updateForestSelect();
+        refilter();
+      }
+    }
     if (s.baseOsm) setBase(true);
     if (s.topoOnTop === false) setOrder(false);
     if (s.panelHidden) document.body.classList.add('panel-hidden');
+    if (s.sections) {
+      SECTION_IDS.forEach(function (id) {
+        if (id in s.sections) document.getElementById(id).open = s.sections[id];
+      });
+    }
   }
 
   applySettings(savedSettings);
   SETTING_IDS.forEach(function (id) {
     var el = document.getElementById(id);
+    if (!el) return;
     el.addEventListener('change', saveSettings);
     el.addEventListener('input', saveSettings);
   });
-  ['baseSat', 'baseOsm', 'orderTopoTop', 'orderSatTop', 'hideBtn', 'showBtn'].forEach(function (id) {
+  ['reqEither', 'reqSF', 'reqNP', 'reqAny'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', saveSettings);
+  });
+  ['baseSat', 'baseOsm', 'viewTopo', 'viewBlend', 'viewSat', 'satOnTop',
+   'hideBtn', 'showBtn'].forEach(function (id) {
     document.getElementById(id).addEventListener('click', function () { setTimeout(saveSettings, 0); });
   });
+  SECTION_IDS.forEach(function (id) {
+    document.getElementById(id).addEventListener('toggle', saveSettings);
+  });
+  // fix the trip-quality badge visibility on load and set initial mode UI
+  setViewMode(viewMode);
+  updateLotsZoomNote();
 </script>
 </body>
 </html>
