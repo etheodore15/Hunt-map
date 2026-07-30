@@ -99,6 +99,7 @@
   <button id="fabNote" title="Add note">📍</button>
   <button id="fabKey" title="Map key">🗺</button>
   <button id="fabSv" title="Street View: tap the map">🚶</button>
+  <button id="fabGps" title="My location">🎯</button>
 </div>
 
 <div id="keyPanel">
@@ -116,8 +117,13 @@
     <input type="range" id="topoOpacity" min="0" max="100" value="70">
   </div>
 
+  <div class="seg" id="baseSeg" title="Base layer">
+    <button id="baseSat" class="active">Satellite</button>
+    <button id="baseOsm">Streets (OSM)</button>
+  </div>
+
   <div class="ctl">
-    <label>Satellite opacity <span class="val" id="satVal">100%</span></label>
+    <label>Basemap opacity <span class="val" id="satVal">100%</span></label>
     <input type="range" id="satOpacity" min="0" max="100" value="100">
   </div>
 
@@ -159,6 +165,9 @@
     <div class="btnrow" style="margin-top:8px">
       <button class="btn" id="keyBtn">🗺 Map key</button>
       <button class="btn" id="svBtn" title="Tap the map to open Google Street View there">🚶 Street View</button>
+    </div>
+    <div class="btnrow" style="margin-top:6px">
+      <button class="btn" id="gpsBtn" title="Show my live GPS position">🎯 My location</button>
     </div>
   </div>
 
@@ -244,6 +253,23 @@
       pane: 'satPane',
       attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
     }).addTo(map);
+
+  var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    pane: 'satPane',
+    attribution: '© OpenStreetMap contributors'
+  });
+
+  function setBase(useOsm) {
+    if (useOsm) { map.removeLayer(satellite); osm.addTo(map); }
+    else { map.removeLayer(osm); satellite.addTo(map); }
+    document.getElementById('baseSat').classList.toggle('active', !useOsm);
+    document.getElementById('baseOsm').classList.toggle('active', useOsm);
+    var op = document.getElementById('satOpacity').value / 100;
+    satellite.setOpacity(op); osm.setOpacity(op);
+  }
+  document.getElementById('baseSat').addEventListener('click', function () { setBase(false); });
+  document.getElementById('baseOsm').addEventListener('click', function () { setBase(true); });
 
   var IMG_RELATIVE = 'morisset_topo.webp';
   var IMG_FALLBACK = 'https://raw.githubusercontent.com/etheodore15/Hunt-map/claude/forest-boundaries-satellite-overlay-f0loyz/morisset_topo.webp';
@@ -537,6 +563,74 @@
     if (b) map.fitBounds(b.pad(0.1));
   });
 
+  // --- Live GPS position ---
+  var gpsOn = false, gpsFollow = true, gpsMarker = null, gpsRing = null, gpsFirstFix = true;
+
+  function gpsButtons(on) {
+    document.getElementById('gpsBtn').classList.toggle('armed', on);
+    document.getElementById('fabGps').classList.toggle('armed', on);
+    document.getElementById('gpsBtn').textContent = on ? '🎯 Tracking… (tap to stop)' : '🎯 My location';
+  }
+
+  function onLocationFound(e) {
+    var ll = e.latlng, acc = e.accuracy || 0;
+    if (!gpsMarker) {
+      gpsRing = L.circle(ll, { radius: acc, color: '#2196f3', weight: 1.5,
+        fillColor: '#2196f3', fillOpacity: 0.12, interactive: false }).addTo(map);
+      gpsMarker = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 3,
+        fillColor: '#2196f3', fillOpacity: 1 }).addTo(map)
+        .bindPopup(function () {
+          return 'You are here<br>' + ll.lat.toFixed(5) + ', ' + ll.lng.toFixed(5) +
+                 '<br>±' + Math.round(acc) + ' m';
+        });
+    } else {
+      gpsMarker.setLatLng(ll);
+      gpsRing.setLatLng(ll).setRadius(acc);
+    }
+    if (gpsFollow) {
+      if (gpsFirstFix) { map.setView(ll, Math.max(map.getZoom(), 15)); gpsFirstFix = false; }
+      else { map.panTo(ll); }
+    }
+  }
+
+  function onLocationError(e) {
+    // code 1 = permission denied: stop and explain. Codes 2/3 (unavailable /
+    // timeout) are transient in the bush — keep the watch alive silently.
+    if (e.code === 1) {
+      stopGps();
+      alert('Could not get your location: ' + e.message +
+        '\nMake sure location permission is allowed for this site (GPS requires the https:// page).');
+    }
+  }
+
+  function startGps() {
+    gpsOn = true; gpsFollow = true; gpsFirstFix = true;
+    gpsButtons(true);
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+    map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 5000, timeout: 3600000 });
+  }
+  function stopGps() {
+    gpsOn = false;
+    gpsButtons(false);
+    map.stopLocate();
+    map.off('locationfound', onLocationFound);
+    map.off('locationerror', onLocationError);
+    if (gpsMarker) { map.removeLayer(gpsMarker); gpsMarker = null; }
+    if (gpsRing) { map.removeLayer(gpsRing); gpsRing = null; }
+  }
+  function toggleGps() {
+    if (!gpsOn) { startGps(); }
+    else if (!gpsFollow && gpsMarker) {
+      // already tracking but not following: re-centre instead of stopping
+      gpsFollow = true;
+      map.panTo(gpsMarker.getLatLng());
+    } else { stopGps(); }
+  }
+  map.on('dragstart', function () { gpsFollow = false; });
+  document.getElementById('gpsBtn').addEventListener('click', toggleGps);
+  document.getElementById('fabGps').addEventListener('click', toggleGps);
+
   // --- Google Street View (keyless deep link) ---
   var svMode = false;
   function svUrl(lat, lng) {
@@ -604,6 +698,7 @@
 
   satSlider.addEventListener('input', function () {
     satellite.setOpacity(this.value / 100);
+    osm.setOpacity(this.value / 100);
     satVal.textContent = this.value + '%';
   });
 
