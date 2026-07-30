@@ -222,7 +222,8 @@
     </div>
     <div class="seg" id="baseSeg" title="Background imagery">
       <button id="baseSat" class="active">Satellite</button>
-      <button id="baseOsm">Streets (OSM)</button>
+      <button id="baseOsm">Streets</button>
+      <button id="baseTopo">NSW Topo</button>
     </div>
     <details class="more">
       <summary>Advanced layering</summary>
@@ -261,6 +262,36 @@
       <span><span class="chip" style="background:#ff9100"></span>Lot boundaries (live lines) <span id="lotsZoomNote" style="color:#ffab40;font-size:11px"></span></span>
     </label>
     <div class="hint">Live NSW Spatial Services data. Lot lines appear when you zoom in close.</div>
+  </details>
+
+  <details class="sect" id="sect-offline" open>
+    <summary>Offline areas <span id="areaCount" style="color:#8fd19e;text-transform:none"></span></summary>
+    <div class="btnrow">
+      <button class="btn" id="areaDrawBtn">▦ Select area (max 20×20 km)</button>
+    </div>
+    <div id="areaPending" style="display:none;margin-top:8px">
+      <div class="hint" id="areaDims" style="margin-top:0"></div>
+      <div style="margin:6px 0 4px;color:#b9c4cc;font-size:12px">Layers to download:</div>
+      <label class="toggle"><input type="checkbox" id="dlTopo" checked><span>NSW topographic</span></label>
+      <label class="toggle"><input type="checkbox" id="dlSat"><span>Satellite imagery</span></label>
+      <label class="toggle"><input type="checkbox" id="dlLots"><span>Lot boundaries (cadastre)</span></label>
+      <div class="hint" id="areaEst"></div>
+      <div class="btnrow" style="margin-top:6px">
+        <button class="btn" id="areaGoBtn">⬇ Download</button>
+        <button class="btn" id="areaCancelBtn">Discard</button>
+      </div>
+    </div>
+    <div id="areaProgress" style="display:none;margin-top:8px">
+      <div class="hint" id="areaProgText" style="margin-top:0"></div>
+      <div style="height:7px;background:#26313a;border-radius:4px;margin-top:5px">
+        <div id="areaProgBar" style="height:7px;width:0%;background:#4caf72;border-radius:4px"></div>
+      </div>
+      <div class="btnrow" style="margin-top:6px">
+        <button class="btn" id="areaStopBtn">✕ Cancel download</button>
+      </div>
+    </div>
+    <div id="areaList"></div>
+    <div class="hint">Downloaded areas keep working with no mobile signal (topo, satellite and lot lines come from the on-device store first). Storage used: <span id="storeUsed">–</span></div>
   </details>
 
   <details class="sect" id="sect-finder">
@@ -350,12 +381,84 @@
   map.getPane('satPane').style.zIndex = 210;
   map.getPane('topoPane').style.zIndex = 260;   // topo above satellite by default
 
-  var satellite = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 19,
-      pane: 'satPane',
-      attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
-    }).addTo(map);
+  // --- Offline tile store (IndexedDB) ---
+  // Downloaded tiles are keyed by URL; each saved area also records its URL
+  // list so deleting an area can drop tiles no other area still needs.
+  var tileDBP = null;
+  function tileDB() {
+    if (!tileDBP) tileDBP = new Promise(function (resolve, reject) {
+      var rq = indexedDB.open('huntmap-offline', 1);
+      rq.onupgradeneeded = function () {
+        rq.result.createObjectStore('tiles');
+        rq.result.createObjectStore('areakeys');
+      };
+      rq.onsuccess = function () { resolve(rq.result); };
+      rq.onerror = function () { reject(rq.error); };
+    });
+    return tileDBP;
+  }
+  function idbOp(store, mode, fn) {
+    return tileDB().then(function (db) {
+      return new Promise(function (resolve) {
+        var tx = db.transaction(store, mode);
+        var rq = fn(tx.objectStore(store));
+        if (rq) {
+          rq.onsuccess = function () { resolve(rq.result); };
+          rq.onerror = function () { resolve(null); };
+        } else {
+          tx.oncomplete = function () { resolve(true); };
+          tx.onerror = function () { resolve(false); };
+        }
+      });
+    }).catch(function () { return null; });
+  }
+  function tileGet(url) { return idbOp('tiles', 'readonly', function (s) { return s.get(url); }); }
+  function tilePut(url, blob) { return idbOp('tiles', 'readwrite', function (s) { return s.put(blob, url); }); }
+  function tileDelMany(urls) {
+    return tileDB().then(function (db) {
+      return new Promise(function (resolve) {
+        var tx = db.transaction('tiles', 'readwrite');
+        var s = tx.objectStore('tiles');
+        urls.forEach(function (u) { s.delete(u); });
+        tx.oncomplete = resolve; tx.onerror = resolve;
+      });
+    }).catch(function () {});
+  }
+  function areaKeysPut(id, urls) { return idbOp('areakeys', 'readwrite', function (s) { return s.put(urls, id); }); }
+  function areaKeysGet(id) { return idbOp('areakeys', 'readonly', function (s) { return s.get(id); }); }
+  function areaKeysDel(id) { return idbOp('areakeys', 'readwrite', function (s) { return s.delete(id); }); }
+
+  // Tile layer that prefers the offline store and falls back to the network.
+  var OfflineTileLayer = L.TileLayer.extend({
+    createTile: function (coords, done) {
+      var tile = document.createElement('img');
+      L.DomEvent.on(tile, 'load', L.Util.bind(this._tileOnLoad, this, done, tile));
+      L.DomEvent.on(tile, 'error', L.Util.bind(this._tileOnError, this, done, tile));
+      tile.alt = '';
+      tile.setAttribute('role', 'presentation');
+      var url = this.getTileUrl(coords);
+      tileGet(url).then(function (blob) {
+        if (blob) {
+          var ou = URL.createObjectURL(blob);
+          tile.addEventListener('load', function () { URL.revokeObjectURL(ou); }, { once: true });
+          tile.addEventListener('error', function () { URL.revokeObjectURL(ou); }, { once: true });
+          tile.src = ou;
+        } else {
+          tile.src = url;
+        }
+      });
+      return tile;
+    }
+  });
+
+  var SAT_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  var NSWTOPO_URL = 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Topo_Map/MapServer/tile/{z}/{y}/{x}';
+
+  var satellite = new OfflineTileLayer(SAT_URL, {
+    maxZoom: 19,
+    pane: 'satPane',
+    attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
+  }).addTo(map);
 
   var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -363,16 +466,33 @@
     attribution: '© OpenStreetMap contributors'
   });
 
-  function setBase(useOsm) {
-    if (useOsm) { map.removeLayer(satellite); osm.addTo(map); }
-    else { map.removeLayer(osm); satellite.addTo(map); }
-    document.getElementById('baseSat').classList.toggle('active', !useOsm);
-    document.getElementById('baseOsm').classList.toggle('active', useOsm);
+  // Statewide NSW topographic cartography (same series as the printed sheets),
+  // served as cached web tiles by NSW Spatial Services.
+  var nswtopo = new OfflineTileLayer(NSWTOPO_URL, {
+    maxZoom: 19,
+    maxNativeZoom: 16,
+    pane: 'satPane',
+    attribution: 'Topo © NSW Spatial Services'
+  });
+
+  var baseLayers = { sat: satellite, osm: osm, topo: nswtopo };
+  var baseMode = 'sat';
+  function setBase(mode) {
+    if (!baseLayers[mode]) mode = 'sat';
+    baseMode = mode;
+    Object.keys(baseLayers).forEach(function (k) {
+      if (k === mode) { baseLayers[k].addTo(map); }
+      else if (map.hasLayer(baseLayers[k])) { map.removeLayer(baseLayers[k]); }
+    });
+    document.getElementById('baseSat').classList.toggle('active', mode === 'sat');
+    document.getElementById('baseOsm').classList.toggle('active', mode === 'osm');
+    document.getElementById('baseTopo').classList.toggle('active', mode === 'topo');
     var op = document.getElementById('satOpacity').value / 100;
-    satellite.setOpacity(op); osm.setOpacity(op);
+    Object.keys(baseLayers).forEach(function (k) { baseLayers[k].setOpacity(op); });
   }
-  document.getElementById('baseSat').addEventListener('click', function () { setBase(false); });
-  document.getElementById('baseOsm').addEventListener('click', function () { setBase(true); });
+  document.getElementById('baseSat').addEventListener('click', function () { setBase('sat'); });
+  document.getElementById('baseOsm').addEventListener('click', function () { setBase('osm'); });
+  document.getElementById('baseTopo').addEventListener('click', function () { setBase('topo'); });
 
   var IMG_RELATIVE = 'morisset_topo.webp';
   var IMG_FALLBACK = 'https://raw.githubusercontent.com/etheodore15/Hunt-map/claude/forest-boundaries-satellite-overlay-f0loyz/morisset_topo.webp';
@@ -398,7 +518,7 @@
   map.getPane('boundaryPane').style.zIndex = 320;
 
   var WORLD = 2 * Math.PI * 6378137;
-  var ArcGISExportLayer = L.TileLayer.extend({
+  var ArcGISExportLayer = OfflineTileLayer.extend({
     initialize: function (serverUrl, dynamicLayers, options) {
       this._exportUrl = serverUrl + '/export?bboxSR=3857&imageSR=3857&size=256,256' +
         '&transparent=true&format=png32&f=image&dynamicLayers=' +
@@ -1101,7 +1221,9 @@
   function updateModePill() {
     var pill = document.getElementById('modePill');
     clearTimeout(modeTimer);
-    if (typeof addMode !== 'undefined' && addMode) {
+    if (typeof areaPillText !== 'undefined' && areaPillText) {
+      pill.textContent = areaPillText;
+    } else if (typeof addMode !== 'undefined' && addMode) {
       pill.textContent = '📍 Tap the map to place a note — tap here to cancel';
     } else if (svMode) {
       pill.textContent = '🚶 Tap the map to open Street View — tap here to cancel';
@@ -1110,15 +1232,14 @@
       return;
     }
     pill.style.display = 'flex';
-    modeTimer = setTimeout(function () {
-      if (typeof setAddMode === 'function') setAddMode(false);
-      setSvMode(false);
-    }, 30000);
+    modeTimer = setTimeout(cancelAllModes, 45000);
   }
-  document.getElementById('modePill').addEventListener('click', function () {
+  function cancelAllModes() {
     if (typeof setAddMode === 'function') setAddMode(false);
     setSvMode(false);
-  });
+    if (typeof cancelAreaDraw === 'function') cancelAreaDraw();
+  }
+  document.getElementById('modePill').addEventListener('click', cancelAllModes);
   map.on('click', function (e) {
     if (!svMode) return;
     setSvMode(false);
@@ -1396,6 +1517,276 @@
   saveNotes();
   applyBlend();
 
+  // --- Offline areas: draw a rectangle (max 20x20 km), download tile pyramids ---
+  var AREAS_KEY = 'huntmap-areas-v1';
+  var MAX_SIDE_M = 20000;
+  var TOPO_ZOOMS = [12, 13, 14, 15, 16];
+  var SAT_ZOOMS = [12, 13, 14, 15, 16];
+  var LOTS_ZOOMS = [14, 15, 16];
+  var EST_BYTES = { topo: 18000, sat: 22000, lots: 5000 };
+  var areas = [];
+  var areaOutlines = {};          // id -> L.Rectangle
+  var areaMode = 0;               // 0 off, 1 waiting first corner, 2 waiting second
+  var areaPillText = '';
+  var areaCorner = null, areaPreviewRect = null, pendingBounds = null, pendingRectLayer = null;
+  var dlAbort = false, downloading = false;
+
+  function loadAreas() {
+    try { areas = JSON.parse(localStorage.getItem(AREAS_KEY)) || []; } catch (e) { areas = []; }
+  }
+  function saveAreas() {
+    localStorage.setItem(AREAS_KEY, JSON.stringify(areas));
+    document.getElementById('areaCount').textContent = areas.length ? '(' + areas.length + ')' : '';
+  }
+  function fmtMB(bytes) { return (bytes / 1048576).toFixed(bytes < 10485760 ? 1 : 0) + ' MB'; }
+  function updateStorageUsed() {
+    if (navigator.storage && navigator.storage.estimate) {
+      navigator.storage.estimate().then(function (est) {
+        document.getElementById('storeUsed').textContent = fmtMB(est.usage || 0);
+      });
+    }
+  }
+
+  // slippy-tile maths
+  function lng2x(lng, z) { return Math.floor((lng + 180) / 360 * Math.pow(2, z)); }
+  function lat2y(lat, z) {
+    return Math.floor((1 - Math.asinh(Math.tan(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, z));
+  }
+  function tileRange(b, z) {   // b = L.LatLngBounds
+    return { x0: lng2x(b.getWest(), z), x1: lng2x(b.getEast(), z),
+             y0: lat2y(b.getNorth(), z), y1: lat2y(b.getSouth(), z) };
+  }
+  function topoTileUrl(z, x, y) { return NSWTOPO_URL.replace('{z}', z).replace('{x}', x).replace('{y}', y); }
+  function satTileUrl(z, x, y) { return SAT_URL.replace('{z}', z).replace('{x}', x).replace('{y}', y); }
+  function lotsTileUrl(z, x, y) {
+    var res = WORLD / Math.pow(2, z);
+    var x0 = -WORLD / 2 + x * res;
+    var y1 = WORLD / 2 - y * res;
+    return lotsLayer._exportUrl + '&bbox=' + [x0, y1 - res, x0 + res, y1].join(',');
+  }
+  function areaUrls(bounds, layers) {
+    var urls = [], est = 0;
+    function collect(zooms, mk, kind) {
+      zooms.forEach(function (z) {
+        var r = tileRange(bounds, z);
+        for (var x = r.x0; x <= r.x1; x++)
+          for (var y = r.y0; y <= r.y1; y++) { urls.push(mk(z, x, y)); est += EST_BYTES[kind]; }
+      });
+    }
+    if (layers.topo) collect(TOPO_ZOOMS, topoTileUrl, 'topo');
+    if (layers.sat) collect(SAT_ZOOMS, satTileUrl, 'sat');
+    if (layers.lots) collect(LOTS_ZOOMS, lotsTileUrl, 'lots');
+    return { urls: urls, est: est };
+  }
+
+  // --- rectangle drawing ---
+  function armAreaDraw() {
+    if (downloading) return;
+    if (typeof setAddMode === 'function') setAddMode(false);
+    setSvMode(false);
+    discardPending();
+    areaMode = 1; areaCorner = null;
+    areaPillText = '▦ Tap the FIRST corner of the area — tap here to cancel';
+    document.body.classList.add('note-mode');
+    document.getElementById('areaDrawBtn').classList.add('armed');
+    updateModePill();
+  }
+  function cancelAreaDraw() {
+    areaMode = 0; areaCorner = null; areaPillText = '';
+    document.body.classList.remove('note-mode');
+    document.getElementById('areaDrawBtn').classList.remove('armed');
+    if (areaPreviewRect) { map.removeLayer(areaPreviewRect); areaPreviewRect = null; }
+    updateModePill();
+  }
+  function clampCorner(a, b) {
+    var latSpan = Math.abs(b.lat - a.lat) * 111320;
+    var lat2 = latSpan > MAX_SIDE_M
+      ? a.lat + Math.sign(b.lat - a.lat) * MAX_SIDE_M / 111320 : b.lat;
+    var mPerDegLng = 111320 * Math.cos(a.lat * Math.PI / 180);
+    var lngSpan = Math.abs(b.lng - a.lng) * mPerDegLng;
+    var lng2 = lngSpan > MAX_SIDE_M
+      ? a.lng + Math.sign(b.lng - a.lng) * MAX_SIDE_M / mPerDegLng : b.lng;
+    return L.latLng(lat2, lng2);
+  }
+  map.on('click', function (e) {
+    if (!areaMode) return;
+    if (areaMode === 1) {
+      areaCorner = e.latlng;
+      areaMode = 2;
+      areaPillText = '▦ Tap the OPPOSITE corner (clamped to 20 km) — tap here to cancel';
+      updateModePill();
+      return;
+    }
+    var b2 = clampCorner(areaCorner, e.latlng);
+    pendingBounds = L.latLngBounds(areaCorner, b2);
+    cancelAreaDraw();
+    showPending();
+  });
+  map.on('mousemove', function (e) {
+    if (areaMode !== 2 || !areaCorner) return;
+    var b2 = clampCorner(areaCorner, e.latlng);
+    var bb = L.latLngBounds(areaCorner, b2);
+    if (!areaPreviewRect) {
+      areaPreviewRect = L.rectangle(bb, { color: '#ffd600', weight: 2, dashArray: '6 5', fillOpacity: 0.06, interactive: false }).addTo(map);
+    } else areaPreviewRect.setBounds(bb);
+  });
+
+  function pendingDims() {
+    var latKm = (pendingBounds.getNorth() - pendingBounds.getSouth()) * 111.32;
+    var lngKm = (pendingBounds.getEast() - pendingBounds.getWest()) * 111.32 *
+      Math.cos(pendingBounds.getCenter().lat * Math.PI / 180);
+    return latKm.toFixed(1) + ' × ' + lngKm.toFixed(1) + ' km';
+  }
+  function pendingLayers() {
+    return { topo: document.getElementById('dlTopo').checked,
+             sat: document.getElementById('dlSat').checked,
+             lots: document.getElementById('dlLots').checked };
+  }
+  function showPending() {
+    pendingRectLayer = L.rectangle(pendingBounds, { color: '#ffd600', weight: 2, dashArray: '6 5', fillOpacity: 0.08, interactive: false }).addTo(map);
+    document.getElementById('areaPending').style.display = 'block';
+    document.getElementById('areaDims').textContent = 'Selected area: ' + pendingDims();
+    updatePendingEst();
+    map.fitBounds(pendingBounds.pad(0.3));
+  }
+  function updatePendingEst() {
+    if (!pendingBounds) return;
+    var info = areaUrls(pendingBounds, pendingLayers());
+    document.getElementById('areaEst').textContent =
+      info.urls.length + ' tiles, roughly ' + fmtMB(info.est) + ' to download.';
+  }
+  ['dlTopo', 'dlSat', 'dlLots'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', updatePendingEst);
+  });
+  function discardPending() {
+    pendingBounds = null;
+    if (pendingRectLayer) { map.removeLayer(pendingRectLayer); pendingRectLayer = null; }
+    document.getElementById('areaPending').style.display = 'none';
+  }
+  document.getElementById('areaDrawBtn').addEventListener('click', function () {
+    if (areaMode) cancelAreaDraw(); else armAreaDraw();
+  });
+  document.getElementById('areaCancelBtn').addEventListener('click', discardPending);
+
+  // --- downloader ---
+  function downloadArea() {
+    if (!pendingBounds || downloading) return;
+    var layers = pendingLayers();
+    if (!layers.topo && !layers.sat && !layers.lots) { alert('Pick at least one layer to download.'); return; }
+    var info = areaUrls(pendingBounds, layers);
+    var bounds = pendingBounds;
+    var rect = pendingRectLayer;
+    pendingRectLayer = null;             // keep the outline while downloading
+    document.getElementById('areaPending').style.display = 'none';
+    document.getElementById('areaProgress').style.display = 'block';
+    downloading = true; dlAbort = false;
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+
+    var done = 0, failed = 0, bytes = 0, i = 0, CONC = 6;
+    function prog() {
+      document.getElementById('areaProgText').textContent =
+        done + ' / ' + info.urls.length + ' tiles (' + fmtMB(bytes) + ')' + (failed ? ' — ' + failed + ' failed' : '');
+      document.getElementById('areaProgBar').style.width = (done / info.urls.length * 100).toFixed(1) + '%';
+    }
+    function next() {
+      if (dlAbort || i >= info.urls.length) return Promise.resolve();
+      var url = info.urls[i++];
+      return fetch(url, { mode: 'cors' }).then(function (r) {
+        if (!r.ok) throw 0;
+        return r.blob();
+      }).then(function (blob) {
+        bytes += blob.size;
+        return tilePut(url, blob);
+      }).catch(function () { failed++; })
+        .then(function () { done++; if (done % 20 === 0 || done === info.urls.length) prog(); })
+        .then(next);
+    }
+    prog();
+    var workers = [];
+    for (var w = 0; w < CONC; w++) workers.push(next());
+    Promise.all(workers).then(function () {
+      downloading = false;
+      document.getElementById('areaProgress').style.display = 'none';
+      if (rect) map.removeLayer(rect);
+      if (dlAbort) { updateStorageUsed(); return; }
+      var id = 'a' + Date.now();
+      var area = {
+        id: id, name: 'Area ' + (areas.length + 1),
+        bounds: [bounds.getSouth(), bounds.getWest(), bounds.getNorth(), bounds.getEast()],
+        layers: layers, tiles: done - failed, bytes: bytes,
+        date: new Date().toISOString().slice(0, 10), visible: true
+      };
+      areas.push(area);
+      areaKeysPut(id, info.urls);
+      saveAreas(); renderAreaList(); drawAreaOutline(area); updateStorageUsed();
+      if (failed) alert(failed + ' tiles failed to download (patchy signal?). Re-download the area later to fill gaps — existing tiles are kept.');
+    });
+  }
+  document.getElementById('areaGoBtn').addEventListener('click', downloadArea);
+  document.getElementById('areaStopBtn').addEventListener('click', function () { dlAbort = true; });
+
+  // --- saved-area list ---
+  function drawAreaOutline(a) {
+    if (areaOutlines[a.id]) { map.removeLayer(areaOutlines[a.id]); delete areaOutlines[a.id]; }
+    if (!a.visible) return;
+    areaOutlines[a.id] = L.rectangle([[a.bounds[0], a.bounds[1]], [a.bounds[2], a.bounds[3]]],
+      { color: '#69f0ae', weight: 1.5, dashArray: '4 5', fillOpacity: 0, interactive: false }).addTo(map);
+  }
+  function renderAreaList() {
+    var box = document.getElementById('areaList');
+    box.innerHTML = '';
+    areas.forEach(function (a) {
+      var row = document.createElement('div');
+      row.className = 'trip-row';
+      var eye = document.createElement('input');
+      eye.type = 'checkbox'; eye.checked = a.visible; eye.title = 'Show / hide outline';
+      eye.addEventListener('change', function () { a.visible = eye.checked; saveAreas(); drawAreaOutline(a); });
+      var lbl = document.createElement('span');
+      lbl.className = 'lbl';
+      var parts = [];
+      if (a.layers.topo) parts.push('topo');
+      if (a.layers.sat) parts.push('sat');
+      if (a.layers.lots) parts.push('lots');
+      lbl.innerHTML = a.name + ' <small>' + fmtMB(a.bytes) + ' · ' + parts.join('+') + '</small>';
+      lbl.title = 'Zoom to area';
+      lbl.addEventListener('click', function () {
+        map.fitBounds([[a.bounds[0], a.bounds[1]], [a.bounds[2], a.bounds[3]]]);
+      });
+      var ren = document.createElement('button');
+      ren.textContent = '✏'; ren.title = 'Rename';
+      ren.addEventListener('click', function () {
+        var v = prompt('Area name:', a.name);
+        if (v !== null && v.trim()) { a.name = v.trim(); saveAreas(); renderAreaList(); }
+      });
+      var del = document.createElement('button');
+      del.textContent = '🗑'; del.title = 'Delete downloaded tiles';
+      del.addEventListener('click', function () {
+        if (!confirm('Delete "' + a.name + '" and its offline tiles?')) return;
+        areaKeysGet(a.id).then(function (mine) {
+          mine = mine || [];
+          var otherIds = areas.filter(function (x) { return x.id !== a.id; }).map(function (x) { return x.id; });
+          return Promise.all(otherIds.map(areaKeysGet)).then(function (lists) {
+            var keep = {};
+            lists.forEach(function (l) { (l || []).forEach(function (u) { keep[u] = 1; }); });
+            return tileDelMany(mine.filter(function (u) { return !keep[u]; }));
+          });
+        }).then(function () {
+          areaKeysDel(a.id);
+          if (areaOutlines[a.id]) { map.removeLayer(areaOutlines[a.id]); delete areaOutlines[a.id]; }
+          areas = areas.filter(function (x) { return x.id !== a.id; });
+          saveAreas(); renderAreaList(); updateStorageUsed();
+        });
+      });
+      row.appendChild(eye); row.appendChild(lbl); row.appendChild(ren); row.appendChild(del);
+      box.appendChild(row);
+    });
+  }
+  loadAreas();
+  saveAreas();
+  renderAreaList();
+  areas.forEach(drawAreaOutline);
+  updateStorageUsed();
+
   // --- In-app update check (native Android builds only) ---
   // CI publishes every build as a GitHub release tagged v<versionCode>; the
   // app compares its own build number and prompts when a newer APK exists.
@@ -1434,7 +1825,7 @@
   var SETTINGS_KEY = 'huntmap-settings-v2';
   var SETTING_IDS = ['topoOpacity', 'satOpacity', 'lotsToggle', 'sfToggle', 'npwsToggle',
     'huntExToggle', 'saleToggle', 'cadToggle', 'minAcres', 'forestName'];
-  var SECTION_IDS = ['sect-field', 'sect-layers', 'sect-bounds', 'sect-finder', 'sect-notes'];
+  var SECTION_IDS = ['sect-field', 'sect-layers', 'sect-bounds', 'sect-offline', 'sect-finder', 'sect-notes'];
   var savedSettings = null;
   try { savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY)); } catch (e) {}
   // migrate a v1 settings blob (pre-redesign control set) once
@@ -1461,7 +1852,7 @@
     });
     s.viewMode = viewMode;
     s.borderReq = borderReq();
-    s.baseOsm = document.getElementById('baseOsm').classList.contains('active');
+    s.baseMode = baseMode;
     s.topoOnTop = topoOnTop;
     s.panelHidden = document.body.classList.contains('panel-hidden');
     s.sections = {};
@@ -1498,7 +1889,8 @@
         refilter();
       }
     }
-    if (s.baseOsm) setBase(true);
+    if (s.baseMode) setBase(s.baseMode);
+    else if (s.baseOsm) setBase('osm');   // migrate pre-topo settings
     if (s.topoOnTop === false) setOrder(false);
     if (s.panelHidden) document.body.classList.add('panel-hidden');
     if (s.sections) {
@@ -1518,7 +1910,7 @@
   ['reqEither', 'reqSF', 'reqNP', 'reqAny'].forEach(function (id) {
     document.getElementById(id).addEventListener('change', saveSettings);
   });
-  ['baseSat', 'baseOsm', 'viewTopo', 'viewBlend', 'viewSat', 'satOnTop',
+  ['baseSat', 'baseOsm', 'baseTopo', 'viewTopo', 'viewBlend', 'viewSat', 'satOnTop',
    'hideBtn', 'showBtn'].forEach(function (id) {
     document.getElementById(id).addEventListener('click', function () { setTimeout(saveSettings, 0); });
   });
