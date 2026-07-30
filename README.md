@@ -22,6 +22,7 @@ Open **`index.html`** — either:
 | **Topo on top / Satellite on top** | Swaps the stacking order of the two layers |
 | **Satellite / Streets (OSM)** | Switches the basemap between Esri satellite imagery and OpenStreetMap (roads, road names — handy for navigation); the opacity slider applies to whichever is active |
 | **🎯 My location** | Live GPS tracking: blue dot + accuracy ring following your device position (browser location permission required; works in the field on the https:// page). The map follows you until you pan away — tap again to re-centre, tap once more to stop |
+| **🧭 Trip logs** | Start/stop GPS track recording at any time (auto-starts GPS if needed). Stopping saves the trip automatically — no prompt. Each saved trip can be renamed, annotated, recoloured, hidden/shown or deleted from the Trip logs list; tap its name to zoom to it. Tracks persist in the browser and survive page reloads (an interrupted recording is recovered on next load) |
 | **See-through paper** | Multiply blend — the white paper disappears so boundaries, contours and tracks draw directly on the satellite photo |
 | **Show topo overlay** | Quick on/off toggle |
 | **✕ / ☰** | Hides the whole control panel behind floating buttons (☰ controls, 📍 add note, 🗺 map key) for a full-screen map |

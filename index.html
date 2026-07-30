@@ -14,6 +14,7 @@
     font: 13px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     padding: 12px 14px; border-radius: 10px; width: 250px;
     box-shadow: 0 2px 12px rgba(0,0,0,.5);
+    max-height: calc(100vh - 20px); overflow-y: auto; overscroll-behavior: contain;
   }
   .panel h1 { font-size: 14px; margin: 0 0 2px; padding-right: 20px; }
   .panel .sub { font-size: 11px; color: #9fb2a8; margin-bottom: 10px; }
@@ -75,6 +76,22 @@
   }
   body.key-open #keyPanel { display: block; }
   .chip { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  /* trip log rows */
+  .trip-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; font-size: 12px; }
+  .trip-row input[type=checkbox] { accent-color: #4caf72; }
+  .trip-row input[type=color] {
+    width: 24px; height: 20px; border: none; background: none; padding: 0; cursor: pointer;
+  }
+  .trip-row .lbl {
+    flex: 1; cursor: pointer; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; color: #dde5ea;
+  }
+  .trip-row .lbl small { color: #8a949e; }
+  .trip-row button {
+    background: none; border: none; cursor: pointer; color: #9fb2a8;
+    font-size: 13px; padding: 1px 3px;
+  }
+  .trip-row button:hover { color: #fff; }
   body.note-mode #map { cursor: crosshair; }
   /* note popup */
   .note-pop textarea {
@@ -100,6 +117,7 @@
   <button id="fabKey" title="Map key">🗺</button>
   <button id="fabSv" title="Street View: tap the map">🚶</button>
   <button id="fabGps" title="My location">🎯</button>
+  <button id="fabTrip" title="Trip log on/off">🧭</button>
 </div>
 
 <div id="keyPanel">
@@ -219,6 +237,15 @@
       <button class="btn" id="exportBtn" title="Download notes as GeoJSON">Export</button>
     </div>
     <div class="hint" id="noteHint">Tap "Add note", then tap the map. Drag a pin to move it; tap it to edit. Notes are saved in this browser.</div>
+  </div>
+
+  <div class="sect">
+    <h2>Trip logs <span id="tripCount" style="color:#8fd19e"></span></h2>
+    <div class="btnrow">
+      <button class="btn" id="tripBtn">▶ Start trip log</button>
+    </div>
+    <div id="tripList"></div>
+    <div class="hint">Records your GPS track while on. Stopping saves the trip automatically — then tap its name to zoom, ✏ to rename, 📝 for a note, the swatch to recolour, 👁 to hide/show, 🗑 to delete.</div>
   </div>
 
   <div class="credit">
@@ -574,6 +601,7 @@
 
   function onLocationFound(e) {
     var ll = e.latlng, acc = e.accuracy || 0;
+    if (recording) tripPush(ll);
     if (!gpsMarker) {
       gpsRing = L.circle(ll, { radius: acc, color: '#2196f3', weight: 1.5,
         fillColor: '#2196f3', fillOpacity: 0.12, interactive: false }).addTo(map);
@@ -611,6 +639,7 @@
     map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 5000, timeout: 3600000 });
   }
   function stopGps() {
+    if (recording) stopTrip();   // no more fixes will arrive — save the log
     gpsOn = false;
     gpsButtons(false);
     map.stopLocate();
@@ -630,6 +659,154 @@
   map.on('dragstart', function () { gpsFollow = false; });
   document.getElementById('gpsBtn').addEventListener('click', toggleGps);
   document.getElementById('fabGps').addEventListener('click', toggleGps);
+
+  // --- Trip logging ---
+  var TRIP_KEY = 'huntmap-trips-v1';
+  var TRIP_ACTIVE_KEY = 'huntmap-trip-active-v1';
+  var TRIP_PALETTE = ['#ff6d00', '#00b0ff', '#d500f9', '#76ff03', '#ff1744', '#ffd600', '#00e5ff', '#f06292'];
+  var trips = [];            // [{id,label,color,notes,visible,points:[[lat,lng,ts],...]}]
+  var tripLines = {};        // id -> L.Polyline
+  var recording = false, recPoints = [], recLine = null, recColor = TRIP_PALETTE[0];
+
+  function loadTrips() {
+    try { trips = JSON.parse(localStorage.getItem(TRIP_KEY)) || []; }
+    catch (e) { trips = []; }
+  }
+  function saveTrips() {
+    localStorage.setItem(TRIP_KEY, JSON.stringify(trips));
+    document.getElementById('tripCount').textContent = trips.length ? '(' + trips.length + ')' : '';
+  }
+  function haversineM(a, b) {
+    var toR = Math.PI / 180, R = 6371000;
+    var dLat = (b[0] - a[0]) * toR, dLon = (b[1] - a[1]) * toR;
+    var s = Math.sin(dLat / 2), t = Math.sin(dLon / 2);
+    var h = s * s + Math.cos(a[0] * toR) * Math.cos(b[0] * toR) * t * t;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function tripStats(t) {
+    var d = 0;
+    for (var i = 1; i < t.points.length; i++) d += haversineM(t.points[i - 1], t.points[i]);
+    var mins = t.points.length > 1 ? (t.points[t.points.length - 1][2] - t.points[0][2]) / 60000 : 0;
+    return (d / 1000).toFixed(1) + ' km · ' +
+      (mins >= 60 ? Math.floor(mins / 60) + ' h ' + Math.round(mins % 60) + ' min' : Math.round(mins) + ' min');
+  }
+  function tripPopupHtml(t) {
+    return '<b>' + t.label + '</b><br>' + tripStats(t) +
+      (t.notes ? '<br><i>' + t.notes.replace(/</g, '&lt;') + '</i>' : '') +
+      '<br><span style="color:#667;font-size:11px">Manage this trip in the Trip logs panel.</span>';
+  }
+  function drawTrip(t) {
+    if (tripLines[t.id]) { map.removeLayer(tripLines[t.id]); delete tripLines[t.id]; }
+    if (!t.visible) return;
+    tripLines[t.id] = L.polyline(t.points.map(function (p) { return [p[0], p[1]]; }),
+      { color: t.color, weight: 4, opacity: 0.9 })
+      .bindPopup(function () { return tripPopupHtml(t); }).addTo(map);
+  }
+  function renderTripList() {
+    var box = document.getElementById('tripList');
+    box.innerHTML = '';
+    trips.forEach(function (t) {
+      var row = document.createElement('div');
+      row.className = 'trip-row';
+      var eye = document.createElement('input');
+      eye.type = 'checkbox'; eye.checked = t.visible; eye.title = 'Show / hide';
+      eye.addEventListener('change', function () { t.visible = eye.checked; saveTrips(); drawTrip(t); });
+      var col = document.createElement('input');
+      col.type = 'color'; col.value = t.color; col.title = 'Change colour';
+      col.addEventListener('input', function () {
+        t.color = col.value; saveTrips();
+        if (tripLines[t.id]) tripLines[t.id].setStyle({ color: t.color });
+      });
+      var lbl = document.createElement('span');
+      lbl.className = 'lbl';
+      lbl.innerHTML = t.label + ' <small>' + tripStats(t) + '</small>';
+      lbl.title = 'Zoom to trip';
+      lbl.addEventListener('click', function () {
+        if (!t.visible) { t.visible = true; eye.checked = true; saveTrips(); drawTrip(t); }
+        if (tripLines[t.id]) { map.fitBounds(tripLines[t.id].getBounds().pad(0.2)); tripLines[t.id].openPopup(); }
+      });
+      var ren = document.createElement('button');
+      ren.textContent = '✏'; ren.title = 'Rename';
+      ren.addEventListener('click', function () {
+        var v = prompt('Trip label:', t.label);
+        if (v !== null && v.trim()) { t.label = v.trim(); saveTrips(); renderTripList(); }
+      });
+      var note = document.createElement('button');
+      note.textContent = '📝'; note.title = 'Edit note';
+      note.addEventListener('click', function () {
+        var v = prompt('Note for "' + t.label + '":', t.notes || '');
+        if (v !== null) { t.notes = v.trim(); saveTrips(); }
+      });
+      var del = document.createElement('button');
+      del.textContent = '🗑'; del.title = 'Delete trip';
+      del.addEventListener('click', function () {
+        if (!confirm('Delete "' + t.label + '"?')) return;
+        if (tripLines[t.id]) { map.removeLayer(tripLines[t.id]); delete tripLines[t.id]; }
+        trips = trips.filter(function (x) { return x.id !== t.id; });
+        saveTrips(); renderTripList();
+      });
+      row.appendChild(eye); row.appendChild(col); row.appendChild(lbl);
+      row.appendChild(ren); row.appendChild(note); row.appendChild(del);
+      box.appendChild(row);
+    });
+  }
+
+  function tripPush(ll) {
+    var p = [Math.round(ll.lat * 1e6) / 1e6, Math.round(ll.lng * 1e6) / 1e6, Date.now()];
+    var last = recPoints[recPoints.length - 1];
+    if (last && haversineM(last, p) < 5) return;   // thin GPS jitter
+    recPoints.push(p);
+    if (recLine) recLine.addLatLng([p[0], p[1]]);
+    // checkpoint so a page reload can't lose the log
+    localStorage.setItem(TRIP_ACTIVE_KEY, JSON.stringify({ color: recColor, points: recPoints }));
+  }
+  function tripButtons() {
+    document.getElementById('tripBtn').classList.toggle('armed', recording);
+    document.getElementById('fabTrip').classList.toggle('armed', recording);
+    document.getElementById('tripBtn').textContent = recording ? '⏹ Stop & save trip' : '▶ Start trip log';
+  }
+  function startTrip() {
+    recording = true;
+    recColor = TRIP_PALETTE[trips.length % TRIP_PALETTE.length];
+    recPoints = [];
+    recLine = L.polyline([], { color: recColor, weight: 4, opacity: 0.9, dashArray: '8 6' }).addTo(map);
+    if (!gpsOn) startGps();
+    tripButtons();
+  }
+  function finishTrip(points, color, labelSuffix) {
+    var start = new Date(points[0][2]);
+    var t = {
+      id: 't' + points[0][2],
+      label: 'Trip ' + start.toLocaleDateString() + ' ' +
+        start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + (labelSuffix || ''),
+      color: color, notes: '', visible: true, points: points
+    };
+    trips.push(t);
+    saveTrips(); renderTripList(); drawTrip(t);
+  }
+  function stopTrip() {
+    recording = false;
+    if (recLine) { map.removeLayer(recLine); recLine = null; }
+    if (recPoints.length >= 2) finishTrip(recPoints, recColor);
+    recPoints = [];
+    localStorage.removeItem(TRIP_ACTIVE_KEY);
+    tripButtons();
+  }
+  function toggleTrip() { if (recording) stopTrip(); else startTrip(); }
+  document.getElementById('tripBtn').addEventListener('click', toggleTrip);
+  document.getElementById('fabTrip').addEventListener('click', toggleTrip);
+
+  loadTrips();
+  saveTrips();
+  renderTripList();
+  trips.forEach(drawTrip);
+  // recover a log interrupted by a page reload
+  try {
+    var active = JSON.parse(localStorage.getItem(TRIP_ACTIVE_KEY));
+    if (active && active.points && active.points.length >= 2)
+      finishTrip(active.points, active.color || TRIP_PALETTE[0], ' (recovered)');
+    localStorage.removeItem(TRIP_ACTIVE_KEY);
+  } catch (e) {}
 
   // --- Google Street View (keyless deep link) ---
   var svMode = false;
