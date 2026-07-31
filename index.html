@@ -389,8 +389,28 @@
     });
   })();
 </script>
+<script src="vendor/capacitor.js"></script>
 <script src="vendor/leaflet/leaflet.js"></script>
 <script>
+  // Capacitor's injected native bridge does NOT include registerPlugin — the
+  // full runtime comes from vendor/capacitor.js (the official browser build of
+  // @capacitor/core). Resolve plugins through it, defensively: if anything is
+  // missing we fall back to plain web behaviour instead of crashing.
+  function capPlugin(name) {
+    try {
+      if (window.capacitorExports && window.capacitorExports.registerPlugin)
+        return window.capacitorExports.registerPlugin(name);
+      if (window.Capacitor && typeof window.Capacitor.registerPlugin === 'function')
+        return window.Capacitor.registerPlugin(name);
+    } catch (e) {}
+    return null;
+  }
+  var IS_NATIVE = false;
+  try {
+    var capG = (window.capacitorExports && window.capacitorExports.Capacitor) || window.Capacitor;
+    IS_NATIVE = !!(capG && capG.isNativePlatform && capG.isNativePlatform());
+  } catch (e) {}
+
   // Georeferenced bounds extracted from the GeoPDF viewport (GDA94 -> WGS84 lat/lon).
   // The image morisset_topo.webp is warped to be axis-aligned in Web Mercator,
   // so a plain imageOverlay lines up exactly with the tile grid.
@@ -466,8 +486,7 @@
   // In the native app, tile blobs live in the filesystem (via the TileStore
   // plugin) so the Android Auto renderer can read them too; on the web they
   // stay in IndexedDB.
-  var TileStoreNative = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())
-    ? window.Capacitor.registerPlugin('TileStore') : null;
+  var TileStoreNative = IS_NATIVE ? capPlugin('TileStore') : null;
   function blobToB64(blob) {
     return new Promise(function (resolve) {
       var r = new FileReader();
@@ -961,8 +980,7 @@
   // BackgroundGeolocation plugin, whose foreground service keeps fixes
   // flowing with the screen off. In a plain browser we fall back to
   // navigator.geolocation via Leaflet.
-  var BgGeo = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())
-    ? window.Capacitor.registerPlugin('BackgroundGeolocation') : null;
+  var BgGeo = IS_NATIVE ? capPlugin('BackgroundGeolocation') : null;
   var bgWatcherId = null;
   var gpsOn = false, gpsFollow = true, gpsMarker = null, gpsRing = null, gpsFirstFix = true;
 
@@ -1884,8 +1902,8 @@
   // --- In-app update check (native Android builds only) ---
   // CI publishes every build as a GitHub release tagged v<versionCode>; the
   // app compares its own build number and prompts when a newer APK exists.
-  if (BgGeo) {
-    var AppInfo = window.Capacitor.registerPlugin('App');
+  var AppInfo = IS_NATIVE ? capPlugin('App') : null;
+  if (AppInfo) {
     Promise.all([
       AppInfo.getInfo(),
       fetch('https://api.github.com/repos/etheodore15/Hunt-map/releases/latest').then(function (r) { return r.json(); })
