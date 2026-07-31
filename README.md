@@ -88,6 +88,23 @@ duplicates. Use it to carry your web markers into the Android app (or
 between phones): Export on the web page → share the file to your phone →
 Import inside the app.
 
+### Android Auto
+
+The app includes a projected **Android Auto** experience: plug the phone in
+and Hunt Map appears on the head unit as a full-surface map — satellite or
+NSW topographic base (cycled from the action strip, along with cadastral lot
+lines), pan/pinch on the car touchscreen, zoom and re-centre buttons, and a
+live GPS puck with heading. **Offline areas work on the head unit too**: in
+the native app, downloaded tiles are stored on the filesystem where both the
+in-app map and the car renderer read them, so a downloaded area (including
+satellite) renders in the car with no signal. Head-unit network fetches are
+cached separately and never pollute your curated offline areas.
+
+Because this build is side-loaded rather than Play-reviewed, enable it once
+in the Android Auto app on the phone: Settings → tap **Version** 10 times to
+unlock developer mode → developer settings → **Unknown sources**. Location
+permission must have been granted in the phone app first.
+
 ### Build locally
 
 ```bash
