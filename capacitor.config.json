@@ -3,6 +3,8 @@
   "appName": "Hunt Map",
   "webDir": "www",
   "android": {
-    "allowMixedContent": false
+    "allowMixedContent": false,
+    "adjustMarginsForEdgeToEdge": "auto",
+    "webContentsDebuggingEnabled": true
   }
 }
