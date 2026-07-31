@@ -412,13 +412,78 @@
       });
     }).catch(function () { return null; });
   }
-  function tileGet(url) { return idbOp('tiles', 'readonly', function (s) { return s.get(url); }); }
-  function tilePut(url, blob) { return idbOp('tiles', 'readwrite', function (s) { return s.put(blob, url); }); }
+  // Canonical tile keys ("topo/z/y/x", "sat/z/y/x", "lots/z/x/y") so the
+  // native Android Auto renderer can address the same stored tiles without
+  // having to reproduce JS float formatting in export URLs.
+  function canonKey(url) {
+    var i = url.indexOf('World_Imagery/MapServer/tile/');
+    if (i >= 0) return 'sat/' + url.split('/tile/')[1];
+    i = url.indexOf('NSW_Topo_Map/MapServer/tile/');
+    if (i >= 0) return 'topo/' + url.split('/tile/')[1];
+    if (url.indexOf('NSW_Land_Parcel_Property_Theme/MapServer/export') >= 0) {
+      var m = /[&?]bbox=([-0-9.e,]+)/i.exec(url);
+      if (m) {
+        var p = m[1].split(',').map(Number);
+        var res = p[2] - p[0];
+        var z = Math.round(Math.log(WORLD / res) / Math.LN2);
+        var x = Math.round((p[0] + WORLD / 2) / res);
+        var y = Math.round((WORLD / 2 - p[3]) / res);
+        return 'lots/' + z + '/' + x + '/' + y;
+      }
+    }
+    return url;
+  }
+
+  // In the native app, tile blobs live in the filesystem (via the TileStore
+  // plugin) so the Android Auto renderer can read them too; on the web they
+  // stay in IndexedDB.
+  var TileStoreNative = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())
+    ? window.Capacitor.registerPlugin('TileStore') : null;
+  function blobToB64(blob) {
+    return new Promise(function (resolve) {
+      var r = new FileReader();
+      r.onload = function () { resolve(String(r.result).split(',')[1]); };
+      r.onerror = function () { resolve(null); };
+      r.readAsDataURL(blob);
+    });
+  }
+  function b64ToBlob(b64) {
+    var bin = atob(b64), arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr]);
+  }
+
+  function tileGet(url) {
+    var key = canonKey(url);
+    if (TileStoreNative) {
+      return TileStoreNative.get({ url: key }).then(function (r) {
+        return (r && r.data) ? b64ToBlob(r.data) : null;
+      }).catch(function () { return null; });
+    }
+    return idbOp('tiles', 'readonly', function (s) { return s.get(key); }).then(function (b) {
+      if (b) return b;
+      return idbOp('tiles', 'readonly', function (s) { return s.get(url); });  // pre-canonical downloads
+    });
+  }
+  function tilePut(url, blob) {
+    var key = canonKey(url);
+    if (TileStoreNative) {
+      return blobToB64(blob).then(function (d) {
+        if (d) return TileStoreNative.put({ url: key, data: d });
+      }).catch(function () {});
+    }
+    return idbOp('tiles', 'readwrite', function (s) { return s.put(blob, key); });
+  }
   function tileDelMany(urls) {
+    var keys = urls.map(canonKey);
+    if (TileStoreNative) {
+      return TileStoreNative.deleteMany({ urls: keys }).catch(function () {});
+    }
     return tileDB().then(function (db) {
       return new Promise(function (resolve) {
         var tx = db.transaction('tiles', 'readwrite');
         var s = tx.objectStore('tiles');
+        keys.forEach(function (u) { s.delete(u); });
         urls.forEach(function (u) { s.delete(u); });
         tx.oncomplete = resolve; tx.onerror = resolve;
       });
