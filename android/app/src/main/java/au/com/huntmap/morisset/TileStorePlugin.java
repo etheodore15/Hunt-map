@@ -42,6 +42,55 @@ public class TileStorePlugin extends Plugin {
     }
 
     @PluginMethod
+    public void carDiag(PluginCall call) {
+        JSObject ret = new JSObject();
+        StringBuilder sb = new StringBuilder();
+        android.content.Context ctx = getContext();
+        try {
+            sb.append("Hunt Map ").append(ctx.getPackageManager()
+                .getPackageInfo(ctx.getPackageName(), 0).versionName)
+              .append(" · Android ").append(android.os.Build.VERSION.RELEASE)
+              .append(" · ").append(android.os.Build.MODEL).append("\n");
+        } catch (Exception e) { sb.append("(version lookup failed)\n"); }
+
+        // Is Android Auto installed, and which version?
+        try {
+            android.content.pm.PackageInfo aa = ctx.getPackageManager()
+                .getPackageInfo("com.google.android.projection.gearhead", 0);
+            sb.append("Android Auto installed: v").append(aa.versionName).append("\n");
+        } catch (Exception e) {
+            sb.append("Android Auto NOT VISIBLE/INSTALLED\n");
+        }
+
+        // Does the phone resolve car-app services (ours and others)?
+        try {
+            android.content.Intent it = new android.content.Intent("androidx.car.app.CarAppService");
+            java.util.List<android.content.pm.ResolveInfo> all =
+                ctx.getPackageManager().queryIntentServices(it, 0);
+            boolean self = false;
+            sb.append("Car app services visible to the phone:\n");
+            for (android.content.pm.ResolveInfo ri : all) {
+                sb.append("  - ").append(ri.serviceInfo.packageName)
+                  .append("/").append(ri.serviceInfo.name).append("\n");
+                if (ctx.getPackageName().equals(ri.serviceInfo.packageName)) self = true;
+            }
+            if (all.isEmpty()) sb.append("  (none)\n");
+            sb.append(self ? "OUR service RESOLVES correctly.\n"
+                           : "OUR service DOES NOT RESOLVE — manifest problem.\n");
+        } catch (Exception e) {
+            sb.append("service query failed: ").append(e.getMessage()).append("\n");
+        }
+
+        String log = CarLog.read(ctx);
+        sb.append("\n--- Car connection log ---\n")
+          .append(log.isEmpty()
+            ? "(empty — Android Auto has NEVER bound to the app.\n If the checks above are OK, Android Auto itself is\n filtering the app out: recheck Unknown sources +\n Application mode: Developer, then replug.)"
+            : log);
+        ret.put("report", sb.toString());
+        call.resolve(ret);
+    }
+
+    @PluginMethod
     public void deleteMany(PluginCall call) {
         JSArray urls = call.getArray("urls");
         int deleted = 0;

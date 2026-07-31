@@ -57,6 +57,14 @@
             android:resource="@xml/automotive_app_desc" />
     </application>
 
+    <!-- Visibility for the in-app Android Auto diagnostics -->
+    <queries>
+        <package android:name="com.google.android.projection.gearhead" />
+        <intent>
+            <action android:name="androidx.car.app.CarAppService" />
+        </intent>
+    </queries>
+
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />

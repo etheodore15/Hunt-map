@@ -94,6 +94,7 @@ public class MapScreen extends Screen implements SurfaceCallback {
         }
         ctx.getCarService(AppManager.class).setSurfaceCallback(this);
         startLocation();
+        au.com.huntmap.morisset.CarLog.log(ctx, "map screen created");
     }
 
     private void startLocation() {
@@ -142,7 +143,11 @@ public class MapScreen extends Screen implements SurfaceCallback {
     }
 
     // --- SurfaceCallback ---
-    @Override public void onSurfaceAvailable(@NonNull SurfaceContainer c) { surface = c; draw(); }
+    @Override public void onSurfaceAvailable(@NonNull SurfaceContainer c) {
+        surface = c;
+        au.com.huntmap.morisset.CarLog.log(getCarContext(), "surface available " + c.getWidth() + "x" + c.getHeight());
+        draw();
+    }
     @Override public void onSurfaceDestroyed(@NonNull SurfaceContainer c) { surface = null; }
     @Override public void onVisibleAreaChanged(@NonNull Rect r) { draw(); }
     @Override public void onStableAreaChanged(@NonNull Rect r) { draw(); }

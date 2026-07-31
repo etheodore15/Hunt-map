@@ -168,6 +168,7 @@
 
 <div id="modePill"></div>
 <div id="errBox" style="display:none;position:absolute;left:10px;right:10px;bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:2000;background:#7f1d1d;color:#ffe4e0;font:12px/1.4 monospace;padding:10px 12px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.6);max-height:40vh;overflow:auto" title="Tap to dismiss"></div>
+<div id="diagBox" style="display:none;position:absolute;left:10px;right:10px;top:calc(20px + env(safe-area-inset-top,0px));z-index:2100;background:#111b24;color:#cfe8d8;font:11.5px/1.45 monospace;padding:12px;border-radius:8px;box-shadow:0 2px 14px rgba(0,0,0,.7);max-height:75vh;overflow:auto;white-space:pre-wrap" title="Tap to close"></div>
 
 <div id="keyPanel">
   <button class="keyclose" id="keyClose" title="Close key">✕</button>
@@ -352,6 +353,9 @@
     <div class="btnrow">
       <button class="btn" id="exportBtn" title="Download notes + trips as GeoJSON">Export</button>
       <button class="btn" id="importBtn" title="Import a Hunt Map GeoJSON export">Import</button>
+    </div>
+    <div class="btnrow" style="margin-top:6px">
+      <button class="btn" id="carDiagBtn" title="Android Auto connection diagnostics">🚗 Car diagnostics</button>
     </div>
     <input type="file" id="importFile" accept=".geojson,.json,application/geo+json,application/json" style="display:none">
     <div class="hint" id="noteHint">"Add note" is under In the field. Drag a pin to move it; tap it to edit. Export bundles notes + trips into one file the app can import.</div>
@@ -1628,6 +1632,27 @@
   notes.forEach(addMarker);
   saveNotes();
   applyBlend();
+
+  // --- Android Auto diagnostics (native app only) ---
+  document.getElementById('diagBox').addEventListener('click', function () {
+    this.style.display = 'none';
+  });
+  document.getElementById('carDiagBtn').addEventListener('click', function () {
+    var box = document.getElementById('diagBox');
+    if (!TileStoreNative) {
+      box.textContent = 'Car diagnostics only work inside the Android app.';
+      box.style.display = 'block';
+      return;
+    }
+    box.textContent = 'Collecting…';
+    box.style.display = 'block';
+    TileStoreNative.carDiag({}).then(function (r) {
+      box.textContent = 'ANDROID AUTO DIAGNOSTICS\n(screenshot this — tap to close)\n\n' +
+        (r && r.report ? r.report : 'no report returned');
+    }).catch(function (e) {
+      box.textContent = 'Diagnostics failed: ' + (e && e.message ? e.message : e);
+    });
+  });
 
   // --- Offline areas: draw a rectangle (max 20x20 km), download tile pyramids ---
   var AREAS_KEY = 'huntmap-areas-v1';
