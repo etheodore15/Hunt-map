@@ -208,7 +208,11 @@
     <div class="hint">Stopping a log saves the trip automatically. Tap a trip's name to zoom to it; ✏ rename, 📝 note, colour swatch to recolour, tick-box to show/hide, 🗑 delete.</div>
     <details class="more">
       <summary>Clean-track tips</summary>
-      <div class="hint">Keep the screen on with the app in the foreground (a wake lock is requested, but a locked phone stops browser GPS — the Android app keeps logging in the background). Allow "Precise location". Coarse network fixes and impossible jumps are filtered out automatically.</div>
+      <div class="hint">In the Android app, trip recording runs as a native service — the track keeps logging with the screen off or the app in the background (a "Trip recording" notification shows while active). On the web, keep the screen on. Allow "Precise location". Coarse fixes and impossible jumps are filtered automatically.</div>
+      <div class="hint">On Samsung and similar phones, also exempt the app from battery limits or the system may still pause it on long trips:</div>
+      <div class="btnrow" style="margin-top:6px">
+        <button class="btn" id="batteryBtn">🔋 Allow unrestricted battery</button>
+      </div>
     </details>
   </details>
 
@@ -414,6 +418,12 @@
     var capG = (window.capacitorExports && window.capacitorExports.Capacitor) || window.Capacitor;
     IS_NATIVE = !!(capG && capG.isNativePlatform && capG.isNativePlatform());
   } catch (e) {}
+  // Plugin proxies throw synchronously when a method is missing — normalise
+  // every call to a rejected promise so .catch() fallbacks always work.
+  function pcall(plugin, method, args) {
+    try { return Promise.resolve(plugin[method](args)); }
+    catch (e) { return Promise.reject(e); }
+  }
 
   // Georeferenced bounds extracted from the GeoPDF viewport (GDA94 -> WGS84 lat/lon).
   // The image morisset_topo.webp is warped to be axis-aligned in Web Mercator,
@@ -508,7 +518,7 @@
   function tileGet(url) {
     var key = canonKey(url);
     if (TileStoreNative) {
-      return TileStoreNative.get({ url: key }).then(function (r) {
+      return pcall(TileStoreNative, 'get', { url: key }).then(function (r) {
         return (r && r.data) ? b64ToBlob(r.data) : null;
       }).catch(function () { return null; });
     }
@@ -521,7 +531,7 @@
     var key = canonKey(url);
     if (TileStoreNative) {
       return blobToB64(blob).then(function (d) {
-        if (d) return TileStoreNative.put({ url: key, data: d });
+        if (d) return pcall(TileStoreNative, 'put', { url: key, data: d });
       }).catch(function () {});
     }
     return idbOp('tiles', 'readwrite', function (s) { return s.put(blob, key); });
@@ -529,7 +539,7 @@
   function tileDelMany(urls) {
     var keys = urls.map(canonKey);
     if (TileStoreNative) {
-      return TileStoreNative.deleteMany({ urls: keys }).catch(function () {});
+      return pcall(TileStoreNative, 'deleteMany', { urls: keys }).catch(function () {});
     }
     return tileDB().then(function (db) {
       return new Promise(function (resolve) {
@@ -1035,6 +1045,7 @@
     gpsOn = true; gpsFollow = true; gpsFirstFix = true;
     gpsButtons();
     if (BgGeo) {
+      try {
       BgGeo.addWatcher({
         backgroundMessage: 'GPS tracking / trip logging is running',
         backgroundTitle: 'Hunt Map',
@@ -1054,6 +1065,12 @@
           accuracy: location.accuracy || 0
         });
       }).then(function (id) { bgWatcherId = id; });
+      } catch (e) {
+        BgGeo = null;   // plugin unavailable — fall back to browser GPS
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+        map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 0, timeout: 3600000 });
+      }
     } else {
       map.on('locationfound', onLocationFound);
       map.on('locationerror', onLocationError);
@@ -1254,7 +1271,19 @@
     if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
   }
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible' && recording) acquireWakeLock();
+    if (document.visibilityState !== 'visible' || !recording) return;
+    acquireWakeLock();
+    // Coming back to the foreground mid-recording: pull the points the native
+    // recorder captured while JS was suspended and redraw the live line.
+    if (TileStoreNative) {
+      pcall(TileStoreNative, 'trackPoll', {}).then(function (r) {
+        var pts = (r && r.points) || [];
+        if (pts.length) {
+          recPoints = pts;
+          if (recLine) recLine.setLatLngs(pts.map(function (p) { return [p[0], p[1]]; }));
+        }
+      }).catch(function () {});
+    }
   });
   function tripButtons() {
     document.getElementById('tripBtn').classList.toggle('armed', recording);
@@ -1271,6 +1300,9 @@
     pendingPoint = null;
     recLine = L.polyline([], { color: recColor, weight: 4, opacity: 0.9, dashArray: '8 6' }).addTo(map);
     if (!gpsOn) startGps();
+    // In the app, the native foreground recorder is the source of truth — the
+    // WebView is suspended in the background, so JS alone would drop points.
+    if (TileStoreNative) pcall(TileStoreNative, 'trackStart', {}).catch(function () {});
     acquireWakeLock();
     tripButtons();
   }
@@ -1289,11 +1321,23 @@
     recording = false;
     releaseWakeLock();
     if (recLine) { map.removeLayer(recLine); recLine = null; }
-    if (recPoints.length >= 2) finishTrip(recPoints, recColor);
+    var jsPoints = recPoints;
     recPoints = [];
     pendingPoint = null;
     localStorage.removeItem(TRIP_ACTIVE_KEY);
     tripButtons();
+    if (TileStoreNative) {
+      // prefer the native recording: it has the background points JS missed
+      pcall(TileStoreNative, 'trackStop', {}).then(function (r) {
+        var pts = (r && r.points) || [];
+        if (pts.length >= 2) finishTrip(pts, recColor);
+        else if (jsPoints.length >= 2) finishTrip(jsPoints, recColor);
+      }).catch(function () {
+        if (jsPoints.length >= 2) finishTrip(jsPoints, recColor);
+      });
+    } else if (jsPoints.length >= 2) {
+      finishTrip(jsPoints, recColor);
+    }
   }
   function toggleTrip() { if (recording) stopTrip(); else startTrip(); }
   document.getElementById('tripBtn').addEventListener('click', toggleTrip);
@@ -1310,6 +1354,27 @@
       finishTrip(active.points, active.color || TRIP_PALETTE[0], ' (recovered)');
     localStorage.removeItem(TRIP_ACTIVE_KEY);
   } catch (e) {}
+  // native recorder recovery: still running (app restarted mid-trip) -> resume
+  // the recording UI; not running but points on disk (app was killed) -> save
+  if (TileStoreNative) {
+    pcall(TileStoreNative, 'trackPoll', {}).then(function (r) {
+      var pts = (r && r.points) || [];
+      if (r && r.running) {
+        recording = true;
+        recColor = TRIP_PALETTE[trips.length % TRIP_PALETTE.length];
+        recPoints = pts;
+        recLine = L.polyline(pts.map(function (p) { return [p[0], p[1]]; }),
+          { color: recColor, weight: 4, opacity: 0.9, dashArray: '8 6' }).addTo(map);
+        tripButtons();
+        if (!gpsOn) startGps();
+      } else if (pts.length >= 2) {
+        finishTrip(pts, TRIP_PALETTE[trips.length % TRIP_PALETTE.length], ' (recovered)');
+        pcall(TileStoreNative, 'trackStop', {}).catch(function () {});
+      } else if (pts.length) {
+        pcall(TileStoreNative, 'trackStop', {}).catch(function () {});
+      }
+    }).catch(function () {});
+  }
 
   // --- Google Street View (keyless deep link) ---
   var svMode = false;
@@ -1633,6 +1698,11 @@
   saveNotes();
   applyBlend();
 
+  document.getElementById('batteryBtn').addEventListener('click', function () {
+    if (TileStoreNative) pcall(TileStoreNative, 'batterySettings', {}).catch(function () {});
+    else alert('Only relevant in the Android app.');
+  });
+
   // --- Android Auto diagnostics (native app only) ---
   document.getElementById('diagBox').addEventListener('click', function () {
     this.style.display = 'none';
@@ -1646,7 +1716,7 @@
     }
     box.textContent = 'Collecting…';
     box.style.display = 'block';
-    TileStoreNative.carDiag({}).then(function (r) {
+    pcall(TileStoreNative, 'carDiag', {}).then(function (r) {
       box.textContent = 'ANDROID AUTO DIAGNOSTICS\n(screenshot this — tap to close)\n\n' +
         (r && r.report ? r.report : 'no report returned');
     }).catch(function (e) {

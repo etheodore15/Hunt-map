@@ -41,6 +41,73 @@ public class TileStorePlugin extends Plugin {
         call.resolve(ret);
     }
 
+    // --- native trip recording (survives WebView suspension) ---
+
+    @PluginMethod
+    public void trackStart(PluginCall call) {
+        try {
+            TrackRecorderService.trackFile(getContext()).delete();
+            android.content.Intent it = new android.content.Intent(getContext(), TrackRecorderService.class);
+            it.setAction(TrackRecorderService.ACTION_START);
+            androidx.core.content.ContextCompat.startForegroundService(getContext(), it);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("trackStart failed: " + e.getMessage());
+        }
+    }
+
+    private JSObject pointsResult(boolean running) {
+        JSObject ret = new JSObject();
+        JSArray arr = new JSArray();
+        for (double[] p : TrackRecorderService.readPoints(getContext())) {
+            JSArray row = new JSArray();
+            row.put(p[0]); row.put(p[1]); row.put((long) p[2]);
+            arr.put(row);
+        }
+        ret.put("running", running);
+        ret.put("points", arr);
+        return ret;
+    }
+
+    @PluginMethod
+    public void trackStop(PluginCall call) {
+        try {
+            android.content.Intent it = new android.content.Intent(getContext(), TrackRecorderService.class);
+            it.setAction(TrackRecorderService.ACTION_STOP);
+            getContext().startService(it);
+        } catch (Exception ignored) {}
+        JSObject ret = pointsResult(false);
+        TrackRecorderService.trackFile(getContext()).delete();
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void trackPoll(PluginCall call) {
+        call.resolve(pointsResult(TrackRecorderService.RUNNING));
+    }
+
+    @PluginMethod
+    public void batterySettings(PluginCall call) {
+        try {
+            android.content.Intent it = new android.content.Intent(
+                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                android.net.Uri.parse("package:" + getContext().getPackageName()));
+            it.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(it);
+            call.resolve();
+        } catch (Exception e) {
+            try {
+                android.content.Intent it2 = new android.content.Intent(
+                    android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                it2.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(it2);
+                call.resolve();
+            } catch (Exception e2) {
+                call.reject("could not open battery settings");
+            }
+        }
+    }
+
     @PluginMethod
     public void carDiag(PluginCall call) {
         JSObject ret = new JSObject();
