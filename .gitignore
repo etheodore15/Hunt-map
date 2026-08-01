@@ -6,3 +6,6 @@ android/build/
 android/app/build/
 android/local.properties
 android/.idea/
+hx1-app/build/
+hx1-app/.gradle/
+hx1-app/src/main/assets/www/

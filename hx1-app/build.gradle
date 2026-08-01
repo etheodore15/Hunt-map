@@ -1,0 +1,31 @@
+// Standalone legacy build for the Hema HX-1 (Android 4.4 / API 19).
+// Pinned to Gradle 7.6.4 + AGP 7.4.2, the last toolchain pair that
+// comfortably targets minSdk 19.
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies { classpath 'com.android.tools.build:gradle:7.4.2' }
+}
+apply plugin: 'com.android.application'
+
+repositories { google(); mavenCentral() }
+
+android {
+    namespace 'au.com.huntmap.hx1'
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId 'au.com.huntmap.hx1'
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode Integer.parseInt(System.getenv('VERSION_CODE') ?: '1')
+        versionName (System.getenv('VERSION_NAME') ?: '1.0-dev')
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+        release { minifyEnabled false }
+    }
+    lint { abortOnError false }
+}

@@ -504,6 +504,41 @@
   // plugin) so the Android Auto renderer can read them too; on the web they
   // stay in IndexedDB.
   var TileStoreNative = IS_NATIVE ? capPlugin('TileStore') : null;
+
+  // Legacy Hema HX-1 wrapper: a plain-WebView app exposes window.HXBridge
+  // (synchronous JSON strings). Shim it to the TileStore plugin interface so
+  // every existing native code path works unchanged. Offline tiles are served
+  // natively by URL interception, so get() always defers to the network URL.
+  if (!TileStoreNative && window.HXBridge) {
+    (function (HXB) {
+      TileStoreNative = {
+        __hx: true,
+        get: function () { return Promise.resolve({}); },
+        put: function () { return Promise.resolve({}); },
+        deleteMany: function (a) {
+          try { HXB.deleteKeys(JSON.stringify((a && a.urls) || [])); } catch (e) {}
+          return Promise.resolve({});
+        },
+        trackStart: function () { try { HXB.trackStart(); } catch (e) {} return Promise.resolve({}); },
+        trackStop: function () {
+          try { return Promise.resolve(JSON.parse(HXB.trackStop())); }
+          catch (e) { return Promise.resolve({ running: false, points: [] }); }
+        },
+        trackPoll: function () {
+          try { return Promise.resolve(JSON.parse(HXB.trackPoll())); }
+          catch (e) { return Promise.resolve({ running: false, points: [] }); }
+        },
+        batterySettings: function () { return Promise.resolve({}); },
+        carDiag: function () {
+          var v = ''; try { v = HXB.version(); } catch (e) {}
+          return Promise.resolve({ report: 'Hema HX build ' + v + ' — Android Auto not applicable.' });
+        },
+        hxDownload: function (keys) { HXB.downloadArea(JSON.stringify(keys)); },
+        hxCancel: function () { try { HXB.cancelDownload(); } catch (e) {} }
+      };
+    })(window.HXBridge);
+  }
+  var IS_HX = !!(TileStoreNative && TileStoreNative.__hx);
   function blobToB64(blob) {
     return new Promise(function (resolve) {
       var r = new FileReader();
@@ -554,9 +589,18 @@
       });
     }).catch(function () {});
   }
-  function areaKeysPut(id, urls) { return idbOp('areakeys', 'readwrite', function (s) { return s.put(urls, id); }); }
-  function areaKeysGet(id) { return idbOp('areakeys', 'readonly', function (s) { return s.get(id); }); }
-  function areaKeysDel(id) { return idbOp('areakeys', 'readwrite', function (s) { return s.delete(id); }); }
+  function areaKeysPut(id, urls) {
+    if (IS_HX) { try { localStorage.setItem('huntmap-areakeys-' + id, JSON.stringify(urls)); } catch (e) {} return Promise.resolve(); }
+    return idbOp('areakeys', 'readwrite', function (s) { return s.put(urls, id); });
+  }
+  function areaKeysGet(id) {
+    if (IS_HX) { try { return Promise.resolve(JSON.parse(localStorage.getItem('huntmap-areakeys-' + id))); } catch (e) { return Promise.resolve(null); } }
+    return idbOp('areakeys', 'readonly', function (s) { return s.get(id); });
+  }
+  function areaKeysDel(id) {
+    if (IS_HX) { localStorage.removeItem('huntmap-areakeys-' + id); return Promise.resolve(); }
+    return idbOp('areakeys', 'readwrite', function (s) { return s.delete(id); });
+  }
 
   // Tile layer that prefers the offline store and falls back to the network.
   var OfflineTileLayer = L.TileLayer.extend({
@@ -1892,12 +1936,41 @@
     downloading = true; dlAbort = false;
     if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
 
-    var done = 0, failed = 0, bytes = 0, i = 0, CONC = 6;
-    function prog() {
+    function progUI(done, total, bytes, failed) {
       document.getElementById('areaProgText').textContent =
-        done + ' / ' + info.urls.length + ' tiles (' + fmtMB(bytes) + ')' + (failed ? ' — ' + failed + ' failed' : '');
-      document.getElementById('areaProgBar').style.width = (done / info.urls.length * 100).toFixed(1) + '%';
+        done + ' / ' + total + ' tiles (' + fmtMB(bytes) + ')' + (failed ? ' — ' + failed + ' failed' : '');
+      document.getElementById('areaProgBar').style.width = (done / total * 100).toFixed(1) + '%';
     }
+    function finalizeArea(okTiles, bytes, failed) {
+      downloading = false;
+      document.getElementById('areaProgress').style.display = 'none';
+      if (rect) map.removeLayer(rect);
+      if (dlAbort) { updateStorageUsed(); return; }
+      var id = 'a' + Date.now();
+      var area = {
+        id: id, name: 'Area ' + (areas.length + 1),
+        bounds: [bounds.getSouth(), bounds.getWest(), bounds.getNorth(), bounds.getEast()],
+        layers: layers, tiles: okTiles, bytes: bytes,
+        date: new Date().toISOString().slice(0, 10), visible: true
+      };
+      areas.push(area);
+      areaKeysPut(id, info.urls.map(canonKey));
+      saveAreas(); renderAreaList(); drawAreaOutline(area); updateStorageUsed();
+      if (failed) alert(failed + ' tiles failed to download (patchy signal?). Re-download the area later to fill gaps — existing tiles are kept.');
+    }
+
+    if (IS_HX) {
+      // the HX wrapper downloads natively (old-WebView TLS can't be trusted)
+      window.__hxProgress = function (done, total, failed, bytes, finished) {
+        progUI(done, total, bytes, failed);
+        if (finished) finalizeArea(done - failed, bytes, failed);
+      };
+      progUI(0, info.urls.length, 0, 0);
+      TileStoreNative.hxDownload(info.urls.map(canonKey));
+      return;
+    }
+
+    var done = 0, failed = 0, bytes = 0, i = 0, CONC = 6;
     function next() {
       if (dlAbort || i >= info.urls.length) return Promise.resolve();
       var url = info.urls[i++];
@@ -1908,32 +1981,21 @@
         bytes += blob.size;
         return tilePut(url, blob);
       }).catch(function () { failed++; })
-        .then(function () { done++; if (done % 20 === 0 || done === info.urls.length) prog(); })
+        .then(function () { done++; if (done % 20 === 0 || done === info.urls.length) progUI(done, info.urls.length, bytes, failed); })
         .then(next);
     }
-    prog();
+    progUI(0, info.urls.length, 0, 0);
     var workers = [];
     for (var w = 0; w < CONC; w++) workers.push(next());
     Promise.all(workers).then(function () {
-      downloading = false;
-      document.getElementById('areaProgress').style.display = 'none';
-      if (rect) map.removeLayer(rect);
-      if (dlAbort) { updateStorageUsed(); return; }
-      var id = 'a' + Date.now();
-      var area = {
-        id: id, name: 'Area ' + (areas.length + 1),
-        bounds: [bounds.getSouth(), bounds.getWest(), bounds.getNorth(), bounds.getEast()],
-        layers: layers, tiles: done - failed, bytes: bytes,
-        date: new Date().toISOString().slice(0, 10), visible: true
-      };
-      areas.push(area);
-      areaKeysPut(id, info.urls);
-      saveAreas(); renderAreaList(); drawAreaOutline(area); updateStorageUsed();
-      if (failed) alert(failed + ' tiles failed to download (patchy signal?). Re-download the area later to fill gaps — existing tiles are kept.');
+      finalizeArea(done - failed, bytes, failed);
     });
   }
   document.getElementById('areaGoBtn').addEventListener('click', downloadArea);
-  document.getElementById('areaStopBtn').addEventListener('click', function () { dlAbort = true; });
+  document.getElementById('areaStopBtn').addEventListener('click', function () {
+    dlAbort = true;
+    if (IS_HX) TileStoreNative.hxCancel();
+  });
 
   // --- saved-area list ---
   function drawAreaOutline(a) {
@@ -2127,6 +2189,15 @@
   SECTION_IDS.forEach(function (id) {
     document.getElementById(id).addEventListener('toggle', saveSettings);
   });
+  // Engines without mix-blend-mode (e.g. the HX-1's 2013 WebView) can't do
+  // the Blend view — hide it and fall back to Topo.
+  var BLEND_OK = false;
+  try { BLEND_OK = !!(window.CSS && CSS.supports && CSS.supports('mix-blend-mode', 'multiply')); } catch (e) {}
+  if (!BLEND_OK) {
+    document.getElementById('viewBlend').style.display = 'none';
+    if (viewMode === 'blend') setViewMode('topo');
+  }
+
   // fix the trip-quality badge visibility on load and set initial mode UI
   setViewMode(viewMode);
   updateLotsZoomNote();
