@@ -61,7 +61,9 @@ public class TileStorePlugin extends Plugin {
         JSArray arr = new JSArray();
         for (double[] p : TrackRecorderService.readPoints(getContext())) {
             JSArray row = new JSArray();
-            row.put(p[0]); row.put(p[1]); row.put((long) p[2]);
+            row.put(Double.valueOf(p[0]));
+            row.put(Double.valueOf(p[1]));
+            row.put(Long.valueOf((long) p[2]));
             arr.put(row);
         }
         ret.put("running", running);
