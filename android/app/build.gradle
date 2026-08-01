@@ -20,7 +20,7 @@ android {
         release {
             // CI signs release builds with the same persistent key used for
             // earlier debug builds, so updates install over the top.
-            storeFile file(System.getenv("KEYSTORE_PATH") ?: "${System.property('user.home')}/.android/debug.keystore")
+            storeFile file(System.getenv("KEYSTORE_PATH") ?: "${System.getProperty('user.home')}/.android/debug.keystore")
             storePassword System.getenv("KEYSTORE_PASS") ?: "android"
             keyAlias System.getenv("KEY_ALIAS") ?: "androiddebugkey"
             keyPassword System.getenv("KEY_PASS") ?: "android"
